@@ -127,3 +127,31 @@ describe("loadQuestions", () => {
     expect(result.skipped[0].file).toBe("bad.json");
   });
 });
+
+describe("malformed-file quarantine", () => {
+  it("keeps valid files and isolates a malformed sibling without crashing", () => {
+    const malformed = "{ this is not json at all";
+    let result;
+    expect(() => {
+      result = loadVocab([
+        { file: "good.json", content: VOCAB_JSON },
+        { file: "bad.json", content: malformed },
+      ]);
+    }).not.toThrow();
+    expect(result!.ok).toHaveLength(1);
+    expect(result!.ok[0].id).toBe("abundant");
+    expect(result!.skipped).toHaveLength(1);
+    expect(result!.skipped[0].file).toBe("bad.json");
+  });
+
+  it("quarantines a passage with broken frontmatter and keeps the valid one", () => {
+    const result = loadPassage([
+      { file: "climate-change.md", content: PASSAGE_MD },
+      { file: "broken.md", content: "no frontmatter at all" },
+    ]);
+    expect(result.ok).toHaveLength(1);
+    expect(result.ok[0].id).toBe("climate-change");
+    expect(result.skipped).toHaveLength(1);
+    expect(result.skipped[0].file).toBe("broken.md");
+  });
+});
