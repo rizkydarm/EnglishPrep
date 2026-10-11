@@ -152,30 +152,36 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<section class="matching" aria-label="Matching question" aria-live="polite">
+<section class="card-3d p-6" aria-label="Matching question" aria-live="polite">
   {#if loading}
-    <p class="state" role="status">Loading matching question…</p>
+    <p class="p-6 text-center text-muted-foreground font-semibold" role="status">Loading matching question…</p>
   {:else if error}
-    <p class="state state-error" role="alert">{error}</p>
+    <p class="p-4 rounded-xl border-2 border-destructive bg-destructive-bg text-destructive-text font-bold" role="alert">{error}</p>
   {:else if !question}
-    <p class="state">No matching question available.</p>
+    <p class="p-6 text-center text-muted-foreground font-semibold">No matching question available.</p>
   {:else if question.pairs.length === 0}
-    <p class="state">This matching set has no pairs.</p>
+    <p class="p-6 text-center text-muted-foreground font-semibold">This matching set has no pairs.</p>
   {:else}
-    <div class="meta">
-      <span class="badge">Matching · {question.pairCount} pairs</span>
-      <span class="badge badge-level">{question.level}</span>
-      <span class="progress" aria-label="{assignedCount()} of {totalPairs()} pairs assigned">
+    <div class="flex items-center justify-between gap-2 mb-6">
+      <div class="flex items-center gap-2">
+        <span class="badge-pill bg-card text-foreground text-xs">
+          Matching · {question.pairCount} pairs
+        </span>
+        <span class="badge-pill bg-yellow text-accent-ink text-xs">
+          {question.level}
+        </span>
+      </div>
+      <span class="badge-pill bg-cyan/20 text-accent-ink dark:text-cyan text-xs font-black" aria-label="{assignedCount()} of {totalPairs()} pairs assigned">
         {assignedCount()}/{totalPairs()} paired
       </span>
     </div>
 
-    <div class="grid">
-      <div class="column" role="group" aria-label="Words">
+    <div class="grid grid-cols-2 gap-3 md:gap-4">
+      <div class="space-y-3" role="group" aria-label="Words">
         {#each question.leftItems as item (item.id)}
           <button
             type="button"
-            class="chip {leftClass(item.id)}"
+            class="match-pill w-full text-left font-bold text-sm md:text-base {leftClass(item.id)}"
             class:chip-just={justLocked === item.id}
             aria-pressed={selectedLeft === item.id}
             disabled={assigned[item.id] !== undefined || graded || disabled}
@@ -185,11 +191,11 @@
           </button>
         {/each}
       </div>
-      <div class="column" role="group" aria-label="Definitions">
+      <div class="space-y-3" role="group" aria-label="Definitions">
         {#each question.rightItems as item (item.id)}
           <button
             type="button"
-            class="chip {rightClass(item.id)}"
+            class="match-pill w-full text-left font-semibold text-xs md:text-sm {rightClass(item.id)}"
             aria-pressed={selectedRight === item.id}
             disabled={Object.values(assigned).includes(item.id) || graded || disabled}
             onclick={() => tapRight(item.id)}
@@ -200,221 +206,69 @@
       </div>
     </div>
 
-    <div class="actions">
+    <div class="mt-6 flex flex-wrap items-center justify-between gap-3 pt-4 border-t-2 border-border dark:border-border">
       {#if !graded}
-        <button type="button" class="ghost" disabled={assignedCount() === 0 || disabled} onclick={reset}>
-          Reset
+        <button
+          type="button"
+          class="btn-3d btn-3d-white px-4 h-[44px] text-xs font-bold"
+          disabled={assignedCount() === 0 || disabled}
+          onclick={reset}
+        >
+          Clear Selection
         </button>
-        <p class="hint">Tap a word, then tap its match. Each pair locks; partial credit per correct pair. Esc clears selection.</p>
-      {:else}
-        <p class="feedback {correctPairs === totalPairs() ? 'feedback-ok' : 'feedback-mixed'}" role="status">
-          {correctPairs}/{totalPairs()} correct ({Math.round(score * 100)}%)
+        <p class="text-xs font-bold text-muted-foreground">
+          Tap a word on the left, then tap its match on the right. Esc clears selection.
         </p>
-        <button type="button" class="ghost" onclick={reset}>Try again</button>
+      {:else}
+        <div
+          class="p-3 px-4 rounded-xl border-2 border-border-strong font-extrabold text-sm flex items-center gap-2 {correctPairs === totalPairs() ? 'bg-success-bg text-success-text border-success' : 'bg-yellow text-accent-ink'}"
+          role="status"
+        >
+          <span>{correctPairs === totalPairs() ? "✓" : "★"}</span>
+          <span>{correctPairs}/{totalPairs()} correct ({Math.round(score * 100)}%)</span>
+        </div>
+        <button type="button" class="btn-3d px-5 h-[44px] text-xs font-black" onclick={reset}>
+          Try Again
+        </button>
       {/if}
     </div>
   {/if}
 </section>
 
 <style>
-  .matching {
-    background: #ffffff;
-    border: 2px solid #e7e5e4;
-    border-radius: 16px;
-    padding: 1.25rem;
-  }
-  :global(.dark) .matching {
-    background: #1e1e20;
-    border-color: #2a2a2e;
-  }
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0.15rem 0.6rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, #6d28d9 10%, transparent);
-    color: #6d28d9;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .badge-level {
-    background: transparent;
-    border: 1px solid #e7e5e4;
-    color: inherit;
-    opacity: 0.8;
-  }
-  :global(.dark) .badge-level {
-    border-color: #2a2a2e;
-  }
-  .progress {
-    margin-left: auto;
-    font-size: 0.8rem;
-    font-weight: 700;
-    opacity: 0.75;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-  .column {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-  .chip {
-    min-height: 44px;
-    padding: 0.7rem 0.9rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: transform 80ms ease-out, border-color 120ms ease-out, background 120ms ease-out;
-  }
-  :global(.dark) .chip {
-    border-color: #2a2a2e;
-  }
-  .chip:not(:disabled):hover {
-    border-color: #6d28d9;
-  }
-  .chip:not(:disabled):active {
-    transform: scale(0.98) translateY(1px);
-  }
-  .chip:focus-visible,
-  .ghost:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .chip:disabled {
-    cursor: default;
-  }
   .chip-selected {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
+    background: var(--cyan) !important;
+    transform: scale(1.02);
   }
   .chip-locked {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 12%, transparent);
+    background: #EFF6FF !important;
+    border-color: var(--primary) !important;
   }
-  .chip-just {
-    animation: match-confirm 250ms ease-out;
+  :global(.dark) .chip-locked {
+    background: rgba(35, 115, 244, 0.2) !important;
+    border-color: var(--primary) !important;
   }
   .chip-correct {
-    border-color: #10b981;
-    background: color-mix(in srgb, #10b981 12%, transparent);
-    animation: match-confirm 250ms ease-out;
+    background: var(--yellow) !important;
+    color: var(--border-strong) !important;
+    text-decoration: line-through;
+    opacity: 0.8;
   }
   .chip-wrong {
-    border-color: #ef4444;
-    background: color-mix(in srgb, #ef4444 8%, transparent);
-    animation: match-shake 250ms ease-out;
+    background: #FEE2E2 !important;
+    border-color: #EF4444 !important;
+    color: #991B1B !important;
   }
-  .actions {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+  :global(.dark) .chip-wrong {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #FCA5A5 !important;
   }
-  .ghost {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.6rem 1.1rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 80ms ease-out;
+  .chip-just {
+    animation: match-pop 250ms ease-out;
   }
-  :global(.dark) .ghost {
-    border-color: #2a2a2e;
-  }
-  .ghost:not(:disabled):active {
-    transform: scale(0.98) translateY(1px);
-  }
-  .ghost:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-  .feedback {
-    margin: 0;
-    font-weight: 700;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-  .feedback-ok {
-    color: #10b981;
-  }
-  .feedback-mixed {
-    color: #6d28d9;
-  }
-  .hint {
-    margin: 0;
-    font-size: 0.78rem;
-    opacity: 0.65;
-  }
-  .state {
-    margin: 0;
-    padding: 1rem;
-    border: 2px dashed #e7e5e4;
-    border-radius: 12px;
-    min-height: 44px;
-  }
-  :global(.dark) .state {
-    border-color: #2a2a2e;
-  }
-  .state-error {
-    border-color: #ef4444;
-    border-style: solid;
-    color: #ef4444;
-  }
-  @keyframes match-confirm {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.04);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes match-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-4px);
-    }
-    75% {
-      transform: translateX(4px);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .chip-just,
-    .chip-correct,
-    .chip-wrong {
-      animation: none;
-    }
-    .chip,
-    .ghost {
-      transition: none;
-    }
+  @keyframes match-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
   }
 </style>

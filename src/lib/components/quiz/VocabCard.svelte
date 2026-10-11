@@ -148,73 +148,91 @@
 <svelte:window onkeydown={onKeydown} />
 
 <section
-  class="vocab-card"
+  class="card-3d p-6"
   class:card-correct={answered && isCorrect}
   class:card-wrong={answered && !isCorrect}
   aria-label="Vocabulary question"
   aria-live="polite"
 >
   {#if loading}
-    <p class="state" role="status">Loading question…</p>
+    <p class="p-6 text-center text-muted-foreground font-semibold" role="status">Loading question…</p>
   {:else if error}
-    <p class="state state-error" role="alert">{error}</p>
+    <p class="p-4 rounded-xl border-2 border-destructive bg-destructive-bg text-destructive-text font-bold" role="alert">{error}</p>
   {:else if !question}
-    <p class="state">No question available.</p>
+    <p class="p-6 text-center text-muted-foreground font-semibold">No question available.</p>
   {:else}
-    <div class="meta">
-      <span class="badge">{question.type === "best_word" ? "Best word" : question.type === "true_false" ? "True / False" : "Multiple choice"}</span>
-      <span class="badge badge-level">{question.level}</span>
+    <div class="flex items-center justify-between gap-2 mb-4">
+      <span class="badge-pill bg-card text-foreground text-xs">
+        {question.type === "best_word" ? "Best word" : question.type === "true_false" ? "True / False" : "Multiple choice"}
+      </span>
+      <span class="badge-pill bg-yellow text-accent-ink text-xs">
+        {question.level}
+      </span>
     </div>
-    <h2 class="prompt">{heading()}</h2>
+
+    <h3 class="text-xl md:text-2xl font-black text-foreground mb-6 leading-snug">
+      {heading()}
+    </h3>
 
     {#if question.type === "true_false"}
-      <div class="tf-row" role="group" aria-label="True or false">
+      <div class="grid grid-cols-2 gap-4" role="group" aria-label="True or false">
         {#each options() as label, i (`${i}-${label}`)}
           <button
             type="button"
-            class="option tf-btn option-{optionState(i)}"
+            class="choice flex items-center justify-center gap-3 min-h-[58px] text-lg font-extrabold {optionState(i) === 'selected' ? 'selected' : optionState(i) === 'correct' ? 'correct' : optionState(i) === 'wrong' ? 'wrong' : ''}"
             aria-pressed={selected === i}
             disabled={answered || disabled}
             onclick={() => {
               if (!answered && !disabled) selected = i;
             }}
           >
-            <span class="key" aria-hidden="true">{i === 0 ? "T" : "F"}</span>
-            {label}
+            <span class="w-7 h-7 rounded-lg border-2 border-border-strong bg-muted dark:bg-card flex items-center justify-center text-xs font-black shrink-0" aria-hidden="true">
+              {i === 0 ? "T" : "F"}
+            </span>
+            <span>{label}</span>
           </button>
         {/each}
       </div>
     {:else}
-      <div class="options" role="group" aria-label="Answer options">
+      <div class="grid gap-3 sm:grid-cols-2" role="group" aria-label="Answer options">
         {#each options() as label, i (`${i}-${label}`)}
+          {@const optKey = ["A", "B", "C", "D"][i] ?? String(i + 1)}
           <button
             type="button"
-            class="option option-{optionState(i)}"
+            class="choice flex items-center gap-3 {optionState(i) === 'selected' ? 'selected' : optionState(i) === 'correct' ? 'correct' : optionState(i) === 'wrong' ? 'wrong' : ''}"
             aria-pressed={selected === i}
             disabled={answered || disabled}
             onclick={() => {
               if (!answered && !disabled) selected = i;
             }}
           >
-            <span class="key" aria-hidden="true">{i + 1}</span>
-            <span>{label}</span>
+            <span class="w-8 h-8 rounded-xl border-2 border-border-strong bg-muted dark:bg-card flex items-center justify-center text-xs font-black shrink-0" aria-hidden="true">
+              {optKey}
+            </span>
+            <span class="flex-1 font-bold text-base">{label}</span>
           </button>
         {/each}
       </div>
     {/if}
 
-    <div class="actions">
-      {#if !answered}
-        <button type="button" class="check" disabled={selected < 0 || disabled} onclick={check}>
-          Check ↵
+    {#if !answered}
+      <div class="mt-6">
+        <button
+          type="button"
+          class="btn-3d w-full h-[52px] text-base font-extrabold flex items-center justify-center"
+          disabled={selected < 0 || disabled}
+          onclick={check}
+        >
+          Check Answer ↵
         </button>
-      {:else}
-        <p class="feedback {isCorrect ? 'feedback-ok' : 'feedback-bad'}" role="status">
-          {isCorrect ? "Correct!" : "Not quite — the highlighted answer is correct."}
-        </p>
-      {/if}
+      </div>
+    {/if}
+
+    <div class="mt-4 flex items-center justify-between text-xs font-bold text-muted-foreground opacity-80">
+      <span>Keys 1–{optionCount()} select</span>
+      <span>Enter checks</span>
+      <span>Esc exits</span>
     </div>
-    <p class="hint">Keys 1–{optionCount()} select · Enter checks · Esc exits</p>
     {#if lastKey !== ""}
       <span class="sr" aria-hidden="true">{lastKey}</span>
     {/if}
@@ -222,194 +240,11 @@
 </section>
 
 <style>
-  .vocab-card {
-    background: #ffffff;
-    border: 2px solid #e7e5e4;
-    border-radius: 16px;
-    padding: 1.25rem;
-  }
-  :global(.dark) .vocab-card {
-    background: #1e1e20;
-    border-color: #2a2a2e;
-  }
   .card-correct {
-    border-color: #10b981;
-    animation: vocab-flash 250ms ease-out;
+    border-color: #10B981 !important;
   }
   .card-wrong {
-    border-color: #ef4444;
-    animation: vocab-shake 250ms ease-out;
-  }
-  .meta {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: 0.15rem 0.6rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, #6d28d9 10%, transparent);
-    color: #6d28d9;
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .badge-level {
-    background: transparent;
-    border: 1px solid #e7e5e4;
-    color: inherit;
-    opacity: 0.8;
-  }
-  :global(.dark) .badge-level {
-    border-color: #2a2a2e;
-  }
-  .prompt {
-    font-size: 1.125rem;
-    line-height: 1.55;
-    margin: 0 0 1rem;
-  }
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-  .tf-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-  }
-  .option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    min-height: 44px;
-    padding: 0.7rem 0.9rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: transform 80ms ease-out, border-color 120ms ease-out, background 120ms ease-out;
-  }
-  :global(.dark) .option {
-    border-color: #2a2a2e;
-  }
-  .option:not(:disabled):hover {
-    border-color: #6d28d9;
-  }
-  .option:not(:disabled):active {
-    transform: scale(0.98) translateY(1px);
-  }
-  .option:focus-visible,
-  .check:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .option:disabled {
-    cursor: default;
-    opacity: 0.85;
-  }
-  .key {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 1.75rem;
-    height: 1.75rem;
-    padding: 0 0.4rem;
-    border-radius: 8px;
-    background: #e7e5e4;
-    color: #44403c;
-    font-size: 0.8rem;
-    font-weight: 700;
-  }
-  :global(.dark) .key {
-    background: #2a2a2e;
-    color: #d6d3d1;
-  }
-  .option-selected {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
-  }
-  .option-correct {
-    border-color: #10b981;
-    background: color-mix(in srgb, #10b981 12%, transparent);
-    animation: vocab-flash 250ms ease-out;
-  }
-  .option-wrong {
-    border-color: #ef4444;
-    background: color-mix(in srgb, #ef4444 8%, transparent);
-    animation: vocab-shake 250ms ease-out;
-  }
-  .tf-btn {
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.05rem;
-    min-height: 56px;
-  }
-  .actions {
-    margin-top: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .check {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.65rem 1.25rem;
-    border: none;
-    border-radius: 12px;
-    background: #6d28d9;
-    color: #fff;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 80ms ease-out;
-  }
-  .check:not(:disabled):active {
-    transform: scale(0.98) translateY(1px);
-  }
-  .check:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-  .feedback {
-    margin: 0;
-    font-weight: 700;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-  }
-  .feedback-ok {
-    color: #10b981;
-  }
-  .feedback-bad {
-    color: #ef4444;
-  }
-  .hint {
-    margin: 0.75rem 0 0;
-    font-size: 0.78rem;
-    opacity: 0.65;
-  }
-  .state {
-    margin: 0;
-    padding: 1rem;
-    border: 2px dashed #e7e5e4;
-    border-radius: 12px;
-    min-height: 44px;
-  }
-  :global(.dark) .state {
-    border-color: #2a2a2e;
-  }
-  .state-error {
-    border-color: #ef4444;
-    border-style: solid;
-    color: #ef4444;
+    border-color: #EF4444 !important;
   }
   .sr {
     position: absolute;
@@ -417,40 +252,5 @@
     height: 1px;
     overflow: hidden;
     clip: rect(0 0 0 0);
-  }
-  @keyframes vocab-flash {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes vocab-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-4px);
-    }
-    75% {
-      transform: translateX(4px);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .card-correct,
-    .card-wrong,
-    .option-correct,
-    .option-wrong {
-      animation: none;
-    }
-    .option,
-    .check {
-      transition: none;
-    }
   }
 </style>

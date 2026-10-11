@@ -42,7 +42,7 @@
 	let startedAt = $state(Date.now());
 	let nextBtn: HTMLButtonElement | null = $state(null);
 
-	// Own the session in the quiz store (exit discards — nothing persisted here).
+	// Own the session in the quiz store (exit discards; nothing persisted here).
 	$effect(() => {
 		quiz.start({
 			mode,
@@ -89,7 +89,7 @@
 					const selfAssessed = item.kind === "writing_image";
 					record(item.id, {
 						earned: 0,
-						userText: "No answer — time expired",
+						userText: "No answer (time expired)",
 						correctText: selfAssessed ? "Not self-scored" : correctTextFor(item),
 						...(selfAssessed ? { excluded: true } : {}),
 					});
@@ -240,7 +240,7 @@
 		record(item.id, {
 			earned: 0,
 			userText: result.userAnswer === "" ? "(empty)" : result.userAnswer,
-			correctText: "Self-assessed — not auto-graded",
+			correctText: "Self-assessed, not auto-graded",
 			excluded: true,
 			selfScore: result.selfScore ?? 0,
 			selfMax: max,
@@ -250,8 +250,8 @@
 	function feedbackFor(item: QuizItem): string {
 		const o = outcomes[item.id];
 		if (!o) return "";
-		if (o.excluded) return "Self-assessed — recorded separately, not in the auto %.";
-		if (expired[item.id] === true) return "Time expired — counted as incorrect.";
+		if (o.excluded) return "Self-assessed, recorded separately, not in the auto %.";
+		if (expired[item.id] === true) return "Time expired, counted as incorrect.";
 		if (o.earned >= 0.999) return "Correct!";
 		if (o.earned > 0) return `Partially correct (${Math.round(o.earned * 100)}%).`;
 		return "Not quite.";
@@ -303,80 +303,134 @@
 	const ringOffset = $derived(timerPerQ > 0 ? RING_C * (1 - remaining / timerPerQ) : 0);
 </script>
 
-<section class="quiz" aria-label="Quiz session">
+<section class="quiz min-h-screen" aria-label="Quiz session">
 	{#if items.length === 0}
-		<p class="state" role="status">No questions in this session — try different setup options.</p>
-		<button type="button" class="btn btn-primary" onclick={() => onExit?.()}>Back</button>
+		<div class="card-3d max-w-md mx-auto p-8 text-center my-12">
+			<p class="font-extrabold text-xl text-foreground" role="status">No questions in this session.</p>
+			<p class="serif text-muted-foreground mt-2">Try different setup options or content levels.</p>
+			<button type="button" class="btn-3d w-full h-[48px] mt-6" onclick={() => onExit?.()}>Back to Home</button>
+		</div>
 	{:else if current !== null}
-		<div class="topbar">
-			<div class="segments" role="group" aria-label="Session progress">
-				{#each items as it, i (it.id)}
-					{@const done = outcomes[it.id] !== undefined}
-					{@const isCurrent = it.id === current.id}
-					<button
-						type="button"
-						class="seg"
-						class:seg-done={done}
-						class:seg-current={isCurrent}
-						disabled={!done || isCurrent}
-						aria-label="Question {i + 1}{done ? ", answered" : ""}{isCurrent ? ", current" : ""}"
-						onclick={() => quiz.goTo(i)}
-					></button>
-				{/each}
-			</div>
-			<div class="topbar-meta">
-				<span class="qcount" aria-live="polite">Q {quiz.index + 1}/{total}</span>
-				<span class="badge">{levelBadge}</span>
+		<!-- Header (Template-Quiz.html) -->
+		<header class="sticky top-0 z-20 bg-card/95 backdrop-blur border-b-[2.5px] border-border-strong -mx-4 -mt-4 px-4 py-3 md:-mx-6 md:-mt-6 md:px-6 mb-8">
+			<div class="max-w-[1120px] mx-auto flex items-center gap-3 md:gap-4">
+				<button
+					type="button"
+					class="w-10 h-10 rounded-xl border-2 border-border-strong flex items-center justify-center bg-card font-black text-sm shadow-[0_2px_0_var(--border-strong)] hover:bg-muted dark:hover:bg-card active:translate-y-[2px] active:shadow-none transition-all"
+					onclick={askExit}
+					aria-label="Exit quiz"
+				>
+					✕
+				</button>
+
+				<!-- 14px thick progress bar -->
+				<div
+					class="flex-1 h-[14px] rounded-full border-[2.5px] border-border-strong overflow-hidden bg-muted dark:bg-card"
+					role="progressbar"
+					aria-valuenow={quiz.index + 1}
+					aria-valuemin={1}
+					aria-valuemax={total}
+					aria-label="Quiz progress"
+				>
+					<div
+						class="h-full bg-primary transition-all duration-300"
+						style="width: {((quiz.index + 1) / total) * 100}%;"
+					></div>
+				</div>
+
+				<!-- Question counter -->
+				<div class="px-3 py-1 rounded-full border-2 border-border-strong font-extrabold text-xs bg-card whitespace-nowrap shadow-[0_1px_0_var(--border-strong)]">
+					{quiz.index + 1} / {total}
+				</div>
+
+				<!-- Timer -->
 				{#if timerPerQ > 0}
-					<span
-						class="timer"
-						class:timer-low={remaining <= 5}
+					<div
+						class="px-3 py-1 rounded-full border-2 border-border-strong font-extrabold text-xs whitespace-nowrap shadow-[0_1px_0_var(--border-strong)] {remaining <= 5 ? 'bg-yellow text-accent-ink border-border-strong font-black animate-pulse' : 'bg-card text-foreground'}"
 						role="timer"
 						aria-label="{remaining} seconds left"
 					>
-						<svg class="ring" viewBox="0 0 24 24" aria-hidden="true">
-							<circle cx="12" cy="12" r="9" class="ring-bg" />
-							<circle
-								cx="12"
-								cy="12"
-								r="9"
-								class="ring-fg"
-								stroke-dasharray={RING_C}
-								stroke-dashoffset={ringOffset}
-								transform="rotate(-90 12 12)"
-							/>
-						</svg>
-						<span>{remaining}s</span>
-					</span>
+						⏱ {remaining}s
+					</div>
 				{/if}
-				<button type="button" class="btn-exit" onclick={askExit} aria-label="Exit quiz">
-					Exit
-				</button>
-			</div>
-		</div>
 
-		<div class="quiz-grid">
-			<aside class="support" aria-label="Session support">
-				<h2 class="support-title">{current.typeLabel}</h2>
-				<p class="support-text">
+				<!-- Skill-Aware Level Badge -->
+				<div class="hidden sm:inline-flex px-3 py-1 rounded-full border-2 border-border-strong font-extrabold text-[11px] {mode === 'reading' ? 'bg-cyan text-accent-ink' : mode === 'writing' ? 'bg-yellow text-accent-ink' : 'bg-primary text-primary-foreground'} shadow-[0_1px_0_var(--border-strong)]">
+					{levelBadge}
+				</div>
+			</div>
+		</header>
+
+		<!-- Main Layout (Template-Quiz.html). Reading keeps a wide two-column
+		     (passage + question); vocab/writing use a single centered column so
+		     the quiz card sits in the middle with the question nav above it. -->
+		<div class="{current.kind.startsWith('reading') ? 'max-w-[1120px] mx-auto pb-12 space-y-6' : 'mx-auto w-full max-w-3xl pb-12 space-y-6'}">
+			<!-- Context + question navigation (above the card in single-column mode) -->
+			<aside class="space-y-4">
+				<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border-2 border-border-strong text-[11px] font-extrabold bg-card shadow-[0_2px_0_var(--border-strong)]">
+					<span class="w-2.5 h-2.5 rounded-full border border-border-strong {mode === 'reading' ? 'bg-cyan' : mode === 'writing' ? 'bg-yellow' : 'bg-primary'}"></span>
+					{mode.toUpperCase()} • {current.typeLabel}
+				</div>
+
+				<h2 class="text-2xl md:text-3xl font-extrabold tracking-tight leading-tight text-foreground">
 					{#if current.kind === "matching"}
-						Tap a word, then tap its match. Partial credit per correct pair.
+						Match the word with its correct definition
 					{:else if current.kind === "cloze"}
-						Spelling close enough counts (one-letter difference accepted).
+						Complete the sentence with the missing word
 					{:else if current.kind.startsWith("reading")}
-						The passage stays visible while you answer.
+						Reading Comprehension
 					{:else if current.kind.startsWith("writing")}
-						Image descriptions are self-assessed and excluded from the auto %.
+						Writing & Structure Drill
 					{:else}
-						Keys 1–4 select · Enter checks · Esc exits.
+						Vocabulary Practice
+					{/if}
+				</h2>
+
+				<p class="serif text-muted-foreground text-base md:text-lg leading-relaxed">
+					{#if current.kind === "matching"}
+						Tap a word on the left, then tap its meaning on the right. Faster than drag & drop for desktop.
+					{:else if current.kind === "cloze"}
+						Type or choose the missing word. Spelling close enough counts (one-letter tolerance).
+					{:else if current.kind.startsWith("reading")}
+						The passage stays visible on the left while you answer the questions on the right.
+					{:else if current.kind.startsWith("writing")}
+						Construct sentences, correct grammatical mistakes, or describe images.
+					{:else}
+						Select the best option from the choices. Press 1–4 on your keyboard or tap a card.
 					{/if}
 				</p>
+
 				{#if current.pairWordIds && current.pairWordIds.length > 0}
-					<p class="support-text">Reviews {current.pairWordIds.length} words for SRS.</p>
+					<div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border-2 border-border-strong bg-yellow text-accent-ink font-extrabold text-xs shadow-[0_2px_0_var(--border-strong)]">
+						<span>SRS Box</span>
+						<span>Reviews {current.pairWordIds.length} words for retention</span>
+					</div>
 				{/if}
+
+				<!-- Discrete Question Jump Overview -->
+				<div class="pt-4 border-t-2 border-border dark:border-border">
+					<div class="text-[11px] font-extrabold text-muted-foreground uppercase tracking-wider mb-2">Question Navigation</div>
+					<div class="flex flex-wrap gap-2" role="group" aria-label="Session questions">
+						{#each items as it, i (it.id)}
+							{@const done = outcomes[it.id] !== undefined}
+							{@const isCurrent = it.id === current.id}
+							{@const activeBg = mode === 'reading' ? 'bg-cyan text-accent-ink' : mode === 'writing' ? 'bg-yellow text-accent-ink' : 'bg-primary text-primary-foreground'}
+							<button
+								type="button"
+								class="w-8 h-8 rounded-xl border-2 border-border-strong font-extrabold text-xs flex items-center justify-center transition-all hover:-translate-y-0.5 active:translate-y-0 {isCurrent ? `${activeBg} shadow-[0_3px_0_var(--border-strong)] ring-2 ring-border-strong ring-offset-1` : done ? 'bg-success-bg text-success-text shadow-[0_2px_0_var(--border-strong)]' : 'bg-card text-muted-foreground opacity-60 shadow-[0_1px_0_var(--border-strong)]'}"
+								disabled={!done || isCurrent}
+								aria-label="Question {i + 1}{done ? ', answered' : ''}{isCurrent ? ', current' : ''}"
+								onclick={() => quiz.goTo(i)}
+							>
+								{i + 1}
+							</button>
+						{/each}
+					</div>
+				</div>
 			</aside>
 
-			<div class="question">
+			<!-- Interactive question component + feedback/advance -->
+			<div class="space-y-4">
 				{#key current.id}
 					{#if current.kind === "mcq" || current.kind === "true_false" || current.kind === "best_word"}
 						<VocabCard
@@ -460,20 +514,34 @@
 					{/if}
 				{/key}
 
-				<div class="nav">
+				<!-- Feedback & Advance Controls -->
+				<div class="mt-4">
 					{#if answered}
-						<p class="feedback" role="status">{feedbackFor(current)}</p>
+						{#if outcomes[current.id]?.earned < 0.999}
+							<div
+								class="card-3d p-4 mb-3 flex items-center justify-between gap-3 bg-destructive-bg border-destructive"
+								role="status"
+							>
+								<div class="font-extrabold text-base text-destructive-text">
+									{feedbackFor(current)}
+								</div>
+							</div>
+						{/if}
 						<button
 							type="button"
-							class="btn btn-primary"
+							class="btn-3d w-full h-[52px] text-lg font-black flex items-center justify-center gap-2"
 							bind:this={nextBtn}
 							onclick={advance}
 						>
-							{quiz.isLast ? "See results" : "Next →"}
+							{quiz.isLast ? "See Results →" : "Next Question →"}
 						</button>
 					{:else}
-						<p class="hint">
-							{#if timerPerQ > 0 && expired[current.id] !== true}Answer before the timer runs out.{:else}Answer above, then continue.{/if}
+						<p class="text-xs font-bold text-center text-muted-foreground">
+							{#if timerPerQ > 0 && expired[current.id] !== true}
+								⏱ Answer before the timer runs out.
+							{:else}
+								Choose or enter your answer above to continue.
+							{/if}
 						</p>
 					{/if}
 				</div>
@@ -481,16 +549,37 @@
 		</div>
 	{/if}
 
+	<!-- Exit Confirmation Modal (Duolingo Style) -->
 	{#if confirming}
-		<div class="overlay" role="presentation" onclick={(e) => { if (e.target === e.currentTarget) confirming = false; }}>
-			<div class="dialog" role="alertdialog" aria-modal="true" aria-label="Exit quiz" aria-describedby="exit-desc">
-				<h2 class="dialog-title">Exit quiz?</h2>
-				<p class="dialog-text" id="exit-desc">The incomplete session is discarded and not saved.</p>
-				<div class="dialog-actions">
-					<button type="button" class="btn" onclick={() => (confirming = false)}>
+		<div
+			class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+			role="presentation"
+			onclick={(e) => { if (e.target === e.currentTarget) confirming = false; }}
+		>
+			<div
+				class="card-3d w-full max-w-md p-6 bg-card"
+				role="alertdialog"
+				aria-modal="true"
+				aria-label="Exit quiz"
+				aria-describedby="exit-desc"
+			>
+				<h2 class="text-2xl font-black text-foreground">Exit practice?</h2>
+				<p class="serif text-muted-foreground mt-2 text-base" id="exit-desc">
+					The incomplete session is discarded and not saved to your history.
+				</p>
+				<div class="flex gap-3 mt-6">
+					<button
+						type="button"
+						class="btn-3d btn-3d-white flex-1 h-[48px] font-bold"
+						onclick={() => (confirming = false)}
+					>
 						Keep practicing
 					</button>
-					<button type="button" class="btn btn-danger" onclick={confirmExit}>
+					<button
+						type="button"
+						class="btn-3d flex-1 h-[48px] font-bold !bg-destructive !border-border-strong text-destructive-foreground"
+						onclick={confirmExit}
+					>
 						Discard session
 					</button>
 				</div>
@@ -501,265 +590,11 @@
 
 <style>
 	.quiz {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
 		animation: quiz-enter 250ms ease-out;
-	}
-	.topbar {
-		display: flex;
-		flex-direction: column;
-		gap: 0.625rem;
-	}
-	.segments {
-		display: flex;
-		gap: 0.375rem;
-	}
-	.seg {
-		flex: 1;
-		height: 0.625rem;
-		min-width: 1.5rem;
-		border: none;
-		border-radius: 999px;
-		background: #e7e5e4;
-		padding: 0;
-		transition: background 300ms ease-out;
-	}
-	.seg:disabled {
-		cursor: default;
-	}
-	.seg-done {
-		background: #10b981;
-	}
-	.seg-current {
-		background: #6d28d9;
-	}
-	button.seg:not(:disabled) {
-		cursor: pointer;
-	}
-	:global(.dark) .seg {
-		background: #2a2a2e;
-	}
-	:global(.dark) .seg-done {
-		background: #10b981;
-	}
-	:global(.dark) .seg-current {
-		background: #6d28d9;
-	}
-	.seg:focus-visible,
-	.btn:focus-visible,
-	.btn-exit:focus-visible {
-		outline: 2px solid #6d28d9;
-		outline-offset: 2px;
-	}
-	.topbar-meta {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		flex-wrap: wrap;
-	}
-	.qcount {
-		font-weight: 800;
-		font-size: 0.9375rem;
-	}
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		min-height: 28px;
-		padding: 0.15rem 0.6rem;
-		border-radius: 999px;
-		border: 1px solid #e7e5e4;
-		font-size: 0.75rem;
-		font-weight: 700;
-		opacity: 0.85;
-	}
-	:global(.dark) .badge {
-		border-color: #2a2a2e;
-	}
-	.timer {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.375rem;
-		margin-left: auto;
-		font-weight: 800;
-		font-size: 0.9rem;
-	}
-	.timer-low {
-		color: #ef4444;
-	}
-	.ring {
-		width: 1.5rem;
-		height: 1.5rem;
-	}
-	.ring-bg {
-		fill: none;
-		stroke: #e7e5e4;
-		stroke-width: 3;
-	}
-	.ring-fg {
-		fill: none;
-		stroke: #6d28d9;
-		stroke-width: 3;
-		stroke-linecap: round;
-		transition: stroke-dashoffset 250ms linear;
-	}
-	.timer-low .ring-fg {
-		stroke: #ef4444;
-	}
-	:global(.dark) .ring-bg {
-		stroke: #2a2a2e;
-	}
-	.btn-exit {
-		min-height: 44px;
-		min-width: 44px;
-		padding: 0.5rem 1rem;
-		border: 2px solid #e7e5e4;
-		border-radius: 12px;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		font-weight: 700;
-		cursor: pointer;
-	}
-	:global(.dark) .btn-exit {
-		border-color: #2a2a2e;
-	}
-	.quiz-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1rem;
-		align-items: start;
-	}
-	@media (min-width: 960px) {
-		.quiz-grid {
-			grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-		}
-	}
-	.support {
-		background: #ffffff;
-		border: 2px solid #e7e5e4;
-		border-radius: 16px;
-		padding: 1rem;
-	}
-	:global(.dark) .support {
-		background: #1e1e20;
-		border-color: #2a2a2e;
-	}
-	.support-title {
-		margin: 0 0 0.375rem;
-		font-size: 1rem;
-	}
-	.support-text {
-		margin: 0.25rem 0 0;
-		font-size: 0.875rem;
-		line-height: 1.55;
-		opacity: 0.8;
-	}
-	.question {
-		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-		min-width: 0;
-	}
-	.nav {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-	}
-	.feedback {
-		margin: 0;
-		font-weight: 800;
-		flex: 1;
-		min-width: 10rem;
-	}
-	.hint {
-		margin: 0;
-		font-size: 0.82rem;
-		opacity: 0.65;
-	}
-	.btn {
-		min-height: 44px;
-		padding: 0.625rem 1.25rem;
-		border: 2px solid #e7e5e4;
-		border-radius: 12px;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		font-weight: 700;
-		cursor: pointer;
-		transition: transform 80ms ease-out;
-	}
-	:global(.dark) .btn {
-		border-color: #2a2a2e;
-	}
-	.btn:not(:disabled):active {
-		transform: scale(0.98) translateY(1px);
-	}
-	.btn-primary {
-		background: #6d28d9;
-		border-color: #6d28d9;
-		color: #fff;
-	}
-	.btn-danger {
-		background: #ef4444;
-		border-color: #ef4444;
-		color: #fff;
-	}
-	.state {
-		margin: 0;
-		padding: 1rem;
-		border: 2px dashed #e7e5e4;
-		border-radius: 12px;
-	}
-	:global(.dark) .state {
-		border-color: #2a2a2e;
-	}
-	.overlay {
-		position: fixed;
-		inset: 0;
-		z-index: 50;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 1.5rem;
-		background: rgba(0, 0, 0, 0.45);
-		animation: quiz-enter 200ms ease-out;
-	}
-	.dialog {
-		width: 100%;
-		max-width: 24rem;
-		background: #ffffff;
-		border: 2px solid #e7e5e4;
-		border-radius: 16px;
-		padding: 1.25rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.625rem;
-	}
-	:global(.dark) .dialog {
-		background: #1e1e20;
-		border-color: #2a2a2e;
-	}
-	.dialog-title {
-		margin: 0;
-		font-size: 1.0625rem;
-	}
-	.dialog-text {
-		margin: 0;
-		font-size: 0.9rem;
-		opacity: 0.8;
-	}
-	.dialog-actions {
-		display: flex;
-		justify-content: flex-end;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-		margin-top: 0.375rem;
 	}
 	@keyframes quiz-enter {
 		from {
-			transform: translateY(8px);
+			transform: translateY(6px);
 			opacity: 0;
 		}
 		to {
@@ -768,14 +603,8 @@
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
-		.quiz,
-		.overlay {
+		.quiz {
 			animation: none;
-		}
-		.seg,
-		.ring-fg,
-		.btn {
-			transition: none;
 		}
 	}
 </style>

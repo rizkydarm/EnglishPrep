@@ -87,32 +87,30 @@
   }
 </script>
 
-<article class="reading-passage" aria-label={title !== "" ? title : "Reading passage"}>
+<article class="card-3d p-6 bg-card" aria-label={title !== "" ? title : "Reading passage"}>
   {#if title !== ""}
-    <h2 class="reading-title">{title}</h2>
+    <h2 class="serif text-xl md:text-2xl font-black mb-4 tracking-tight text-foreground border-b-2 border-border dark:border-border pb-3">{title}</h2>
   {/if}
-  <div class="reading-body">
+  <div class="serif text-[17px] md:text-[18px] leading-[1.8] text-foreground space-y-2">
     {#if display.length === 0}
-      <p class="empty-state">No passage content.</p>
+      <p class="p-6 text-center text-muted-foreground font-sans">No passage content.</p>
     {/if}
     {#each display as sentence, i (i)}
       {@const state = sentenceState(i)}
       {#if interactive}
         <button
           type="button"
-          class="sentence sentence-{state}"
+          class="sentence sentence-{state} w-full text-left p-2 rounded-xl border-2 border-transparent transition-all {state === 'selected' ? 'highlight-user !border-cyan' : state === 'correct' ? 'highlight-correct' : state === 'wrong' ? 'bg-destructive-bg !border-destructive' : 'hover:bg-muted/70 dark:hover:bg-card/70'}"
           aria-pressed={selectedSet.has(i)}
           aria-label={`Sentence ${i + 1}${selectedSet.has(i) ? ", selected" : ""}`}
           onclick={() => onToggle?.(i)}
         >
-          <span class="sentence-num" aria-hidden="true">{i + 1}</span>
+          <span class="w-6 h-6 rounded-full border-2 border-border-strong bg-muted dark:bg-card font-sans font-black text-[11px] inline-flex items-center justify-center mr-2 shrink-0 align-middle shadow-[0_1px_0_var(--border-strong)]" aria-hidden="true">{i + 1}</span>
           <span class="sentence-text">
             {#each sentence.chunks as chunk, ci (`${ci}-${chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text}`)}
               {#if chunk.kind === "gap"}
                 <span
-                  class="gap-pill"
-                  class:gap-active={activeGap === chunk.gap}
-                  class:gap-filled={filledGaps[chunk.gap] !== undefined && filledGaps[chunk.gap] !== ""}
+                  class="gap-pill font-sans font-extrabold text-xs px-2.5 py-0.5 rounded-lg border-2 border-border-strong bg-card dark:bg-card text-primary shadow-[0_1px_0_var(--border-strong)] {activeGap === chunk.gap ? '!bg-yellow !text-accent-ink ring-2 ring-primary' : ''} {filledGaps[chunk.gap] !== undefined && filledGaps[chunk.gap] !== '' ? '!border-success !text-success-text' : ''}"
                 >{gapLabel(chunk.gap)}</span>
               {:else}
                 {chunk.text}
@@ -121,14 +119,12 @@
           </span>
         </button>
       {:else}
-        <p class="sentence sentence-{state}">
+        <p class="sentence sentence-{state} p-2 rounded-xl transition-all {state === 'selected' ? 'highlight-user' : state === 'correct' ? 'highlight-correct' : state === 'wrong' ? 'bg-destructive-bg !border-destructive' : ''}">
           <span class="sentence-text">
             {#each sentence.chunks as chunk, ci (`${ci}-${chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text}`)}
               {#if chunk.kind === "gap"}
                 <span
-                  class="gap-pill"
-                  class:gap-active={activeGap === chunk.gap}
-                  class:gap-filled={filledGaps[chunk.gap] !== undefined && filledGaps[chunk.gap] !== ""}
+                  class="gap-pill font-sans font-extrabold text-xs px-2.5 py-0.5 rounded-lg border-2 border-border-strong bg-card dark:bg-card text-primary shadow-[0_1px_0_var(--border-strong)] {activeGap === chunk.gap ? '!bg-yellow !text-accent-ink' : ''} {filledGaps[chunk.gap] !== undefined && filledGaps[chunk.gap] !== '' ? '!border-success !text-success-text' : ''}"
                 >{gapLabel(chunk.gap)}</span>
               {:else}
                 {chunk.text}
@@ -139,144 +135,32 @@
       {/if}
     {/each}
   </div>
+
+  {#if interactive}
+    <div class="mt-4 pt-4 border-t-2 border-border dark:border-border flex flex-wrap gap-2 text-xs font-bold font-sans">
+      <span class="px-2.5 py-1 rounded-full border-2 border-border-strong bg-cyan text-accent-ink shadow-[0_1px_0_var(--border-strong)]">Your highlight</span>
+      <span class="px-2.5 py-1 rounded-full border-2 border-dashed border-border-strong bg-yellow text-accent-ink shadow-[0_1px_0_var(--border-strong)]">Correct answer</span>
+    </div>
+  {/if}
 </article>
 
 <style>
-  .reading-passage {
-    background: #ffffff;
-    border: 1px solid #e7e5e4;
-    border-radius: 16px;
-    padding: 1.25rem;
+  .highlight-user {
+    background: rgba(101, 208, 244, 0.45) !important;
+    border-bottom: 3px solid var(--cyan) !important;
   }
-  :global(.dark) .reading-passage {
-    background: #1e1e20;
-    border-color: #2a2a2e;
+  .highlight-correct {
+    background: var(--yellow) !important;
+    color: var(--accent-ink) !important;
+    border: 2.5px dashed var(--border-strong) !important;
   }
-  .reading-title {
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin: 0 0 1rem;
+  .gap-pill:not(:disabled):hover {
+    transform: translateY(-1px);
   }
-  .reading-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .gap-pill:not(:disabled):active {
+    transform: translateY(0);
   }
-  .empty-state {
-    margin: 0;
-    padding: 0.75rem;
-    border: 2px dashed #e7e5e4;
-    border-radius: 12px;
-    font-size: 0.875rem;
-    opacity: 0.8;
-  }
-  :global(.dark) .empty-state {
-    border-color: #2a2a2e;
-  }
-  .sentence {
-    display: flex;
-    gap: 0.625rem;
-    align-items: flex-start;
-    width: 100%;
-    min-height: 44px;
-    padding: 0.625rem 0.75rem;
-    margin: 0;
-    border: 2px solid transparent;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    line-height: 1.6;
-    text-align: left;
-  }
-  button.sentence {
-    cursor: pointer;
-  }
-  button.sentence:hover {
-    border-color: #e7e5e4;
-  }
-  :global(.dark) button.sentence:hover {
-    border-color: #2a2a2e;
-  }
-  button.sentence:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .sentence-num {
-    flex: none;
-    width: 1.5rem;
-    height: 1.5rem;
-    margin-top: 0.15rem;
-    border-radius: 999px;
-    background: #e7e5e4;
-    color: #44403c;
-    font-size: 0.75rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  :global(.dark) .sentence-num {
-    background: #2a2a2e;
-    color: #d6d3d1;
-  }
-  .sentence-selected {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
-  }
-  .sentence-correct {
-    border-color: #10b981;
-    background: color-mix(in srgb, #10b981 10%, transparent);
-    animation: reading-flash 250ms ease-out;
-  }
-  .sentence-wrong {
-    border-color: #ef4444;
-    background: color-mix(in srgb, #ef4444 8%, transparent);
-    animation: reading-shake 250ms ease-out;
-  }
-  .gap-pill {
-    display: inline-block;
-    padding: 0.1rem 0.55rem;
-    margin: 0 0.15rem;
-    border: 2px solid #6d28d9;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.85em;
-    white-space: nowrap;
-  }
-  .gap-filled {
-    background: color-mix(in srgb, #6d28d9 10%, transparent);
-  }
-  .gap-active {
-    box-shadow: 0 0 0 2px color-mix(in srgb, #6d28d9 45%, transparent);
-  }
-  @keyframes reading-flash {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes reading-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-4px);
-    }
-    75% {
-      transform: translateX(4px);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sentence-correct,
-    .sentence-wrong {
-      animation: none;
-    }
+  .sentence:not(:disabled):active {
+    transform: scale(0.99);
   }
 </style>

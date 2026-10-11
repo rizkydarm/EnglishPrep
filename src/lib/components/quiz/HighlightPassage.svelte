@@ -30,7 +30,7 @@
     sentences?: string[];
     /** Question mode. `mcq` covers sentence_completion + best_title (4 options). */
     mode: Mode;
-    /** Explicit mcq sub-kind — replaces prompt-sniffing dispatch. */
+    /** Explicit mcq sub-kind; replaces prompt-sniffing dispatch. */
     mcqKind?: "sentence_completion" | "best_title";
     /** Question prompt shown in the side panel. */
     prompt?: string;
@@ -183,47 +183,59 @@
       {activeGap}
     />
     {#if mode === "choose_idea" && targetSentence !== null && passage[targetSentence] !== undefined}
-      <p class="target-note">Highlighted sentence {targetSentence + 1}: “{passage[targetSentence]}”</p>
+      <div class="card-3d p-4 mt-4 bg-yellow text-accent-ink font-medium">
+        <span class="text-xs font-extrabold uppercase tracking-wider block mb-1">Target Sentence {targetSentence + 1}</span>
+        <p class="serif text-base italic">“{passage[targetSentence]}”</p>
+      </div>
     {/if}
   </div>
 
-  <aside class="question-panel" aria-label="Question">
+  <aside class="card-3d p-6 bg-card space-y-4" aria-label="Question">
     {#if prompt !== ""}
-      <p class="question-prompt">{prompt}</p>
+      <h3 class="text-lg md:text-xl font-extrabold text-foreground leading-snug">
+        {prompt}
+      </h3>
     {/if}
 
     {#if mode === "tap_sentence"}
-      <p class="tap-hint">Tap the sentence{keyIndices.length > 1 ? "s" : ""} that show the answer. Tap again to untap.</p>
+      <div class="p-3 rounded-xl border-2 border-border-strong bg-muted dark:bg-muted text-xs font-bold text-muted-foreground">
+        Tap the sentence{keyIndices.length > 1 ? "s" : ""} on the left that show the answer. Tap again to deselect.
+      </div>
       {#if tapped.length > 0}
-        <p class="tap-count" aria-live="polite">{tapped.length} selected</p>
+        <div class="px-3 py-1 rounded-full border-2 border-border-strong bg-cyan text-accent-ink text-xs font-extrabold w-fit" aria-live="polite">
+          {tapped.length} sentence{tapped.length === 1 ? "" : "s"} selected
+        </div>
       {/if}
       <button
         type="button"
-        class="check-btn"
+        class="btn-3d w-full h-[52px] font-extrabold"
         disabled={locked || tapped.length === 0}
         onclick={submit}
       >
         Check answer
       </button>
     {:else}
-      <div class="options" role="radiogroup" aria-label={prompt !== "" ? prompt : "Options"}>
+      <div class="space-y-3" role="radiogroup" aria-label={prompt !== "" ? prompt : "Options"}>
         {#each options as option, i (i)}
+          {@const optKey = ["A", "B", "C", "D"][i] ?? String(i + 1)}
           <button
             type="button"
             role="radio"
             aria-checked={picked === i}
-            class="option option-{optionState(i)}"
+            class="choice flex items-center gap-3 {optionState(i) === 'picked' ? 'selected' : optionState(i) === 'correct' ? 'correct' : optionState(i) === 'wrong' ? 'wrong' : ''}"
             disabled={locked}
             onclick={() => pickOption(i)}
           >
-            <span class="option-key" aria-hidden="true">{i + 1}</span>
-            <span>{option}</span>
+            <span class="w-8 h-8 rounded-xl border-2 border-border-strong bg-muted dark:bg-card flex items-center justify-center text-xs font-black shrink-0" aria-hidden="true">
+              {optKey}
+            </span>
+            <span class="flex-1 font-bold text-sm md:text-base">{option}</span>
           </button>
         {/each}
       </div>
       <button
         type="button"
-        class="check-btn"
+        class="btn-3d w-full h-[52px] font-extrabold mt-4"
         disabled={locked || picked === null}
         onclick={submit}
       >
@@ -232,9 +244,14 @@
     {/if}
 
     {#if revealed}
-      <p class="feedback feedback-{correct ? 'correct' : 'wrong'}" role="status" aria-live="polite">
-        {correct ? "Correct." : "Not quite — try reviewing the passage."}
-      </p>
+      <div
+        class="p-4 rounded-xl border-2 border-border-strong font-extrabold text-sm flex items-center gap-3 {correct ? 'bg-success-bg text-success-text border-success' : 'bg-destructive-bg text-destructive-text border-destructive'}"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="text-xl">{correct ? "✓" : "✗"}</span>
+        <span>{correct ? "Correct! Well done." : "Not quite. Check the highlighted sentence in the passage."}</span>
+      </div>
     {/if}
   </aside>
 </div>
@@ -243,173 +260,15 @@
   .reading-layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: start;
   }
   @media (min-width: 960px) {
     .reading-layout {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    }
-    .question-panel {
-      position: sticky;
-      top: 1rem;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
     }
   }
   .reading-main {
     min-width: 0;
-  }
-  .target-note {
-    margin: 0.75rem 0 0;
-    padding: 0.75rem;
-    border: 2px solid #6d28d9;
-    border-radius: 12px;
-    background: #ffffff;
-    line-height: 1.6;
-  }
-  :global(.dark) .target-note {
-    background: #1e1e20;
-  }
-  .question-panel {
-    background: #ffffff;
-    border: 1px solid #e7e5e4;
-    border-radius: 16px;
-    padding: 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  :global(.dark) .question-panel {
-    background: #1e1e20;
-    border-color: #2a2a2e;
-  }
-  .question-prompt {
-    margin: 0;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .tap-hint,
-  .tap-count {
-    margin: 0;
-    font-size: 0.875rem;
-    opacity: 0.8;
-  }
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .option {
-    display: flex;
-    gap: 0.625rem;
-    align-items: center;
-    min-height: 44px;
-    width: 100%;
-    padding: 0.625rem 0.75rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-  :global(.dark) .option {
-    border-color: #2a2a2e;
-  }
-  .option:hover:not(:disabled) {
-    border-color: #6d28d9;
-  }
-  .option:focus-visible,
-  .check-btn:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .option:disabled {
-    cursor: default;
-    opacity: 0.75;
-  }
-  .option-key {
-    flex: none;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 8px;
-    background: #e7e5e4;
-    color: #44403c;
-    font-size: 0.8rem;
-    font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-  :global(.dark) .option-key {
-    background: #2a2a2e;
-    color: #d6d3d1;
-  }
-  .option-picked {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
-  }
-  .option-correct {
-    border-color: #10b981;
-    background: color-mix(in srgb, #10b981 10%, transparent);
-    animation: reading-flash 250ms ease-out;
-  }
-  .option-wrong {
-    border-color: #ef4444;
-    background: color-mix(in srgb, #ef4444 8%, transparent);
-    animation: reading-shake 250ms ease-out;
-  }
-  .check-btn {
-    min-height: 44px;
-    border: none;
-    border-radius: 12px;
-    background: #6d28d9;
-    color: #fff;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  .check-btn:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-  .feedback {
-    margin: 0;
-    font-weight: 700;
-  }
-  .feedback-correct {
-    color: #10b981;
-  }
-  .feedback-wrong {
-    color: #ef4444;
-  }
-  @keyframes reading-flash {
-    0% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.02);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  @keyframes reading-shake {
-    0%,
-    100% {
-      transform: translateX(0);
-    }
-    25% {
-      transform: translateX(-4px);
-    }
-    75% {
-      transform: translateX(4px);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .option-correct,
-    .option-wrong {
-      animation: none;
-    }
   }
 </style>

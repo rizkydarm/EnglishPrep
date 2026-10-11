@@ -1,6 +1,7 @@
 <script lang="ts">
   import { isAccepted, normalizeSentence, sentencesEqual } from "$lib/utils/normalize";
   import type { WritingPrompt } from "$lib/types/schema";
+  import LightbulbIcon from "@lucide/svelte/icons/lightbulb";
 
   export interface WritingResult {
     promptId: string;
@@ -172,11 +173,11 @@
   );
 
   const RUBRIC: { score: number; label: string }[] = [
-    { score: 1, label: "1 — One relevant idea, major gaps" },
-    { score: 2, label: "2 — Some ideas, limited coverage" },
-    { score: 3, label: "3 — Covers main ideas, some detail" },
-    { score: 4, label: "4 — Clear, covers most keywords" },
-    { score: 5, label: "5 — Complete, natural, all key ideas" },
+    { score: 1, label: "1: One relevant idea, major gaps" },
+    { score: 2, label: "2: Some ideas, limited coverage" },
+    { score: 3, label: "3: Covers main ideas, some detail" },
+    { score: 4, label: "4: Clear, covers most keywords" },
+    { score: 5, label: "5: Complete, natural, all key ideas" },
   ];
 
   function revealModel(): void {
@@ -221,552 +222,274 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<section class="writing-editor" aria-label="Writing exercise">
+<section class="card-3d p-6 bg-card" aria-label="Writing exercise">
   {#if prompt == null || !valid}
-    <div class="fallback" role="status">
-      <p class="fallback-title">No writing prompt available.</p>
-      <p class="fallback-sub">This prompt is empty or invalid and was skipped.</p>
+    <div class="p-6 text-center" role="status">
+      <p class="font-extrabold text-lg text-foreground">No writing prompt available.</p>
+      <p class="serif text-muted-foreground mt-1">This prompt is empty or invalid and was skipped.</p>
       {#if onSkip && !disabled}
-        <div class="actions">
-          <button type="button" class="btn btn-primary" onclick={() => onSkip?.()}>
+        <div class="mt-4">
+          <button type="button" class="btn-3d px-6 h-[44px] font-bold" onclick={() => onSkip?.()}>
             Skip this question
           </button>
         </div>
       {/if}
     </div>
   {:else if prompt.type === "sentence_order"}
-    <div class="block">
-      <p class="instruction">Tap the words in order to build the sentence.</p>
-      {#if prompt.grammar_focus}
-        <p class="meta">Focus: {prompt.grammar_focus}</p>
-      {/if}
+    <div class="space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <span class="badge-pill bg-card text-xs">Sentence Order</span>
+        {#if prompt.grammar_focus}
+          <span class="badge-pill bg-yellow text-accent-ink text-xs">Focus: {prompt.grammar_focus}</span>
+        {/if}
+      </div>
 
-      <div class="answer-line" aria-live="polite" aria-label="Your sentence">
+      <p class="font-extrabold text-lg text-foreground">Tap the words in order to build the sentence.</p>
+
+      <!-- Sentence building zone -->
+      <div class="min-h-[56px] p-3 rounded-2xl border-[2.5px] border-border-strong bg-muted/80 dark:bg-muted flex flex-wrap gap-2 items-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)]" aria-live="polite" aria-label="Your sentence">
         {#if placed.length === 0}
-          <span class="placeholder">Tap words below…</span>
+          <span class="text-xs font-bold text-muted-foreground px-2">Tap words below to arrange your sentence…</span>
         {:else}
           {#each placed as wordIndex, k (k)}
             <button
               type="button"
-              class="chip chip-placed"
+              class="px-3.5 py-1.5 rounded-full border-2 border-border-strong bg-cyan text-accent-ink font-extrabold text-sm shadow-[0_2px_0_var(--border-strong)] hover:-translate-y-0.5 active:translate-y-[2px] transition-all flex items-center gap-1.5"
               disabled={disabled || checked}
               aria-label={`Remove ${prompt.words[wordIndex]}`}
               onclick={() => removeChip(k)}
-            >{prompt.words[wordIndex]} <span aria-hidden="true">×</span></button>
+            >
+              <span>{prompt.words[wordIndex]}</span>
+              <span class="opacity-70 text-xs font-black" aria-hidden="true">✕</span>
+            </button>
           {/each}
         {/if}
       </div>
 
-      <div class="bank" aria-label="Word choices">
+      <!-- Word bank -->
+      <div class="p-3 rounded-2xl border-2 border-border dark:border-border bg-card flex flex-wrap gap-2 items-center" aria-label="Word choices">
         {#each bank as wordIndex (wordIndex)}
           <button
             type="button"
-            class="chip"
+            class="match-pill text-sm font-extrabold"
             disabled={disabled || checked}
             aria-label={`Add ${prompt.words[wordIndex]}`}
             onclick={() => placeChip(wordIndex)}
-          >{prompt.words[wordIndex]}</button>
+          >
+            {prompt.words[wordIndex]}
+          </button>
         {/each}
         {#if bank.length === 0}
-          <span class="placeholder">All words placed.</span>
+          <span class="text-xs font-bold text-muted-foreground px-2">All words placed.</span>
         {/if}
       </div>
 
-      <div class="actions">
+      <div class="flex gap-3 pt-2">
         {#if !checked}
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn-3d flex-1 h-[52px] font-extrabold text-base"
             disabled={disabled || placed.length === 0}
             onclick={checkOrder}
-          >Check</button>
+          >Check Answer</button>
           <button
             type="button"
-            class="btn"
+            class="btn-3d btn-3d-white px-5 h-[52px] font-bold text-sm"
             disabled={disabled || placed.length === 0}
             onclick={clearPlaced}
           >Clear</button>
         {:else if !disabled}
-          <button type="button" class="btn" onclick={retryOrder}>Try again</button>
+          <button type="button" class="btn-3d flex-1 h-[52px] font-extrabold text-base" onclick={retryOrder}>Try Again</button>
         {/if}
       </div>
 
       {#if checked}
-        <p class="feedback feedback-{correct ? 'correct' : 'wrong'}" role="status">
-          {correct ? "Correct!" : "Not quite — compare with the answer below."}
-        </p>
-        {#if !correct}
-          <p class="answer-reveal">Answer: {prompt.correct}</p>
-        {/if}
+        <div
+          class="p-4 rounded-xl border-2 border-border-strong font-extrabold text-sm flex items-center gap-3 {correct ? 'bg-success-bg text-success-text border-success' : 'bg-destructive-bg text-destructive-text border-destructive'}"
+          role="status"
+        >
+          <span class="text-xl">{correct ? "✓" : "✗"}</span>
+          <div>
+            <div>{correct ? "Correct sentence structure!" : "Not quite. Compare with the correct sentence below:"}</div>
+            {#if !correct}
+              <div class="serif text-base mt-1 underline">{prompt.correct}</div>
+            {/if}
+          </div>
+        </div>
       {/if}
     </div>
   {:else if prompt.type === "grammar_fix"}
-    <div class="block">
-      <p class="instruction">Fix the error in the sentence.</p>
-      <blockquote class="given">{prompt.sentence}</blockquote>
+    <div class="space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <span class="badge-pill bg-card text-xs">Grammar Fix</span>
+        <span class="badge-pill bg-yellow text-accent-ink text-xs">Correction Drill</span>
+      </div>
+
+      <p class="font-extrabold text-lg text-foreground">Fix the grammatical error in the sentence.</p>
+
+      <blockquote class="serif p-4 rounded-xl border-2 border-border-strong bg-muted dark:bg-muted text-lg leading-relaxed text-foreground">
+        “{prompt.sentence}”
+      </blockquote>
 
       {#if prompt.hint}
-        <div class="hint-row">
+        <div class="space-y-2">
           <button
             type="button"
-            class="btn btn-small"
+            class="btn-3d btn-3d-white px-3 py-1 text-xs font-bold"
             aria-expanded={showHint}
             disabled={disabled}
             onclick={() => (showHint = !showHint)}
-          >{showHint ? "Hide hint" : "Show hint"}</button>
+          >
+            {#if showHint}
+              Hide Hint
+            {:else}
+              <LightbulbIcon class="size-3.5" data-icon="inline-start" /> Show Hint
+            {/if}
+          </button>
           {#if showHint}
-            <p class="hint">{prompt.hint}</p>
+            <div class="p-3 rounded-xl border-2 border-border-strong bg-yellow/20 text-xs font-bold text-foreground">
+              {prompt.hint}
+            </div>
           {/if}
         </div>
       {/if}
 
-      <label class="field-label" for="grammar-input">Your correction</label>
-      <textarea
-        id="grammar-input"
-        class="textarea"
-        rows={3}
-        value={text}
-        disabled={disabled || checked}
-        placeholder="Type the corrected sentence…"
-        oninput={(e) => (text = (e.target as HTMLTextAreaElement).value)}
-      ></textarea>
+      <div class="space-y-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-muted-foreground" for="grammar-input">Your correction</label>
+        <textarea
+          id="grammar-input"
+          class="w-full border-[2.5px] border-border-strong rounded-xl p-3 font-mono font-bold text-sm md:text-base focus:border-primary bg-card text-foreground shadow-[0_3px_0_var(--border-strong)] outline-none transition-all resize-y min-h-[90px]"
+          rows={3}
+          value={text}
+          disabled={disabled || checked}
+          placeholder="Type the corrected sentence…"
+          oninput={(e) => (text = (e.target as HTMLTextAreaElement).value)}
+        ></textarea>
+      </div>
 
-      <div class="actions">
+      <div class="pt-2">
         {#if !checked}
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn-3d w-full h-[52px] font-extrabold text-base"
             disabled={disabled || text.trim() === ""}
             onclick={checkGrammar}
-          >Check</button>
+          >Check Answer</button>
         {:else if !disabled}
-          <button type="button" class="btn" onclick={retryGrammar}>Try again</button>
+          <button type="button" class="btn-3d w-full h-[52px] font-extrabold text-base" onclick={retryGrammar}>Try Again</button>
         {/if}
       </div>
 
       {#if checked}
-        <p class="feedback feedback-{correct ? 'correct' : 'wrong'}" role="status">
-          {correct ? "Correct!" : "Not quite — see an accepted answer below."}
-        </p>
-        {#if !correct}
-          <p class="answer-reveal">Accepted: {prompt.accepted[0]}</p>
-        {/if}
-        {#if prompt.explanation_id}
-          <p class="meta">{prompt.explanation_id}</p>
-        {/if}
+        <div
+          class="p-4 rounded-xl border-2 border-border-strong font-extrabold text-sm flex items-center gap-3 {correct ? 'bg-success-bg text-success-text border-success' : 'bg-destructive-bg text-destructive-text border-destructive'}"
+          role="status"
+        >
+          <span class="text-xl">{correct ? "✓" : "✗"}</span>
+          <div>
+            <div>{correct ? "Correct fix!" : "Not quite. See an accepted answer below:"}</div>
+            {#if !correct}
+              <div class="serif text-base mt-1 underline">“{prompt.accepted[0]}”</div>
+            {/if}
+            {#if prompt.explanation_id}
+              <div class="text-xs font-normal opacity-80 mt-1">{prompt.explanation_id}</div>
+            {/if}
+          </div>
+        </div>
       {/if}
     </div>
   {:else}
-    <div class="block">
-      <p class="instruction">{prompt.prompt}</p>
-      <img class="desc-image" src={prompt.image} alt={prompt.prompt} loading="lazy" />
+    <!-- Image Description -->
+    <div class="space-y-4">
+      <div class="flex items-center justify-between gap-2">
+        <span class="badge-pill bg-card text-xs">Image Description</span>
+        <span class="badge-pill bg-yellow text-accent-ink text-xs">Self-Assessed</span>
+      </div>
 
-      <label class="field-label" for="desc-input">Your description (2–3 sentences)</label>
-      <textarea
-        id="desc-input"
-        class="textarea"
-        rows={4}
-        value={text}
-        disabled={disabled || submittedSelf}
-        placeholder="Describe what is happening in the picture…"
-        oninput={(e) => (text = (e.target as HTMLTextAreaElement).value)}
-      ></textarea>
+      <p class="font-extrabold text-lg text-foreground">{prompt.prompt}</p>
+
+      <div class="rounded-2xl border-[2.5px] border-border-strong overflow-hidden bg-muted dark:bg-muted shadow-[0_4px_0_var(--border-strong)] max-h-[300px] flex items-center justify-center">
+        <img class="max-h-[300px] w-auto object-contain" src={prompt.image} alt={prompt.prompt} loading="lazy" />
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-extrabold uppercase tracking-wider text-muted-foreground" for="desc-input">Your description (2–3 sentences)</label>
+        <textarea
+          id="desc-input"
+          class="w-full border-[2.5px] border-border-strong rounded-xl p-3 font-sans font-bold text-sm md:text-base focus:border-primary bg-card text-foreground shadow-[0_3px_0_var(--border-strong)] outline-none transition-all resize-y min-h-[100px]"
+          rows={4}
+          value={text}
+          disabled={disabled || submittedSelf}
+          placeholder="Describe what is happening in the picture…"
+          oninput={(e) => (text = (e.target as HTMLTextAreaElement).value)}
+        ></textarea>
+      </div>
 
       {#if !revealed}
-        <div class="actions">
-          <button
-            type="button"
-            class="btn btn-primary"
-            disabled={disabled || text.trim() === ""}
-            onclick={revealModel}
-          >Reveal model answer</button>
-        </div>
-        <p class="meta">Your answer is not auto-graded. Compare it yourself below.</p>
+        <button
+          type="button"
+          class="btn-3d w-full h-[52px] font-extrabold text-base"
+          disabled={disabled || text.trim() === ""}
+          onclick={revealModel}
+        >
+          Reveal Model Answer →
+        </button>
+        <p class="text-xs font-bold text-center text-muted-foreground">Self-assessed drill: compare your writing against the model answer.</p>
       {:else}
-        <div class="model">
-          <h3 class="model-title">Model answer</h3>
-          <p class="model-text">{prompt.model_answer}</p>
-          <h3 class="model-title">Keyword checklist</h3>
-          <ul class="keywords">
-            {#each prompt.keywords as keyword (keyword)}
-              <li class="keyword keyword-{keywordHit(keyword) ? 'hit' : 'miss'}">
-                <span aria-hidden="true">{keywordHit(keyword) ? "✓" : "○"}</span>
-                {keyword}
-              </li>
-            {/each}
-          </ul>
-          <p class="meta" aria-live="polite">{hitCount} of {prompt.keywords.length} keywords found.</p>
+        <div class="card-3d p-5 bg-muted dark:bg-muted space-y-4">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Model Answer</span>
+            <p class="serif text-base md:text-lg text-foreground mt-1 leading-relaxed">“{prompt.model_answer}”</p>
+          </div>
+
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">Keyword Checklist</span>
+            <div class="flex flex-wrap gap-2 mt-2">
+              {#each prompt.keywords as keyword (keyword)}
+                <span class="px-3 py-1 rounded-full border-2 border-border-strong font-extrabold text-xs flex items-center gap-1.5 {keywordHit(keyword) ? 'bg-success-bg text-success-text border-success' : 'bg-muted text-muted-foreground opacity-70'}">
+                  <span>{keywordHit(keyword) ? "✓" : "○"}</span>
+                  <span>{keyword}</span>
+                </span>
+              {/each}
+            </div>
+            <p class="text-xs font-bold text-muted-foreground mt-2" aria-live="polite">
+              {hitCount} of {prompt.keywords.length} keywords used.
+            </p>
+          </div>
         </div>
 
-        <div class="self-score" aria-label="Self assessment">
-          <p class="self-badge">Self-assessed — excluded from auto score</p>
-          <h3 class="model-title">Guided rubric — score yourself honestly</h3>
-          <ol class="rubric">
-            {#each RUBRIC.filter((r) => r.score <= scoreMax) as item (item.score)}
-              <li>{item.label}</li>
-            {/each}
-          </ol>
-          <div class="score-row" role="group" aria-label={`Self score, 1 to ${scoreMax}`}>
+        <div class="card-3d p-5 bg-yellow text-accent-ink space-y-3" aria-label="Self assessment">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-black uppercase tracking-wider">Score Yourself (1–{scoreMax})</span>
+            <span class="badge-pill bg-white text-accent-ink border-border-strong text-[10px] font-black">Excluded from %</span>
+          </div>
+
+          <div class="flex gap-2" role="group" aria-label={`Self score, 1 to ${scoreMax}`}>
             {#each Array.from({ length: scoreMax }, (_, i) => i + 1) as n (n)}
               <button
                 type="button"
-                class="score-btn"
-                class:score-active={selfScore === n}
-                aria-pressed={selfScore === n}
+                class="w-11 h-11 rounded-xl border-2 border-border-strong font-extrabold text-base flex items-center justify-center transition-all hover:-translate-y-0.5 active:translate-y-0 {selfScore === n ? 'bg-accent-ink text-yellow shadow-[0_3px_0_#000] scale-105' : 'bg-white text-accent-ink shadow-[0_2px_0_var(--border-strong)] hover:bg-slate-50'}"
                 disabled={disabled || submittedSelf}
                 aria-label={`Score ${n} of ${scoreMax}`}
                 onclick={() => (selfScore = n)}
-              >{n}</button>
+              >
+                {n}
+              </button>
             {/each}
           </div>
-          <div class="actions">
-            <button
-              type="button"
-              class="btn btn-primary"
-              disabled={disabled || selfScore == null || submittedSelf}
-              onclick={submitSelfScore}
-            >Submit self-score{submittedSelf ? "ted" : ""}</button>
-          </div>
-          {#if submittedSelf}
-            <p class="feedback feedback-self" role="status">
-              Self-assessed score {selfScore} of {scoreMax} recorded — not counted in the auto %.
-            </p>
-          {/if}
+
+          <button
+            type="button"
+            class="btn-3d w-full h-[48px] font-extrabold !bg-foreground !text-background !border-border-strong"
+            disabled={disabled || selfScore == null || submittedSelf}
+            onclick={submitSelfScore}
+          >
+            Submit Self-Score{submittedSelf ? " (Recorded)" : ""}
+          </button>
         </div>
       {/if}
     </div>
   {/if}
 </section>
 
-<style>
-  .writing-editor {
-    background: #ffffff;
-    border: 1px solid #e7e5e4;
-    border-radius: 16px;
-    padding: 1.25rem;
-  }
-  :global(.dark) .writing-editor {
-    background: #1e1e20;
-    border-color: #2a2a2e;
-  }
-  .block {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-  .instruction {
-    margin: 0;
-    font-weight: 700;
-    font-size: 1rem;
-  }
-  .meta {
-    margin: 0;
-    font-size: 0.875rem;
-    opacity: 0.75;
-  }
-  .fallback {
-    border: 2px dashed #e7e5e4;
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-  }
-  :global(.dark) .fallback {
-    border-color: #2a2a2e;
-  }
-  .fallback-title {
-    margin: 0;
-    font-weight: 700;
-  }
-  .fallback-sub {
-    margin: 0.25rem 0 0;
-    font-size: 0.875rem;
-    opacity: 0.75;
-  }
-  .answer-line,
-  .bank {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    min-height: 44px;
-    padding: 0.625rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-  }
-  :global(.dark) .answer-line,
-  :global(.dark) .bank {
-    border-color: #2a2a2e;
-  }
-  .placeholder {
-    font-size: 0.875rem;
-    opacity: 0.6;
-    align-self: center;
-  }
-  .chip {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.5rem 0.875rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  :global(.dark) .chip {
-    border-color: #2a2a2e;
-  }
-  .chip:hover:not(:disabled) {
-    border-color: #6d28d9;
-  }
-  .chip:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .chip:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-  .chip-placed {
-    border-color: #6d28d9;
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
-  }
-  .given {
-    margin: 0;
-    padding: 0.75rem 1rem;
-    border-left: 4px solid #6d28d9;
-    border-radius: 0 12px 12px 0;
-    background: color-mix(in srgb, #6d28d9 6%, transparent);
-    font-size: 1rem;
-  }
-  .hint-row {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-  .hint {
-    margin: 0;
-    font-size: 0.875rem;
-    opacity: 0.85;
-  }
-  .field-label {
-    font-size: 0.875rem;
-    font-weight: 700;
-  }
-  .textarea {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.75rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    line-height: 1.6;
-    resize: vertical;
-  }
-  :global(.dark) .textarea {
-    border-color: #2a2a2e;
-  }
-  .textarea:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .actions {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .btn {
-    min-height: 44px;
-    padding: 0.625rem 1.25rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-  :global(.dark) .btn {
-    border-color: #2a2a2e;
-  }
-  .btn:hover:not(:disabled) {
-    border-color: #6d28d9;
-  }
-  .btn:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .btn:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-  .btn:active:not(:disabled) {
-    transform: scale(0.98) translateY(1px);
-  }
-  .btn-primary {
-    background: #6d28d9;
-    border-color: #6d28d9;
-    color: #ffffff;
-  }
-  .btn-small {
-    min-height: 44px;
-    padding: 0.4rem 0.875rem;
-    font-size: 0.875rem;
-  }
-  .feedback {
-    margin: 0;
-    padding: 0.625rem 0.875rem;
-    border-radius: 12px;
-    font-weight: 700;
-  }
-  .feedback-correct {
-    background: color-mix(in srgb, #10b981 12%, transparent);
-    border: 2px solid #10b981;
-    animation: writing-flash 250ms ease-out;
-  }
-  .feedback-wrong {
-    background: color-mix(in srgb, #ef4444 10%, transparent);
-    border: 2px solid #ef4444;
-    animation: writing-shake 250ms ease-out;
-  }
-  .feedback-self {
-    background: color-mix(in srgb, #6d28d9 8%, transparent);
-    border: 2px dashed #6d28d9;
-  }
-  .answer-reveal {
-    margin: 0;
-    font-size: 0.9375rem;
-  }
-  .desc-image {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid #e7e5e4;
-  }
-  :global(.dark) .desc-image {
-    border-color: #2a2a2e;
-  }
-  .model {
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    padding: 0.875rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  :global(.dark) .model {
-    border-color: #2a2a2e;
-  }
-  .model-title {
-    margin: 0;
-    font-size: 0.9375rem;
-    font-weight: 700;
-  }
-  .model-text {
-    margin: 0;
-    line-height: 1.6;
-  }
-  .keywords {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .keyword {
-    min-height: 44px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.375rem;
-    padding: 0.375rem 0.75rem;
-    border: 2px solid #e7e5e4;
-    border-radius: 999px;
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-  :global(.dark) .keyword {
-    border-color: #2a2a2e;
-  }
-  .keyword-hit {
-    border-color: #10b981;
-    background: color-mix(in srgb, #10b981 10%, transparent);
-  }
-  .self-score {
-    border: 2px dashed #6d28d9;
-    border-radius: 12px;
-    padding: 0.875rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.625rem;
-  }
-  .self-badge {
-    margin: 0;
-    font-size: 0.8125rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    color: #6d28d9;
-  }
-  .rubric {
-    margin: 0;
-    padding-left: 1.25rem;
-    font-size: 0.875rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-  .score-row {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  .score-btn {
-    min-width: 44px;
-    min-height: 44px;
-    border: 2px solid #e7e5e4;
-    border-radius: 12px;
-    background: transparent;
-    color: inherit;
-    font: inherit;
-    font-weight: 800;
-    cursor: pointer;
-  }
-  :global(.dark) .score-btn {
-    border-color: #2a2a2e;
-  }
-  .score-btn:hover:not(:disabled) {
-    border-color: #6d28d9;
-  }
-  .score-btn:focus-visible {
-    outline: 2px solid #6d28d9;
-    outline-offset: 2px;
-  }
-  .score-active {
-    background: #6d28d9;
-    border-color: #6d28d9;
-    color: #ffffff;
-  }
-  @keyframes writing-flash {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
-  }
-  @keyframes writing-shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    75% { transform: translateX(4px); }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .feedback-correct,
-    .feedback-wrong,
-    .btn:active:not(:disabled) {
-      animation: none;
-      transform: none;
-    }
-  }
-</style>
+
