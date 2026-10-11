@@ -157,7 +157,7 @@
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD`
 - **Depends On:** T-006, T-010, T-013, T-016, T-019, T-022
 - **Acceptance:** semua acceptance §14 hijau; tidak ada network; tidak ada drag&drop; 1 fix-wave max, lalu adjudicate
-- **Status:** done (agy final whole-branch review PASS — SUPERSEDED by QA: PRD §14 = 12/13, #9 FAIL live-content-read; suite actual 100/100 not 200/200. See Epic 6.)
+- **Status:** done (merge gate: agy claimed PASS/13-13 but was wrong — actual 12/13, #9 FAIL. Epic 6 fixed #9 + C1–C4. Re-verified by QA deepseek: PRD §14 = 13/13 code-verified, suite 106/106, check 0 errors, build OK. Runtime E2E (offline launch / Wi-Fi-off) still unexecuted.)
 
 ## Epic 6 — QA Fix Wave (muse QA verdict 2026-10-11, qa-verdict.md)
 
