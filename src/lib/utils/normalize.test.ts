@@ -10,14 +10,18 @@ import {
 describe('normalizeSentence', () => {
 	it('matches case/punctuation-insensitively', () => {
 		expect(normalizeSentence('Although the report was long, it was clear.')).toBe(
-			'although the report was long, it was clear'
+			'although the report was long it was clear'
 		);
+	});
+	it('ignores internal punctuation (hyphen vs space)', () => {
+		expect(sentencesEqual('well-known', 'well known')).toBe(true);
+		expect(sentencesEqual('long, it was clear', 'long it was clear')).toBe(true);
 	});
 	it('collapses whitespace and trims', () => {
 		expect(normalizeSentence('  She   suggested\the  apply ')).toBe('she suggested he apply');
 	});
-	it('keeps internal apostrophes', () => {
-		expect(normalizeSentence("Don't stop!")).toBe("don't stop");
+	it('strips apostrophes', () => {
+		expect(normalizeSentence("Don't stop!")).toBe('dont stop');
 	});
 });
 

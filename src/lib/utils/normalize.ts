@@ -2,7 +2,12 @@
 // Pure string utils — no Tauri imports.
 
 export function normalizeSentence(input: string): string {
-	return input.toLowerCase().trim().replace(/\s+/g, ' ').replace(/[.!?]+$/u, '');
+	return input
+		.toLowerCase()
+		.replace(/[''']/g, '')
+		.replace(/[^a-z0-9\s]+/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim();
 }
 
 export function sentencesEqual(a: string, b: string): boolean {
@@ -32,5 +37,5 @@ export function levenshtein(a: string, b: string): number {
 }
 
 export function withinEditDistance(a: string, b: string, max: number): boolean {
-	return (levenshtein(a, b) as number) <= max;
+	return levenshtein(a, b) <= max;
 }
