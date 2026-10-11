@@ -151,7 +151,7 @@
 - **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `scripts/validate-content.ts`, `package.json` (`validate:content`)
 - **Depends On:** T-021
 - **Acceptance:** PRD §14 checklist 13 baris ter-cover; malformed file → toast + skip (tidak crash)
-- **Status:** todo
+- **Status:** done (d6c63d8; content/CI scope — global id uniqueness asserted in `validate:content`, malformed file quarantined (skip, no crash). UI-dependent §14 lines verified at T-023.)
 
 ### T-023 — [agy] Final whole-branch review (merge gate)
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD`
