@@ -1,10 +1,10 @@
 // Progress + history + profile (PRD §8).
 // progress.json: daily activity + mastered ids.
 // history.json: quiz sessions with per-question wrong refs.
-// profile.json: created_at, content_version.
+// profile.json: created_at, content_version, total_words_mastered.
 
 import type { Level } from "$lib/types/schema";
-import type { QuizMode } from "./quiz";
+import type { QuizMode } from "./quiz.svelte";
 import { clearState, loadState, saveState } from "./persist";
 
 export interface DailyEntry {
@@ -30,6 +30,7 @@ export interface HistorySession {
 export interface ProfileState {
 	created_at: string;
 	content_version: number;
+	total_words_mastered: number;
 }
 
 export interface RecordSessionInput {
@@ -46,11 +47,24 @@ function dayOf(dateIso: string): string {
 	return dateIso.slice(0, 10);
 }
 
+let fallbackCounter = 0;
+
+function newSessionId(): string {
+	try {
+		if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+			return crypto.randomUUID();
+		}
+	} catch {
+		// Fall through to the counter fallback below.
+	}
+	return `${Date.now()}-${fallbackCounter++}`;
+}
+
 class ProgressStore {
 	daily = $state<DailyEntry[]>([]);
 	sessions = $state<HistorySession[]>([]);
 	masteredIds = $state<string[]>([]);
-	profile = $state<ProfileState>({ created_at: new Date().toISOString(), content_version: 1 });
+	profile = $state<ProfileState>({ created_at: new Date().toISOString(), content_version: 1, total_words_mastered: 0 });
 	loaded = $state(false);
 
 	async load(): Promise<void> {
@@ -64,9 +78,15 @@ class ProgressStore {
 		this.masteredIds = progress.masteredIds;
 		this.sessions = history;
 		if (profile) {
-			this.profile = profile;
+			this.profile = {
+				...profile,
+				total_words_mastered:
+					typeof profile.total_words_mastered === "number"
+						? profile.total_words_mastered
+						: this.masteredIds.length,
+			};
 		} else {
-			this.profile = { created_at: new Date().toISOString(), content_version: 1 };
+			this.profile = { created_at: new Date().toISOString(), content_version: 1, total_words_mastered: this.masteredIds.length };
 			await saveState("profile.json", this.profile);
 		}
 		this.loaded = true;
@@ -81,7 +101,7 @@ class ProgressStore {
 	async recordSession(input: RecordSessionInput): Promise<HistorySession> {
 		const date = input.date ?? new Date().toISOString();
 		const session: HistorySession = {
-			id: `${date}-${this.sessions.length + 1}`,
+			id: newSessionId(),
 			date,
 			mode: input.mode,
 			levels: [...input.levels],
@@ -127,7 +147,9 @@ class ProgressStore {
 
 	async setMasteredIds(ids: string[]): Promise<void> {
 		this.masteredIds = [...ids];
+		this.profile = { ...this.profile, total_words_mastered: this.masteredIds.length };
 		await this.persist();
+		await saveState("profile.json", this.profile);
 	}
 
 	/** Double-confirm in the view before calling: wipes local progress + history. */

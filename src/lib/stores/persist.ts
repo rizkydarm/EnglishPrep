@@ -22,10 +22,6 @@ function getBackingStore(filename: string): Promise<Store | null> {
 	return pending;
 }
 
-export function isTauri(): boolean {
-	return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
-}
-
 function readCache<T>(filename: string): T | undefined {
 	try {
 		const raw = localStorage.getItem(cacheKey(filename));

@@ -99,8 +99,7 @@ export const settings = new SettingsStore();
 /** Open the editable content folder in Finder (PRD §6.1). No-op outside Tauri. */
 export async function openContentFolder(): Promise<boolean> {
 	try {
-		const { appDataDir } = await import("@tauri-apps/api/path");
-		const { join } = await import("@tauri-apps/api/path");
+		const { appDataDir, join } = await import("@tauri-apps/api/path");
 		const { openPath } = await import("@tauri-apps/plugin-opener");
 		const dir = await join(await appDataDir(), "content");
 		await openPath(dir);
