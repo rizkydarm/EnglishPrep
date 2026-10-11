@@ -4,6 +4,11 @@ import {
   VocabEntrySchema,
   WritingPromptsFileSchema,
 } from "../src/lib/types/schema.js";
+import {
+  findDuplicateIds,
+  formatDuplicate,
+  type IdRef,
+} from "../src/lib/content-loader/integrity.js";
 import { loadPassage, loadQuestions, loadVocab } from "../src/lib/content-loader/loader.js";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -15,6 +20,7 @@ interface Failure {
 }
 
 const failures: Failure[] = [];
+const idRefs: IdRef[] = [];
 let vocabCount = 0;
 let passageCount = 0;
 let questionCount = 0;
@@ -41,6 +47,7 @@ const vocabFiles = [
 {
   const r = loadVocab(vocabFiles);
   vocabCount = r.ok.length;
+  for (const v of r.ok) idRefs.push({ id: v.id, source: "vocab" });
   for (const s of r.skipped) failures.push({ file: relative(ROOT, s.file), reason: s.reason });
 }
 
@@ -49,7 +56,10 @@ const passageIds = new Set<string>();
 {
   const r = loadPassage(passageFiles);
   passageCount = r.ok.length;
-  for (const p of r.ok) passageIds.add(p.id);
+  for (const p of r.ok) {
+    passageIds.add(p.id);
+    idRefs.push({ id: p.id, source: "reading/passages" });
+  }
   for (const s of r.skipped) failures.push({ file: relative(ROOT, s.file), reason: s.reason });
 }
 
@@ -58,6 +68,9 @@ const questionFiles = readFiles(join(CONTENT, "reading", "questions"), ".json");
   const r = loadQuestions(questionFiles);
   for (const q of r.ok) {
     questionCount += q.items.length;
+    for (const item of q.items) {
+      idRefs.push({ id: item.id, source: `reading/questions/${q.passage_id}` });
+    }
     if (!passageIds.has(q.passage_id)) {
       failures.push({
         file: `reading/questions (passage_id: ${q.passage_id})`,
@@ -86,6 +99,9 @@ const questionFiles = readFiles(join(CONTENT, "reading", "questions"), ".json");
           });
         } else {
           promptCount = r.data.items.length;
+          for (const item of r.data.items) {
+            idRefs.push({ id: item.id, source: "writing/prompts.json" });
+          }
         }
       } catch (e) {
         failures.push({
@@ -105,6 +121,10 @@ if (passageCount !== 5) {
 }
 if (promptCount !== 10) {
   failures.push({ file: "writing/prompts.json", reason: `expected 10 prompts, got ${promptCount}` });
+}
+
+for (const dup of findDuplicateIds(idRefs)) {
+  failures.push({ file: "content/*", reason: formatDuplicate(dup) });
 }
 
 if (failures.length > 0) {

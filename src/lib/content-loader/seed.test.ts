@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { WritingPromptsFileSchema } from "../types/schema.js";
+import { findDuplicateIds, type IdRef } from "./integrity.js";
 import { loadPassage, loadQuestions, loadVocab, type ContentFile } from "./loader.js";
 import { extractGapNumbers, splitSentences } from "./reading.js";
 
@@ -129,5 +130,28 @@ describe("seed writing", () => {
     expect(new Set(parsed.data.items.map((i) => i.type))).toEqual(
       new Set(["sentence_order", "grammar_fix", "image_description"]),
     );
+  });
+});
+
+describe("seed id integrity", () => {
+  it("has globally unique ids across vocab, passages, questions, and prompts", () => {
+    const refs: IdRef[] = [];
+    for (const v of loadVocab(vocabFiles()).ok) refs.push({ id: v.id, source: "vocab" });
+    for (const p of loadPassage(passageFiles()).ok) {
+      refs.push({ id: p.id, source: "reading/passages" });
+    }
+    for (const q of loadQuestions(questionFiles()).ok) {
+      for (const item of q.items) {
+        refs.push({ id: item.id, source: `reading/questions/${q.passage_id}` });
+      }
+    }
+    const writing = WritingPromptsFileSchema.safeParse(
+      JSON.parse(Object.values(writingModules)[0]),
+    );
+    if (!writing.success) expect.fail("writing/prompts.json is invalid");
+    for (const item of writing.data.items) {
+      refs.push({ id: item.id, source: "writing/prompts.json" });
+    }
+    expect(findDuplicateIds(refs)).toEqual([]);
   });
 });
