@@ -39,7 +39,7 @@
 - **Agent:** deepseek · **Estimasi:** 15 mnt · **File:** `src-tauri/resources/content/**` (50 vocab, 5 reading, 10 writing)
 - **Depends On:** T-002, T-003
 - **Acceptance:** `bun run validate:content` hijau; 1 B1-Core, 1 B1+, 2 B2-Core, 1 B2-Mastery reading
-- **Status:** todo
+- **Status:** done (25f143a proxy, review clean; images placeholder per PRD §11)
 
 ### T-006 — [agy] Security + schema review Epic 0
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `src/lib/types/schema.ts`, `src/lib/content-loader/*`, `src-tauri/**`

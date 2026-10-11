@@ -11,6 +11,7 @@
 - [2026-10-11] T-002 (deepseek-equivalent): DONE 9194727. vitest 2/2, svelte-check 0 errors. 2 minors deferred to final review.
 - [2026-10-11] T-003 (deepseek-equivalent): DONE 19af71a. loader 9/9, suite 11/11, check 0 errors. 2 minors deferred.
 - [2026-10-11] T-004 (muse): DONE 9f8f3e9. cargo check + svelte-check 0 errors, no network. Scope minors → T-006 (agy).
+- [2026-10-11] T-005 (muse-proxy for deepseek, PO-approved): DONE 25f143a. 50+5+10, 0 skipped, images placeholder per PRD §11.
 
 ## Review findings
 (none yet)
