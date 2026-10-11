@@ -22,6 +22,7 @@
 - [T-006] Advisory 2 (Integrity): `validate-content.ts` and `loader.ts` validate schemas and counts, but do not yet verify global `id` uniqueness (preventing collision on custom packs). Seed content verified 100% unique (50/50 vocab, 5/5 passages, 25/25 questions, 10/10 prompts). Recommend adding duplicate ID assertion in validator.
 - [T-006] Advisory 3 (Capabilities): `opener:default` is included in `capabilities/default.json` for external app/browser opening. CSP blocks in-app network (`connect-src 'none'`), fully offline compliant.
 - [2026-10-11] T-005 (deepseek, structural test): `choose_idea` prompts may not match their highlighted sentence. `urban-farming-q4` highlights sentence 4 ("Volunteers carried soil up the stairs...") but the answer is "Cause and effect", which that sentence does not express. `island-trip-q4` (sentence 12) and `morning-market-q4` (sentence 11) are also weak. Structural checks pass; flagged for agy quality review (T-013), not a blocker.
+- [Stand-in gate, superseded by agy T-006] Advisory: `choose_idea.answer` has no schema upper bound vs options length (seed clean). Advisory: `[[GAP:0]]` parses as valid gap (seed uses 1-based, clean). Parked, not blocking.
 
 ## Rulings
 - R1: `agy` = Antigravity/Gemini (reviewer/audit). Jika salah (agy ternyata tool lain), ganti assignment tanpa ubah task.
