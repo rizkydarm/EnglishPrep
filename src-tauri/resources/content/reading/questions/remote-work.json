@@ -48,7 +48,7 @@
       "type": "highlight_idea",
       "variant": "tap_sentence",
       "prompt": "Select the sentence that expresses a CONTRAST between two views.",
-      "answer_sentences": [5],
+      "answer_sentences": [8],
       "answer_text": "However, isolation remains a serious challenge."
     },
     {

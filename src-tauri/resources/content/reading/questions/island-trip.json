@@ -34,7 +34,7 @@
       "type": "highlight_idea",
       "variant": "tap_sentence",
       "prompt": "Select the sentence that gives extra information from a local person.",
-      "answer_sentences": [7],
+      "answer_sentences": [10],
       "answer_text": "The stall owner told them which beaches were safe for swimming and where to watch the sunset."
     },
     {

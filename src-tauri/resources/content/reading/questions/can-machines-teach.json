@@ -30,6 +30,20 @@
       "explanation_id": "Diskusi menuntut siswa mempertahankan pendapat dan berubah pikiran di depan umum."
     },
     {
+      "id": "can-machines-teach-q6",
+      "type": "sentence_completion",
+      "gap": 3,
+      "options": [
+        "The answer they found was a simple division of labour.",
+        "Machines were removed from every classroom completely.",
+        "Teachers refused to change their methods at all.",
+        "Students were told to teach the software themselves."
+      ],
+      "answer": 0,
+      "explanation_en": "The next sentence explains how the two divide the work.",
+      "explanation_id": "Kalimat berikutnya menjelaskan pembagian kerja antara keduanya."
+    },
+    {
       "id": "can-machines-teach-q3",
       "type": "sentence_completion",
       "gap": 4,
@@ -48,7 +62,7 @@
       "type": "highlight_idea",
       "variant": "tap_sentence",
       "prompt": "Select the sentence that states the author's main warning about cost-cutting.",
-      "answer_sentences": [17],
+      "answer_sentences": [24],
       "answer_text": "If they use machines merely to cut costs, classrooms may produce faster answers and slower minds."
     },
     {
