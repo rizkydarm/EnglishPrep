@@ -286,8 +286,8 @@
             disabled={disabled || placed.length === 0}
             onclick={clearPlaced}
           >Clear</button>
-        {:else}
-          <button type="button" class="btn" disabled={disabled} onclick={retryOrder}>Try again</button>
+        {:else if !disabled}
+          <button type="button" class="btn" onclick={retryOrder}>Try again</button>
         {/if}
       </div>
 
@@ -339,8 +339,8 @@
             disabled={disabled || text.trim() === ""}
             onclick={checkGrammar}
           >Check</button>
-        {:else}
-          <button type="button" class="btn" disabled={disabled} onclick={retryGrammar}>Try again</button>
+        {:else if !disabled}
+          <button type="button" class="btn" onclick={retryGrammar}>Try again</button>
         {/if}
       </div>
 
