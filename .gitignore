@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 
 # Worktrees
 .worktrees/
+
+# Local agent working memory (not project source)
+.workbuddy-ai/
