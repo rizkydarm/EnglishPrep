@@ -1,0 +1,66 @@
+{
+  "passage_id": "remote-work",
+  "items": [
+    {
+      "id": "remote-work-q1",
+      "type": "sentence_completion",
+      "gap": 1,
+      "options": [
+        "This shift has changed not only where we work, but also how success is measured.",
+        "Working from home has now completely disappeared from modern life.",
+        "Most companies have banned laptops from the kitchen table.",
+        "Nobody works from home anymore after the pandemic ended."
+      ],
+      "answer": 0,
+      "explanation_en": "The shift changed where we work and how success is measured.",
+      "explanation_id": "Perubahan itu mengubah tempat kerja dan cara mengukur keberhasilan."
+    },
+    {
+      "id": "remote-work-q2",
+      "type": "sentence_completion",
+      "gap": 2,
+      "options": [
+        "Young workers especially miss informal chats with colleagues.",
+        "Young employees never talk to anyone at the office.",
+        "Coffee machines have been removed from every office.",
+        "Video calls have made all friendships stronger."
+      ],
+      "answer": 0,
+      "explanation_en": "Young employees miss informal conversations near the coffee machine.",
+      "explanation_id": "Karyawan muda merindukan obrolan santai di dekat mesin kopi."
+    },
+    {
+      "id": "remote-work-q3",
+      "type": "sentence_completion",
+      "gap": 3,
+      "options": [
+        "The hybrid model is now the most common arrangement.",
+        "Every company now forces staff back to the office full time.",
+        "Nobody is allowed to work from home on any day.",
+        "Technology companies have closed all their offices."
+      ],
+      "answer": 0,
+      "explanation_en": "The hybrid approach is now the most common.",
+      "explanation_id": "Model hibrida kini menjadi yang paling umum."
+    },
+    {
+      "id": "remote-work-q4",
+      "type": "highlight_idea",
+      "variant": "tap_sentence",
+      "prompt": "Select the sentence that expresses a CONTRAST between two views.",
+      "answer_sentences": [5],
+      "answer_text": "However, isolation remains a serious challenge."
+    },
+    {
+      "id": "remote-work-q5",
+      "type": "best_title",
+      "options": [
+        "Why Working From Home Is Here to Stay",
+        "A History of Office Furniture",
+        "The Failure of Remote Work",
+        "How to Commute Faster"
+      ],
+      "answer": 0
+    }
+  ]
+}

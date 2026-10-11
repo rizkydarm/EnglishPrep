@@ -1,0 +1,67 @@
+{
+  "passage_id": "urban-farming",
+  "items": [
+    {
+      "id": "urban-farming-q1",
+      "type": "sentence_completion",
+      "gap": 1,
+      "options": [
+        "Residents now grow vegetables on the flat roofs of city buildings.",
+        "City residents have stopped eating vegetables entirely.",
+        "All vegetables are now imported from distant countries.",
+        "Nobody in the city knows how to plant anything."
+      ],
+      "answer": 0,
+      "explanation_en": "Residents grow food on roofs of offices, schools, and flats.",
+      "explanation_id": "Warga menanam makanan di atap kantor, sekolah, dan apartemen."
+    },
+    {
+      "id": "urban-farming-q2",
+      "type": "sentence_completion",
+      "gap": 2,
+      "options": [
+        "Collected rainwater waters the beds, saving treated water.",
+        "The gardens waste more treated water than ordinary farms.",
+        "Nobody waters the plants because rain never falls.",
+        "All the water tanks were removed from the rooftops."
+      ],
+      "answer": 0,
+      "explanation_en": "Rainwater in tanks waters the beds with less treated water.",
+      "explanation_id": "Air hujan di tangki menyirami bedeng sehingga hemat air bersih."
+    },
+    {
+      "id": "urban-farming-q3",
+      "type": "sentence_completion",
+      "gap": 3,
+      "options": [
+        "These problems are solvable but need planning and money.",
+        "The problems are impossible and the projects all stopped.",
+        "Nobody cares about the weight of soil and water.",
+        "Engineers refused to check any of the buildings."
+      ],
+      "answer": 0,
+      "explanation_en": "The problems are solvable but require planning and money.",
+      "explanation_id": "Masalah itu bisa diatasi tetapi butuh perencanaan dan dana."
+    },
+    {
+      "id": "urban-farming-q4",
+      "type": "highlight_idea",
+      "variant": "choose_idea",
+      "sentence": 4,
+      "prompt": "Which idea does the highlighted sentence express?",
+      "options": ["Cause and effect", "Comparison", "Prediction", "Concession"],
+      "answer": 0
+    },
+    {
+      "id": "urban-farming-q5",
+      "type": "best_title",
+      "options": [
+        "Growing Fresh Food Above the City",
+        "Why Cities Should Ban Gardens",
+        "The End of Traditional Farming",
+        "How to Build an Apartment Block"
+      ],
+      "answer": 0
+    }
+  ]
+}

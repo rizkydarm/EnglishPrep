@@ -1,0 +1,66 @@
+{
+  "passage_id": "can-machines-teach",
+  "items": [
+    {
+      "id": "can-machines-teach-q1",
+      "type": "sentence_completion",
+      "gap": 1,
+      "options": [
+        "A decade later, the results are more complicated than anyone predicted.",
+        "All teachers were replaced by software within a single year.",
+        "Nobody uses tutoring programs in schools anymore.",
+        "The software failed completely and was banned everywhere."
+      ],
+      "answer": 0,
+      "explanation_en": "Results are more complicated than enthusiasts or critics predicted.",
+      "explanation_id": "Hasilnya lebih rumit daripada perkiraan pendukung maupun pengkritik."
+    },
+    {
+      "id": "can-machines-teach-q2",
+      "type": "sentence_completion",
+      "gap": 2,
+      "options": [
+        "Students must defend opinions and change their minds in front of others.",
+        "Machines feel embarrassed when students make mistakes.",
+        "Classroom discussions have been removed from every school.",
+        "Students never need to listen to objections from others."
+      ],
+      "answer": 0,
+      "explanation_en": "Discussions require defending opinions and changing minds publicly.",
+      "explanation_id": "Diskusi menuntut siswa mempertahankan pendapat dan berubah pikiran di depan umum."
+    },
+    {
+      "id": "can-machines-teach-q3",
+      "type": "sentence_completion",
+      "gap": 4,
+      "options": [
+        "Schools must now explain what student data is stored and for how long.",
+        "Nobody worries about student data because none is collected.",
+        "Learning platforms delete all records immediately every day.",
+        "Regulators have banned all discussion of data privacy."
+      ],
+      "answer": 0,
+      "explanation_en": "Regulators require schools to explain stored data and retention.",
+      "explanation_id": "Regulator mewajibkan sekolah menjelaskan data yang disimpan dan durasinya."
+    },
+    {
+      "id": "can-machines-teach-q4",
+      "type": "highlight_idea",
+      "variant": "tap_sentence",
+      "prompt": "Select the sentence that states the author's main warning about cost-cutting.",
+      "answer_sentences": [17],
+      "answer_text": "If they use machines merely to cut costs, classrooms may produce faster answers and slower minds."
+    },
+    {
+      "id": "can-machines-teach-q5",
+      "type": "best_title",
+      "options": [
+        "Machines Can Drill, Only Teachers Can Deepen",
+        "Why Schools Should Ban All Software",
+        "The End of Classroom Discussion",
+        "How to Build a Tutoring Program"
+      ],
+      "answer": 0
+    }
+  ]
+}

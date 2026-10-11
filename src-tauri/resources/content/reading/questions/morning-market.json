@@ -1,0 +1,61 @@
+{
+  "passage_id": "morning-market",
+  "items": [
+    {
+      "id": "morning-market-q1",
+      "type": "sentence_completion",
+      "gap": 1,
+      "options": [
+        "Fresh food from the market is cheaper and healthier than supermarket food.",
+        "Supermarkets are always cheaper than traditional markets.",
+        "Sari never buys fruit because it costs too much.",
+        "The market only sells clothes and electronic goods."
+      ],
+      "answer": 0,
+      "explanation_en": "The paragraph says market food is cheaper and healthier.",
+      "explanation_id": "Paragraf menyatakan makanan pasar lebih murah dan lebih sehat."
+    },
+    {
+      "id": "morning-market-q2",
+      "type": "sentence_completion",
+      "gap": 2,
+      "options": [
+        "She brings her own cloth bag to avoid using plastic.",
+        "She always asks for extra plastic bags at every stall.",
+        "She leaves her shopping bag at home every Saturday.",
+        "She throws her bag away after one shopping trip."
+      ],
+      "answer": 0,
+      "explanation_en": "She puts everything into her own cloth bag.",
+      "explanation_id": "Ia memasukkan semuanya ke tas kain miliknya sendiri."
+    },
+    {
+      "id": "morning-market-q3",
+      "type": "highlight_idea",
+      "variant": "tap_sentence",
+      "prompt": "Select the sentence that shows Sari learning something new.",
+      "answer_sentences": [8],
+      "answer_text": "Sari listens carefully and sometimes writes the recipes in a small notebook."
+    },
+    {
+      "id": "morning-market-q4",
+      "type": "highlight_idea",
+      "variant": "choose_idea",
+      "sentence": 11,
+      "prompt": "Which idea does the highlighted sentence express?",
+      "options": ["A daily habit", "A complaint", "A prediction", "A comparison"],
+      "answer": 0
+    },
+    {
+      "id": "morning-market-q5",
+      "type": "best_title",
+      "options": [
+        "A Healthy Saturday Routine",
+        "Why Supermarkets Are Better",
+        "How to Open a Market Stall",
+        "The History of Porridge"
+      ],
+      "answer": 0
+    }
+  ]
+}

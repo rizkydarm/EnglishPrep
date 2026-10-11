@@ -1,0 +1,61 @@
+{
+  "passage_id": "island-trip",
+  "items": [
+    {
+      "id": "island-trip-q1",
+      "type": "sentence_completion",
+      "gap": 1,
+      "options": [
+        "They packed their bags and checked the ferry times carefully.",
+        "They cancelled the trip because everyone was too busy.",
+        "They decided to stay home and work through the weekend.",
+        "They sold their bicycles to pay for the ferry tickets."
+      ],
+      "answer": 0,
+      "explanation_en": "They packed luggage and checked the timetable twice.",
+      "explanation_id": "Mereka mengepak koper dan memeriksa jadwal dua kali."
+    },
+    {
+      "id": "island-trip-q2",
+      "type": "sentence_completion",
+      "gap": 2,
+      "options": [
+        "Nobody minded the delay because the island looked beautiful.",
+        "Everyone was angry and returned home immediately.",
+        "The passengers demanded that the ferry turn back.",
+        "The wind damaged the harbour and closed the island."
+      ],
+      "answer": 0,
+      "explanation_en": "Nobody complained because the view was beautiful.",
+      "explanation_id": "Tak ada yang mengeluh karena pemandangannya indah."
+    },
+    {
+      "id": "island-trip-q3",
+      "type": "highlight_idea",
+      "variant": "tap_sentence",
+      "prompt": "Select the sentence that gives extra information from a local person.",
+      "answer_sentences": [7],
+      "answer_text": "The stall owner told them which beaches were safe for swimming and where to watch the sunset."
+    },
+    {
+      "id": "island-trip-q4",
+      "type": "highlight_idea",
+      "variant": "choose_idea",
+      "sentence": 12,
+      "prompt": "Which idea does the highlighted sentence express?",
+      "options": ["Regret about the trip", "A positive result of the trip", "A travel warning", "A change of plan"],
+      "answer": 1
+    },
+    {
+      "id": "island-trip-q5",
+      "type": "best_title",
+      "options": [
+        "A Short Trip That Restored Their Energy",
+        "Why Ferries Are Always Late",
+        "The Dangers of Island Travel",
+        "How to Open a Beach Stall"
+      ],
+      "answer": 0
+    }
+  ]
+}

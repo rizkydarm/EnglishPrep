@@ -1,0 +1,100 @@
+{
+  "items": [
+    {
+      "id": "wr-001",
+      "type": "sentence_order",
+      "level": "b1-core",
+      "words": ["she", "goes", "to", "work", "by", "bus", "every", "day"],
+      "correct": "She goes to work by bus every day.",
+      "alternatives": [],
+      "grammar_focus": "present simple routine"
+    },
+    {
+      "id": "wr-002",
+      "type": "sentence_order",
+      "level": "b1-plus",
+      "words": ["although", "it", "was", "raining", "we", "continued", "our", "journey"],
+      "correct": "Although it was raining, we continued our journey.",
+      "alternatives": ["We continued our journey although it was raining."],
+      "grammar_focus": "concession clause"
+    },
+    {
+      "id": "wr-003",
+      "type": "sentence_order",
+      "level": "b2-core",
+      "words": ["although", "the", "report", "was", "long", "it", "was", "clear"],
+      "correct": "Although the report was long, it was clear.",
+      "alternatives": [],
+      "grammar_focus": "concession clause"
+    },
+    {
+      "id": "wr-004",
+      "type": "sentence_order",
+      "level": "b2-mastery",
+      "words": ["had", "she", "known", "about", "the", "delay", "she", "would", "have", "left", "earlier"],
+      "correct": "Had she known about the delay, she would have left earlier.",
+      "alternatives": [],
+      "grammar_focus": "third conditional inversion"
+    },
+    {
+      "id": "wr-005",
+      "type": "grammar_fix",
+      "level": "b1-core",
+      "sentence": "She go to school by bike every morning.",
+      "accepted": ["She goes to school by bike every morning."],
+      "hint": "subject-verb agreement: she + verb-s",
+      "explanation_id": "Subjek 'she' memakai kata kerja bentuk -s: 'goes'."
+    },
+    {
+      "id": "wr-006",
+      "type": "grammar_fix",
+      "level": "b2-core",
+      "sentence": "She suggested him to apply for the scholarship.",
+      "accepted": [
+        "She suggested that he apply for the scholarship.",
+        "She suggested he apply for the scholarship."
+      ],
+      "hint": "verb pattern: suggest",
+      "explanation_id": "Setelah 'suggest' gunakan pola 'that + subjek + bare infinitive'."
+    },
+    {
+      "id": "wr-007",
+      "type": "grammar_fix",
+      "level": "b2-mastery",
+      "sentence": "Despite of the rain, the match continued.",
+      "accepted": ["Despite the rain, the match continued."],
+      "hint": "preposition after despite",
+      "explanation_id": "'Despite' tidak memakai 'of'; gunakan 'despite the rain'."
+    },
+    {
+      "id": "wr-008",
+      "type": "image_description",
+      "level": "b1-core",
+      "image": "images/street-market.jpg",
+      "prompt": "Describe what is happening in the picture (2–3 sentences).",
+      "model_answer": "A vendor is selling fresh vegetables at a busy street market. Customers are browsing the stalls while carrying baskets.",
+      "keywords": ["vendor", "selling", "market", "customers"],
+      "self_score_max": 5
+    },
+    {
+      "id": "wr-009",
+      "type": "image_description",
+      "level": "b2-core",
+      "image": "images/city-park.jpg",
+      "prompt": "Describe the park scene and what people are doing (2–3 sentences).",
+      "model_answer": "Several people are jogging along the path in a green city park. A child is feeding ducks by the pond while parents watch from a bench.",
+      "keywords": ["jogging", "pond", "bench", "parents"],
+      "self_score_max": 5
+    },
+    {
+      "id": "wr-010",
+      "type": "image_description",
+      "level": "b2-mastery",
+      "image": "images/train-station.jpg",
+      "prompt": "Describe the atmosphere of the station and speculate about the travellers (3–4 sentences).",
+      "model_answer": "The crowded station buzzes with hurried travellers dragging luggage toward the platforms. A delayed departure board suggests some journeys may be disrupted, yet most people wait patiently with coffee in hand.",
+      "keywords": ["crowded", "platforms", "delayed", "luggage"],
+      "self_score_max": 5
+    }
+  ]
+}
