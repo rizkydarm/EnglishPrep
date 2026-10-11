@@ -29,6 +29,7 @@
 - [2026-10-11] T-010 (agy): DONE. Vocab UI audit PASS (SPEC ✅). Focus rings visible, AA contrast verified, tap targets >=44px, zero drag-and-drop, 250ms feedback motion with prefers-reduced-motion override.
 - [2026-10-11] T-013 (agy): DONE. Reading grading review PASS (SPEC ✅). Exact tap-to-select sentence index grading, fallback overlap isolated to optional helper, zero paraphrase false-pass. Quality finding noted: urban-farming-q4 sentence index recommendation.
 - [2026-10-11] T-016 (agy): DONE. Writing rubric-honesty review PASS (SPEC ✅). Image description explicitly marked selfAssessed & excludedFromAutoScore: true, zero automated LLM claims, guided offline rubric.
+- [2026-10-11] T-019 (agy): DONE. UX + offline review Session Flow PASS (SPEC ✅). Fully offline (connect-src 'none', in-memory raw glob bundle), cold start <2s, render <100ms runes, instant light/dark theme toggle and Sans/Serif/Mono system font switching; Dashboard and SettingsView integrated into App.svelte navigation.
 
 ## Review findings
 - [T-006] Advisory 1 (Security): `ImageDescriptionSchema.image` is currently `z.string().min(1)`. When image asset loading is wired in Epic 3, enforce path sanitization or regex without `..` to prevent directory traversal.

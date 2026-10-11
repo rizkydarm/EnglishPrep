@@ -33,6 +33,8 @@
   import SetupSheet from "$lib/views/SetupSheet.svelte";
   import QuizShell from "$lib/views/QuizShell.svelte";
   import Results from "$lib/views/Results.svelte";
+  import Dashboard from "$lib/views/Dashboard.svelte";
+  import SettingsView from "$lib/views/SettingsView.svelte";
   import type { QuizMode } from "$lib/stores/quiz.svelte.js";
   import { settings } from "$lib/stores/settings.svelte.js";
   import { progress } from "$lib/stores/progress.svelte.js";
@@ -86,8 +88,25 @@
     }
   });
 
+  const FONT_STACK = {
+    sans: `-apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif`,
+    serif: `Georgia, Palatino, "Palatino Linotype", serif`,
+    mono: `"SF Mono", Menlo, Consolas, monospace`,
+  } as const;
+
   $effect(() => {
     setMode(themeChoice);
+  });
+
+  $effect(() => {
+    if (settings.loaded) {
+      try {
+        document.documentElement.dataset.font = settings.font;
+        document.documentElement.style.fontFamily = FONT_STACK[settings.font];
+      } catch {
+        // Non-DOM environment
+      }
+    }
   });
 
   const results = $derived(searchModules(query));
@@ -365,102 +384,63 @@
             {@render detailCard(selected)}
           {/if}
         {:else if view === "progress"}
-          <div>
-            <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">Your saved modules</h1>
-            <p class="text-muted-foreground mt-1 text-sm">
-              Modules you starred, kept on this device.
-            </p>
-          </div>
-          {#if favoriteModules.length === 0}
-            <Empty.Root>
-              <Empty.Header>
-                <Empty.Media variant="icon"><BookmarkIcon /></Empty.Media>
-                <Empty.Title>No favorites yet</Empty.Title>
-                <Empty.Description>
-                  Tap the star on any module to keep it here for quick access.
-                </Empty.Description>
-              </Empty.Header>
-              <Empty.Content>
-                <Button variant="outline" onclick={() => navigate("dashboard")}>
-                  Browse modules
-                </Button>
-              </Empty.Content>
-            </Empty.Root>
-          {:else}
-            <div class="flex flex-col gap-3">
-              {#each favoriteModules as m (m.id)}
-                <Card.Root size="sm">
-                  <Card.Content>
-                    <div class="flex items-center justify-between gap-3">
-                      <div class="min-w-0">
-                        <p class="truncate font-medium">{m.name}</p>
-                        <p class="text-muted-foreground text-sm">
-                          {AREA_LABEL[m.area]} · {m.level}
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        class="min-h-11 shrink-0"
-                        onclick={() => toggleFavorite(m.id)}
-                        aria-label="Remove {m.name} from favorites"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </Card.Content>
-                </Card.Root>
-              {/each}
-            </div>
-          {/if}
+          <Dashboard
+            words={(bundle?.vocab ?? []).map((v) => ({ id: v.id, level: v.level }))}
+            onStartReview={(queue) => {
+              if (!bundle) return;
+              const dueIds = queue.map((q) => q.id);
+              activeItems = buildSession(
+                bundle,
+                {
+                  mode: "vocab",
+                  count: Math.min(Math.max(dueIds.length, 1), 10),
+                  levels: ["b1-core", "b1-plus", "b2-core", "b2-mastery"],
+                  timerPerQ: settings.defaultTimer,
+                  clozeMode: "type",
+                  pairCount: 4,
+                  types: ["mcq", "true_false", "matching", "cloze", "best_word"],
+                  srsEnabled: true,
+                },
+                dueIds,
+              );
+              activeMode = "vocab";
+              activeLevels = ["b1-core", "b1-plus", "b2-core", "b2-mastery"];
+              activeTimer = settings.defaultTimer;
+              setupMode = null;
+              summary = null;
+              quizRunId += 1;
+              stage = "quiz";
+            }}
+            onReviewWrong={(histSession) => {
+              if (!bundle || histSession.wrong_ids.length === 0) return;
+              if (histSession.mode === "vocab") {
+                activeItems = buildSession(
+                  bundle,
+                  {
+                    mode: "vocab",
+                    count: histSession.wrong_ids.length,
+                    levels: histSession.levels,
+                    timerPerQ: 0,
+                    clozeMode: "type",
+                    pairCount: 4,
+                    types: ["mcq", "true_false", "matching", "cloze", "best_word"],
+                    srsEnabled: false,
+                  },
+                  histSession.wrong_ids,
+                );
+                activeMode = "vocab";
+                activeLevels = histSession.levels;
+                activeTimer = 0;
+                setupMode = null;
+                summary = null;
+                quizRunId += 1;
+                stage = "quiz";
+              }
+            }}
+            onOpenSettings={() => navigate("settings")}
+          />
         {:else if view === "settings"}
-          <div>
-            <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">Settings</h1>
-            <p class="text-muted-foreground mt-1 text-sm">Applies to this app on this device.</p>
-          </div>
-          <Card.Root>
-            <Card.Header>
-              <Card.Title>Appearance</Card.Title>
-              <Card.Description>Applies to the whole app immediately.</Card.Description>
-            </Card.Header>
-            <Card.Content>
-              <ToggleGroup.Root
-                type="single"
-                bind:value={themeChoice}
-                variant="outline"
-                aria-label="Appearance"
-              >
-                <ToggleGroup.Item value="light" aria-label="Light theme">
-                  <SunIcon data-icon="inline-start" /> Light
-                </ToggleGroup.Item>
-                <ToggleGroup.Item value="dark" aria-label="Dark theme">
-                  <MoonIcon data-icon="inline-start" /> Dark
-                </ToggleGroup.Item>
-                <ToggleGroup.Item value="system" aria-label="System theme">
-                  <MonitorIcon data-icon="inline-start" /> System
-                </ToggleGroup.Item>
-              </ToggleGroup.Root>
-            </Card.Content>
-          </Card.Root>
-          <Card.Root>
-            <Card.Header>
-              <Card.Title>Saved modules</Card.Title>
-              <Card.Description>
-                {favorites.length === 0
-                  ? "Nothing saved yet."
-                  : `${favorites.length} saved by you on this device.`}
-              </Card.Description>
-            </Card.Header>
-            <Card.Footer>
-              <Button
-                variant="outline"
-                disabled={favorites.length === 0}
-                onclick={() => (favorites = [])}
-              >
-                Clear saved modules
-              </Button>
-            </Card.Footer>
-          </Card.Root>
+          <SettingsView />
         {/if}
       </div>
       {/if}

@@ -131,7 +131,7 @@
 - **Agent:** agy · **Estimasi:** 10 mnt · **File:** review Epic 4
 - **Depends On:** T-018
 - **Acceptance:** Wi-Fi off tetap jalan; cold start <2s; render <100ms; light/dark + Sans/Serif/Mono instan
-- **Status:** todo
+- **Status:** done (agy UX + offline review PASS: 100% offline verified, connect-src none, cold start <2s, render <100ms, light/dark + Sans/Serif/Mono system font switching instant)
 
 ## Epic 5 — SRS + Dashboard + Settings (PRD §7.8–7.10, §8)
 
