@@ -59,7 +59,7 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/utils/vocab-factory.ts`
 - **Depends On:** T-007
 - **Acceptance:** MCQ 4 opsi, T/F, matching 4/6 pasang, cloze type+wordbank (edit-distance ≤1), best-word-context; distractor auto same-level/POS; no-repeat per session
-- **Status:** todo
+- **Status:** done (agy proxy for muse; vocab-factory 5 types + auto-distractor + fuzzy cloze; test 12/12)
 
 ### T-009 — [muse] Vocab UI: VocabCard + MatchingGrid + ClozeInput
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/VocabCard.svelte`, `MatchingGrid.svelte`, `ClozeInput.svelte`
