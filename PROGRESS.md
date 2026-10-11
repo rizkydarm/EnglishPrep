@@ -10,6 +10,7 @@
 - [2026-10-11] T-001 (deepseek-equivalent): DONE 4849459. `bun run check` 0 errors, validate:content exit 0, vitest 0-test pass. Ruling: stub import guarded until T-005.
 - [2026-10-11] T-002 (deepseek-equivalent): DONE 9194727. vitest 2/2, svelte-check 0 errors. 2 minors deferred to final review.
 - [2026-10-11] T-003 (deepseek-equivalent): DONE 19af71a. loader 9/9, suite 11/11, check 0 errors. 2 minors deferred.
+- [2026-10-11] T-004 (muse): DONE 9f8f3e9. cargo check + svelte-check 0 errors, no network. Scope minors → T-006 (agy).
 
 ## Review findings
 (none yet)
