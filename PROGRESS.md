@@ -43,3 +43,4 @@
 - R1: `agy` = Antigravity/Gemini (reviewer/audit). Jika salah (agy ternyata tool lain), ganti assignment tanpa ubah task.
 - R2: Test runner = vitest (belum ada di package.json). T-001 wajib pasang dulu.
 - R3: Plain Svelte tanpa SvelteKit, jadi "routes" = view-switch di `App.svelte` + `src/lib/views/*`.
+- [2026-10-11 QA] T-023 PASS di-supersede: PRD §14 aktual 12/13 (#9 FAIL live-content-read, verified); klaim 200/200 tests dikoreksi → aktual 100/100. Epic 6 Q-001..Q-004 difile. C1 Review-Wrong sedang difix parallel worker (hands off).

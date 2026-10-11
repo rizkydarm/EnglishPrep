@@ -157,7 +157,33 @@
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD`
 - **Depends On:** T-006, T-010, T-013, T-016, T-019, T-022
 - **Acceptance:** semua acceptance §14 hijau; tidak ada network; tidak ada drag&drop; 1 fix-wave max, lalu adjudicate
-- **Status:** done (agy final whole-branch review PASS: PRD §14 checklist 13/13 verified green, zero network, zero drag&drop, 200/200 tests pass, svelte-check 0 errors, cargo check 0 errors)
+- **Status:** done (agy final whole-branch review PASS — SUPERSEDED by QA: PRD §14 = 12/13, #9 FAIL live-content-read; suite actual 100/100 not 200/200. See Epic 6.)
+
+## Epic 6 — QA Fix Wave (muse QA verdict 2026-10-11, qa-verdict.md)
+
+### Q-001 — [muse] Live content-folder read + Reload wiring (Critical, PRD §6.1)
+- **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/views/session-data.ts`, `src/lib/stores/settings.svelte.ts`
+- **Depends On:** T-004 (fs capability; tambah `plugin-fs` read jika belum)
+- **Acceptance:** runtime baca `~/Library/Application Support/com.ielts-toeic-preps/content/` via plugin-fs, fallback bundle; Reload re-read + toast jujur (skipped disurfacing); tambah-test tanpa file → tetap jalan
+- **Status:** todo
+
+### Q-002 — [muse] Review-Wrong + Start Review wiring (Critical)
+- **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/App.svelte` (konsumen `buildWrongSessionFromHistory`)
+- **Depends On:** parallel-worker C1 fix (uncommitted saat QA) mendarat dulu
+- **Acceptance:** Review-Wrong replay missed-only semua mode (bukan random); Start Review pakai due queue Dashboard; reading/writing tidak silent no-op
+- **Status:** todo (hands off sampai C1 commit)
+
+### Q-003 — [muse] Writing scoring honesty + soft-lock (Important)
+- **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/components/quiz/WritingEditor.svelte`, `QuizShell.svelte`, `session-data.ts`
+- **Depends On:** none
+- **Acceptance:** timer-expiry image → excluded (tidak cemari auto %); all-excluded session → N/A bukan 0%; invalid prompt → fallback + skip (tidak soft-lock); Try-again konsisten
+- **Status:** todo
+
+### Q-004 — [deepseek] Seed images + alternatives (Minor, optional)
+- **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `writing/images/*`, `prompts.json`
+- **Depends On:** none
+- **Acceptance:** 3 image placeholder diganti/asan; alternatives diisi bila ada; PRD §11 membolehkan placeholder → boleh park
+- **Status:** todo (park-able)
 
 ## DAG (urutan eksekusi)
 ```
@@ -166,6 +192,7 @@ T-001 ─┬─→ T-002 ─┬─→ T-003 ─→ T-011 ─→ T-012 ─→ T-0
        │          └─→ T-014 ─→ T-015 ─→ T-016 ──────────┤
 T-004 ─┴─→ T-017 ─→ T-020 ─→ T-021 ─→ T-022 ───────────┤
 T-005 ─→ T-006 ────────────────────────────────────────┤
-                         T-018 ─→ T-019 ─→ T-023 (gate)
+                         T-018 ─→ T-019 ─→ T-023 (gate, superseded—see Epic 6)
+Q-001 + Q-003 paralel; Q-002 setelah C1 mendarat; lalu Q-gate ulang.
 ```
 Paralel aman: T-001∥T-004. Lalu T-002. Lalu T-003∥T-007∥T-014. deepseek tidak blokir muse kecuali di Depends On.
