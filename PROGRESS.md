@@ -15,6 +15,8 @@
 - [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
 - [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
 
+- [2026-10-11] T-007 (deepseek proxy for muse, PO-approved): DONE ad25c4c. srs.ts (Leitner 1-3-7-14-30, isDue/isMastered) + scoring.ts (matchingPartial, percent). srs 9/9, scoring 4/4, suite 38/38, check 0 errors.
+
 ## Review findings
 - [2026-10-11] T-005 (deepseek, structural test): `choose_idea` prompts may not match their highlighted sentence. `urban-farming-q4` highlights sentence 4 ("Volunteers carried soil up the stairs...") but the answer is "Cause and effect", which that sentence does not express. `island-trip-q4` (sentence 12) and `morning-market-q4` (sentence 11) are also weak. Structural checks pass; flagged for agy quality review (T-013), not a blocker.
 
