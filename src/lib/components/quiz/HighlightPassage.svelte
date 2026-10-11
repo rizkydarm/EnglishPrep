@@ -30,6 +30,8 @@
     sentences?: string[];
     /** Question mode. `mcq` covers sentence_completion + best_title (4 options). */
     mode: Mode;
+    /** Explicit mcq sub-kind — replaces prompt-sniffing dispatch. */
+    mcqKind?: "sentence_completion" | "best_title";
     /** Question prompt shown in the side panel. */
     prompt?: string;
     /** Option texts for `choose_idea` / `mcq`. */
@@ -54,6 +56,7 @@
     sentences = [],
     mode,
     prompt = "",
+    mcqKind = "sentence_completion",
     options = [],
     targetSentence = null,
     answer = 0,
@@ -95,7 +98,7 @@
     }
     if (mode === "mcq") {
       const key = Array.isArray(answer) ? answer[0] : answer;
-      if (prompt.toLowerCase().includes("title")) return gradeBestTitle(picked, key ?? 0);
+      if (mcqKind === "best_title") return gradeBestTitle(picked, key ?? 0);
       return gradeSentenceCompletion(picked, key ?? 0);
     }
     return false;
@@ -126,21 +129,32 @@
   }
 
   function onKeydown(e: KeyboardEvent): void {
-    if (locked || mode === "tap_sentence") return;
-    if (e.key >= "1" && e.key <= "9") {
+    if (locked) return;
+    const target = e.target as HTMLElement | null;
+    if (target !== null) {
+      const tag = target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
+      if (root !== null && !root.contains(target)) return;
+    }
+    if (e.key === "Escape") {
+      picked = null;
+      tapped = [];
+      return;
+    }
+    if (mode === "tap_sentence") return;
+    if (e.key >= "1" && e.key <= "4") {
       const i = Number(e.key) - 1;
       if (i < options.length) {
         e.preventDefault();
         pickOption(i);
       }
-    } else if (e.key === "Escape") {
-      picked = null;
-      tapped = [];
     } else if (e.key === "Enter" && picked !== null) {
       e.preventDefault();
       submit();
     }
   }
+
+  let root: HTMLDivElement | null = $state(null);
 
   onMount(() => {
     window.addEventListener("keydown", onKeydown);
@@ -148,7 +162,7 @@
   });
 </script>
 
-<div class="reading-layout">
+<div class="reading-layout" bind:this={root}>
   <div class="reading-main">
     <ReadingPassage
       {title}

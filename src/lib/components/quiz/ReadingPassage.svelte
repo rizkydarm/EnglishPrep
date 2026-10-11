@@ -92,6 +92,9 @@
     <h2 class="reading-title">{title}</h2>
   {/if}
   <div class="reading-body">
+    {#if display.length === 0}
+      <p class="empty-state">No passage content.</p>
+    {/if}
     {#each display as sentence, i (i)}
       {@const state = sentenceState(i)}
       {#if interactive}
@@ -104,7 +107,7 @@
         >
           <span class="sentence-num" aria-hidden="true">{i + 1}</span>
           <span class="sentence-text">
-            {#each sentence.chunks as chunk (chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text)}
+            {#each sentence.chunks as chunk, ci (`${ci}-${chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text}`)}
               {#if chunk.kind === "gap"}
                 <span
                   class="gap-pill"
@@ -120,7 +123,7 @@
       {:else}
         <p class="sentence sentence-{state}">
           <span class="sentence-text">
-            {#each sentence.chunks as chunk (chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text)}
+            {#each sentence.chunks as chunk, ci (`${ci}-${chunk.kind === "gap" ? `g${chunk.gap}` : chunk.text}`)}
               {#if chunk.kind === "gap"}
                 <span
                   class="gap-pill"
@@ -158,6 +161,17 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+  .empty-state {
+    margin: 0;
+    padding: 0.75rem;
+    border: 2px dashed #e7e5e4;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    opacity: 0.8;
+  }
+  :global(.dark) .empty-state {
+    border-color: #2a2a2e;
   }
   .sentence {
     display: flex;
