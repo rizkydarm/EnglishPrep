@@ -3,73 +3,127 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Palette source of truth: design/DESIGN.md / PRD §10.
+ * Duolingo + Quizlet + Kahoot Hybrid:
+ * Primary Blue #2373F4, Secondary #578EF5, Cyan #65D0F4, Accent Yellow #F2F7A0, Ink #0F172A, Background #F8FAFF
+ */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 1rem;
+
+  --background: #F8FAFF;
+  --foreground: #0F172A;
+  --card: #FFFFFF;
+  --card-foreground: #0F172A;
+  --card-hover: #F2F6FF;
+  --popover: #FFFFFF;
+  --popover-foreground: #0F172A;
+  --primary: #2373F4;
+  --primary-hover: #1A5FD1;
+  /* AA-safe blue for filled buttons + primary text (white on #2373F4 = 4.35:1, fails AA). */
+  --primary-strong: #1A5FD1;
+  --primary-foreground: #FFFFFF;
+  --secondary: #578EF5;
+  --secondary-foreground: #FFFFFF;
+  --cyan: #65D0F4;
+  --yellow: #F2F7A0;
+  --yellow-strong: #E9ED6F;
+  /* Ink used on light accents (yellow/cyan stay light in both themes). */
+  --accent-ink: #0F172A;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #EFF6FF;
+  --accent-foreground: #2373F4;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --destructive-text: #B91C1C;
+  --destructive-bg: #FEE2E2;
+  --success: #10B981;
+  --success-bg: #D1FAE5;
+  --success-foreground: #FFFFFF;
+  --success-text: #047857;
+  --warn: #F59E0B;
+  --warn-foreground: #0F172A;
+  --border: #E2E8F0;
+  --border-strong: #0F172A;
+  --input: #E2E8F0;
+  --ring: #2373F4;
+
+  --shadow-3d: 0 4px 0 0 #0F172A;
+  --shadow-3d-lg: 0 6px 0 0 #0F172A;
+  --shadow-soft: 0 8px 24px rgba(35, 115, 244, 0.08);
+
+  --chart-1: #2373F4;
+  --chart-2: #578EF5;
+  --chart-3: #65D0F4;
+  --chart-4: #F2F7A0;
+  --chart-5: #10B981;
+
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #2373F4;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EFF6FF;
+  --sidebar-accent-foreground: #2373F4;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #2373F4;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.439 0 0);
+  --background: #0B1220;
+  --foreground: #F1F5F9;
+  --card: #141E33;
+  --card-foreground: #F1F5F9;
+  --card-hover: #1B2A4A;
+  --popover: #141E33;
+  --popover-foreground: #F1F5F9;
+  --primary: #578EF5;
+  --primary-hover: #6EA0F7;
+  --primary-strong: #578EF5;
+  --primary-foreground: #0F172A;
+  --secondary: #578EF5;
+  --secondary-foreground: #0F172A;
+  --cyan: #65D0F4;
+  --yellow: #F2F7A0;
+  --yellow-strong: #E9ED6F;
+  --accent-ink: #0F172A;
+  --muted: #1B2A4A;
+  --muted-foreground: #94A3B8;
+  --accent: #1E2D50;
+  --accent-foreground: #578EF5;
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+  --destructive-text: #F87171;
+  --destructive-bg: #3A1414;
+  --success: #10B981;
+  --success-bg: #0F2E24;
+  --success-foreground: #0F172A;
+  --success-text: #34D399;
+  --warn: #F59E0B;
+  --warn-foreground: #0F172A;
+  --border: #1E2D50;
+  --border-strong: #2A3A5C;
+  --input: #1E2D50;
+  --ring: #578EF5;
+
+  --shadow-3d: 0 4px 0 0 #000000;
+  --shadow-3d-lg: 0 6px 0 0 #000000;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --chart-1: #578EF5;
+  --chart-2: #65D0F4;
+  --chart-3: #F2F7A0;
+  --chart-4: #10B981;
+  --chart-5: #94A3B8;
+
+  --sidebar: #101827;
+  --sidebar-foreground: #F1F5F9;
+  --sidebar-primary: #578EF5;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #1B2A4A;
+  --sidebar-accent-foreground: #578EF5;
+  --sidebar-border: #1E2D50;
+  --sidebar-ring: #578EF5;
 }
 
 @theme inline {
@@ -77,6 +131,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -84,15 +139,30 @@
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-cyan: var(--cyan);
+  --color-yellow: var(--yellow);
+  --color-yellow-strong: var(--yellow-strong);
+  --color-accent-ink: var(--accent-ink);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-text: var(--success-text);
+  --color-warn: var(--warn);
+  --color-warn-foreground: var(--warn-foreground);
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
@@ -108,13 +178,259 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Offline system stacks only — no webfonts (PRD §10.3 & DESIGN.md). */
+  --font-sans: -apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-serif: Georgia, Palatino, "Palatino Linotype", serif;
+  --font-mono: "SF Mono", Menlo, Consolas, monospace;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
   body {
     @apply bg-background text-foreground;
+    min-height: 100vh;
+  }
+  ::selection {
+    background: #F2F7A0;
+    color: #0F172A;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TACTILE 3D SYSTEM (Duolingo + Quizlet + Kahoot Hybrid)
+
+   Wrapped in @layer components so Tailwind utilities (flex, text-center,
+   height, min-height, bg-*, px-*) can override these component defaults.
+   Without the layer these rules are unlayered and win over utilities
+   regardless of specificity — which broke layouts (e.g. `.choice{display:block}`
+   cancelled `flex`, `.mode-card{background:card}` cancelled `bg-yellow`).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer components {
+
+/* 3D Tactile Buttons */
+.btn-3d {
+  background: var(--primary-strong);
+  color: var(--primary-foreground);
+  border: 2.5px solid var(--border-strong);
+  box-shadow: 0 4px 0 0 var(--border-strong);
+  border-radius: 16px;
+  font-weight: 700;
+  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease, background-color 0.12s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  min-height: 48px;
+  user-select: none;
+}
+.btn-3d:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 0 var(--border-strong);
+}
+.btn-3d:active:not(:disabled) {
+  transform: translateY(4px);
+  box-shadow: 0 0 0 0 var(--border-strong);
+}
+.btn-3d:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: 0 2px 0 0 var(--border-strong);
+}
+
+.btn-3d-yellow {
+  background: var(--yellow);
+  color: #0F172A;
+}
+.btn-3d-yellow:hover:not(:disabled) {
+  background: var(--yellow-strong);
+}
+
+.btn-3d-secondary {
+  background: var(--secondary);
+  /* ink on #578EF5 = 5.6:1 (AA); white on it = 3.19:1 (fails). */
+  color: #0F172A;
+}
+
+.btn-3d-cyan {
+  background: var(--cyan);
+  color: #0F172A;
+}
+
+.btn-3d-white {
+  background: var(--card);
+  color: var(--foreground);
+}
+
+/* 3D Tactile Cards */
+.card-3d {
+  background: var(--card);
+  border: 2.5px solid var(--border-strong);
+  border-radius: 20px;
+  box-shadow: var(--shadow-3d-lg);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.mode-card {
+  background: var(--card);
+  border: 2.5px solid var(--border-strong);
+  border-radius: 24px;
+  box-shadow: var(--shadow-3d-lg);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+.mode-card:hover {
+  transform: translateY(-4px) rotate(0.5deg);
+  box-shadow: 0 10px 0 0 var(--border-strong);
+}
+.mode-card:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 0 var(--border-strong);
+}
+
+/* Choice Cards (Quizlet clarity + Duolingo 3D feedback) */
+.choice {
+  border: 2.5px solid var(--border-strong);
+  border-radius: 16px;
+  padding: 14px 18px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 4px 0 0 var(--border-strong);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: left;
+  width: 100%;
+  display: block;
+}
+.choice:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 0 var(--border-strong);
+  background: var(--card-hover);
+}
+.choice.selected {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, var(--card));
+  box-shadow: 0 4px 0 0 var(--primary);
+}
+.choice.correct {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success-text);
+  box-shadow: 0 4px 0 0 var(--success);
+}
+.choice.wrong {
+  border-color: var(--destructive);
+  background: var(--destructive-bg);
+  color: var(--destructive-text);
+  box-shadow: 0 4px 0 0 var(--destructive);
+  animation: shake 0.3s;
+}
+
+/* Matching Pills */
+.match-pill {
+  border: 2.5px solid var(--border-strong);
+  border-radius: 9999px;
+  padding: 10px 18px;
+  font-weight: 700;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 3px 0 0 var(--border-strong);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.match-pill:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 0 var(--border-strong);
+}
+.match-pill.selected {
+  background: var(--cyan);
+  color: #0F172A;
+  transform: scale(1.02);
+  box-shadow: 0 4px 0 0 var(--border-strong);
+}
+.match-pill.matched {
+  background: var(--yellow);
+  color: #0F172A;
+  text-decoration: line-through;
+  opacity: 0.8;
+}
+
+/* Shared interactive affordance: hover lift + press. Apply to any clickable that
+   is not already a .btn-3d / .choice / .match-pill / .mode-card. */
+.interactive {
+  transition:
+    transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    color 0.12s ease;
+}
+.interactive:hover:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(-1px);
+}
+.interactive:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Badge Pill */
+.badge-pill {
+  border: 2px solid var(--border-strong);
+  border-radius: 9999px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Score Ring (Kahoot Energy) */
+.score-ring {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 8px solid var(--border-strong);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 38px;
+  background: var(--yellow);
+  color: #0F172A;
+  box-shadow: 0 6px 0 0 var(--border-strong);
+  transform: rotate(-3deg);
+}
+
+/* Shake Animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-3d, .mode-card, .card-3d, .choice, .match-pill, .interactive {
+    transition: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+} /* @layer components */
