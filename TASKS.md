@@ -185,6 +185,20 @@
 - **Acceptance:** 3 image placeholder diganti/asan; alternatives diisi bila ada; PRD §11 membolehkan placeholder → boleh park
 - **Status:** parked (placeholder jujur per PRD §11; butuh aset biner owner)
 
+## Epic 7 — UI Rebuild to design/DESIGN.md (blue/yellow)
+
+> Direction change (PO, 2026-10-11): canonical spec is now `design/DESIGN.md`
+> (blue `#2373F4` / cyan `#65D0F4` / yellow `#F2F7A0`), mirrored in PRD §10. All prior
+> "violet" UI work is **superseded**. Base = `main` (has Epic 6 fixes). `agy`'s
+> `feat/mvp-foundation` style waves (`f93de17`, `d029962` + uncommitted wave) are abandoned.
+
+### T-024 — [deepseek] Full UI rebuild to blue/yellow on main
+- **Agent:** deepseek · **Base:** `main` · **File:** `src/app.css`, `src/App.svelte`, `src/lib/components/app-sidebar.svelte`, `src/lib/components/ui/{button,badge}/`, `src/lib/views/*.svelte`, `src/lib/components/quiz/*.svelte`
+- **Depends On:** none (docs synced: PRD §10, AGENTS.md, root `DESIGN.md` pointer)
+- **Acceptance:** every screen uses the blue/yellow tokens from PRD §10; system font stacks only; lucide icons (no emoji); 2px ink border + hard 3D shadow per `design/Template-*.html`; `bun run check` / `test` / `build` green; antislop-ui Delivery Gate pass
+- **Coordination:** agy stopped; single writer = deepseek for the fix pass.
+- **Status:** done — agy's blue/yellow rebuild (uncommitted) + deepseek fix passes: Font style setting removed, sidebar spacing, dark-mode token sweep, AA-safe blue (`--primary-strong`), hover/press on all clickables. Fix pass 2 (Req D): removed the 3 offline chips, moved the sidebar toggle to the bottom-left footer beside the theme button (+ floating toggle when collapsed, mobile keeps a header trigger), inactive nav items now have a real surface with a distinct active fill, fixed the unstyled Progress Settings button (`btn-3d` was missing), restyled Settings (Appearance card removed, sound switch rebuilt, tactile `card-3d` sections). `bun run check` 0 errors, 106/106 tests, build OK.
+
 ## DAG (urutan eksekusi)
 ```
 T-001 ─┬─→ T-002 ─┬─→ T-003 ─→ T-011 ─→ T-012 ─→ T-013 ─┐
