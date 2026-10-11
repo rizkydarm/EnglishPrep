@@ -15,13 +15,13 @@
 - **Depends On:** none
 - **Steps:** `bun add zod papaparse gray-matter` + `bun add -d vitest`; script Zod dry-run
 - **Acceptance:** `bun run check` hijau, `bunx vitest run` hijau (0 test ok)
-- **Status:** todo
+- **Status:** done (4849459, review: 1 parked minor → T-005)
 
 ### T-002 — [deepseek] Zod schema = kontrak PRD §6.3–6.6
 - **Agent:** deepseek · **Estimasi:** 12 mnt · **File:** `src/lib/types/schema.ts`
 - **Depends On:** T-001
 - **Acceptance:** export `VocabEntry, ReadingPassage, ReadingQuestions, WritingPrompt, Level`; invalid `level` ditolak; test `schema.test.ts` hijau
-- **Status:** todo
+- **Status:** done (9194727, review clean, 2 minors deferred)
 
 ### T-003 — [deepseek] Content loader + quarantine (PRD §6.7)
 - **Agent:** deepseek · **Estimasi:** 15 mnt · **File:** `src/lib/content-loader/loader.ts`
