@@ -3,7 +3,9 @@ import type { Level, ReadingPassage, ReadingQuestions, VocabEntry, WritingPrompt
 import {
 	buildSession,
 	buildWrongSession,
+	buildWrongSessionFromHistory,
 	correctTextFor,
+	resolveHistoryRows,
 	summarizeSession,
 	type ContentBundle,
 	type QuizItem,
@@ -173,5 +175,43 @@ describe("correctTextFor", () => {
 		if (completion) expect(correctTextFor(completion)).toBe("opt c");
 		const writing = buildSession(bundle(), setup({ mode: "writing", count: 1 }));
 		expect(correctTextFor(writing[0])).toBe("She works hard.");
+	});
+});
+
+describe("buildWrongSessionFromHistory & resolveHistoryRows", () => {
+	it("replays reading wrong items from history", () => {
+		const b = bundle();
+		const replay = buildWrongSessionFromHistory(b, {
+			mode: "reading",
+			levels: ["b2-core"],
+			wrong_ids: ["test-passage-q1"],
+		});
+		expect(replay).toHaveLength(1);
+		expect(replay[0].id).toBe("test-passage-q1");
+		expect(replay[0].kind).toBe("reading_completion");
+	});
+
+	it("replays writing wrong items from history", () => {
+		const b = bundle();
+		const replay = buildWrongSessionFromHistory(b, {
+			mode: "writing",
+			levels: ["b2-core"],
+			wrong_ids: ["wr-test-1"],
+		});
+		expect(replay).toHaveLength(1);
+		expect(replay[0].id).toBe("wr-test-1");
+		expect(replay[0].kind).toBe("writing_order");
+	});
+
+	it("resolves history labels with Indonesian translation or prompt preview", () => {
+		const b = bundle();
+		const rows = resolveHistoryRows(b, {
+			wrong_ids: ["w-001", "test-passage-q1", "wr-test-1"],
+		});
+		expect(rows).toEqual([
+			{ id: "w-001", label: "manage (verb)", detail: "arti manage" },
+			{ id: "test-passage-q1", label: "Fill gap 1", detail: "Answer: opt c" },
+			{ id: "wr-test-1", label: "She works hard.", detail: "sentence order" },
+		]);
 	});
 });

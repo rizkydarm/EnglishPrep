@@ -43,8 +43,10 @@
   import {
     buildSession,
     buildWrongSession,
+    buildWrongSessionFromHistory,
     countReadingQuestions,
     loadContentBundle,
+    resolveHistoryRows,
     type ContentBundle,
     type QuizItem,
     type SessionSetup,
@@ -413,22 +415,10 @@
             }}
             onReviewWrong={(histSession) => {
               if (!bundle || histSession.wrong_ids.length === 0) return;
-              if (histSession.mode === "vocab") {
-                activeItems = buildSession(
-                  bundle,
-                  {
-                    mode: "vocab",
-                    count: histSession.wrong_ids.length,
-                    levels: histSession.levels,
-                    timerPerQ: 0,
-                    clozeMode: "type",
-                    pairCount: 4,
-                    types: ["mcq", "true_false", "matching", "cloze", "best_word"],
-                    srsEnabled: false,
-                  },
-                  histSession.wrong_ids,
-                );
-                activeMode = "vocab";
+              const wrongItems = buildWrongSessionFromHistory(bundle, histSession);
+              if (wrongItems.length > 0) {
+                activeItems = wrongItems;
+                activeMode = histSession.mode;
                 activeLevels = histSession.levels;
                 activeTimer = 0;
                 setupMode = null;
@@ -437,6 +427,7 @@
                 stage = "quiz";
               }
             }}
+            resolveRows={(histSession) => (bundle ? resolveHistoryRows(bundle, histSession) : [])}
             onOpenSettings={() => navigate("settings")}
           />
         {:else if view === "settings"}

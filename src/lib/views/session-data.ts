@@ -361,6 +361,125 @@ export function buildWrongSession(items: QuizItem[], wrongIds: string[]): QuizIt
 	);
 }
 
+/** Replay missed items from a persisted history session across any mode. */
+export function buildWrongSessionFromHistory(
+	bundle: ContentBundle,
+	session: { mode: QuizMode; levels: Level[]; wrong_ids: string[] },
+): QuizItem[] {
+	if (session.wrong_ids.length === 0) return [];
+	if (session.mode === "vocab") {
+		return buildSession(
+			bundle,
+			{
+				mode: "vocab",
+				count: session.wrong_ids.length,
+				levels: session.levels,
+				timerPerQ: 0,
+				clozeMode: "type",
+				pairCount: 4,
+				types: ["mcq", "true_false", "matching", "cloze", "best_word"],
+				srsEnabled: false,
+			},
+			session.wrong_ids,
+		);
+	}
+	if (session.mode === "reading") {
+		const qByPassage = new Map(bundle.questions.map((q) => [q.passage_id, q]));
+		const acc: QuizItem[] = [];
+		for (const p of bundle.passages) {
+			const q = qByPassage.get(p.id);
+			if (!q) continue;
+			const sentences = splitSentences(p.body);
+			for (const item of q.items) {
+				if (session.wrong_ids.includes(item.id)) {
+					let kind: ItemKind = "reading_choose";
+					let label = "Choose idea";
+					if (item.type === "sentence_completion") {
+						kind = "reading_completion";
+						label = "Sentence completion";
+					} else if (item.type === "best_title") {
+						kind = "reading_title";
+						label = "Best title";
+					} else if (item.variant === "tap_sentence") {
+						kind = "reading_tap";
+						label = "Highlight idea";
+					}
+					acc.push({
+						id: item.id,
+						kind,
+						typeLabel: label,
+						level: p.level,
+						payload: { passage: p, sentences, item } satisfies ReadingPayload,
+					});
+				}
+			}
+		}
+		return shuffle(acc);
+	}
+	if (session.mode === "writing") {
+		const kinds: Record<WritingPrompt["type"], { kind: ItemKind; label: string }> = {
+			sentence_order: { kind: "writing_order", label: "Sentence order" },
+			grammar_fix: { kind: "writing_grammar", label: "Grammar fix" },
+			image_description: { kind: "writing_image", label: "Image description" },
+		};
+		return shuffle(
+			bundle.prompts
+				.filter((p) => session.wrong_ids.includes(p.id))
+				.map((p) => ({
+					id: p.id,
+					kind: kinds[p.type].kind,
+					typeLabel: kinds[p.type].label,
+					level: p.level,
+					payload: p,
+				})),
+		);
+	}
+	return [];
+}
+
+/** Resolve history wrong items to readable labels + translations/details. */
+export function resolveHistoryRows(
+	bundle: ContentBundle,
+	session: { wrong_ids: string[] },
+): { id: string; label: string; detail?: string }[] {
+	return session.wrong_ids.map((id) => {
+		const v = bundle.vocab.find((entry) => entry.id === id);
+		if (v) return { id, label: `${v.word} (${v.pos})`, detail: v.definition_id };
+		for (const q of bundle.questions) {
+			const it = q.items.find((item) => item.id === id);
+			if (it) {
+				const text =
+					it.type === "sentence_completion"
+						? `Fill gap ${it.gap}`
+						: it.type === "best_title"
+							? "Best title"
+							: it.prompt;
+				const preview = text.length > 50 ? `${text.slice(0, 47)}…` : text;
+				let detail = "";
+				if (it.type === "highlight_idea" && it.variant === "tap_sentence") {
+					detail = `Sentences: ${it.answer_sentences.map((s) => s + 1).join(", ")}`;
+				} else if (it.options) {
+					const opt = it.options[it.answer];
+					detail = opt ? `Answer: ${opt}` : `Answer ${it.answer + 1}`;
+				}
+				return { id, label: preview, detail };
+			}
+		}
+		const p = bundle.prompts.find((pr) => pr.id === id);
+		if (p) {
+			const text =
+				p.type === "sentence_order"
+					? p.correct
+					: p.type === "grammar_fix"
+						? p.sentence
+						: p.prompt;
+			const preview = text.length > 50 ? `${text.slice(0, 47)}…` : text;
+			return { id, label: preview, detail: p.type.replace("_", " ") };
+		}
+		return { id, label: id };
+	});
+}
+
 // ---- review text + summary ----
 
 /** Correct-answer text for the Results review list. */

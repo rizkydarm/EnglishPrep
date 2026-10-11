@@ -38,7 +38,7 @@
 	let outcomes = $state<Record<string, ItemOutcome>>({});
 	let expired = $state<Record<string, boolean>>({});
 	let confirming = $state(false);
-	let remaining = $state<number>(timerPerQ);
+	let remaining = $state<number>(0);
 	let startedAt = $state(Date.now());
 	let nextBtn: HTMLButtonElement | null = $state(null);
 
@@ -476,7 +476,7 @@
 				<h2 class="dialog-title">Exit quiz?</h2>
 				<p class="dialog-text" id="exit-desc">The incomplete session is discarded and not saved.</p>
 				<div class="dialog-actions">
-					<button type="button" class="btn" autofocus onclick={() => (confirming = false)}>
+					<button type="button" class="btn" onclick={() => (confirming = false)}>
 						Keep practicing
 					</button>
 					<button type="button" class="btn btn-danger" onclick={confirmExit}>

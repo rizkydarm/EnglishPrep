@@ -44,9 +44,9 @@
 		writing: "Writing drill",
 	};
 
-	let count = $state(defaults.count);
-	let levels = $state<Level[]>([...defaults.levels]);
-	let timer = $state<0 | 15 | 30 | 60>(defaults.timer);
+	let count = $state(10);
+	let levels = $state<Level[]>(["b2-core"]);
+	let timer = $state<0 | 15 | 30 | 60>(0);
 	let clozeMode = $state<"type" | "word_bank">("word_bank");
 	let pairCount = $state<4 | 6>(4);
 	let types = $state([...VOCAB_TYPES]);
@@ -274,7 +274,6 @@
 					type="button"
 					class="btn btn-primary"
 					disabled={!canStart}
-					autofocus
 					onclick={start}
 				>
 					Start quiz · {clamped} question{clamped === 1 ? "" : "s"}
