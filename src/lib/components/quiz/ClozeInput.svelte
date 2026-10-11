@@ -72,10 +72,9 @@
   }
 
   function onKeydown(e: KeyboardEvent): void {
-    if (disabled) return;
     if (e.key === "Escape") {
       e.preventDefault();
-      if (picked !== null || input !== "") {
+      if (!disabled && (picked !== null || input !== "")) {
         picked = null;
         input = "";
       } else {
@@ -83,6 +82,7 @@
       }
       return;
     }
+    if (disabled) return;
     if (e.key === "Enter" && canCheck()) {
       const tag = (e.target as HTMLElement | null)?.tagName ?? "";
       // In type mode the input's own Enter also checks; avoid double handling.
@@ -153,7 +153,7 @@
       </div>
     {:else if question.wordBank && question.wordBank.length > 0}
       <div class="bank" role="group" aria-label="Word bank">
-        {#each question.wordBank as word (`${word}`)}
+        {#each question.wordBank as word, i (`${i}-${word}`)}
           <button
             type="button"
             class="chip"

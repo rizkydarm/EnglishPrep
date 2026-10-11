@@ -10,8 +10,10 @@
   interface Props {
     /** Question to render (mcq | true_false | best_word). Null/undefined renders the empty state. */
     question?: VocabCardQuestion | null;
-    /** Called once the user checks an answer: (isCorrect, selectedIndex). */
+    /** Called once the user checks an answer: (isCorrect, selectedIndex). Fires exactly once per question. */
     onAnswer?: (isCorrect: boolean, selectedIndex: number) => void;
+    /** Called when the user requests advance after answering (Enter/Space). Never re-fires onAnswer. */
+    onNext?: () => void;
     /** Called on Esc (exit / dismiss). */
     onExit?: () => void;
     /** Show a loading skeleton instead of content. */
@@ -25,6 +27,7 @@
   let {
     question = null,
     onAnswer,
+    onNext,
     onExit,
     loading = false,
     error = null,
@@ -86,16 +89,16 @@
       return;
     }
     // Parent advances the question; reset handled by the id effect.
-    onAnswer?.(isCorrect, selected);
+    onNext?.();
   }
 
   function onKeydown(e: KeyboardEvent): void {
-    if (disabled) return;
     if (e.key === "Escape") {
       e.preventDefault();
       onExit?.();
       return;
     }
+    if (disabled) return;
     if (answered) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -166,7 +169,7 @@
 
     {#if question.type === "true_false"}
       <div class="tf-row" role="group" aria-label="True or false">
-        {#each options() as label, i (label)}
+        {#each options() as label, i (`${i}-${label}`)}
           <button
             type="button"
             class="option tf-btn option-{optionState(i)}"

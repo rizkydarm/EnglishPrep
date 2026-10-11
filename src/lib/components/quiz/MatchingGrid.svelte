@@ -72,6 +72,10 @@
     }
     assigned = { ...assigned, [selectedLeft]: selectedRight };
     justLocked = selectedLeft;
+    const lockedId = selectedLeft;
+    setTimeout(() => {
+      if (justLocked === lockedId) justLocked = null;
+    }, 300);
     selectedLeft = null;
     selectedRight = null;
     if (Object.keys(assigned).length >= totalPairs() && totalPairs() > 0) {
@@ -115,16 +119,17 @@
   }
 
   function onKeydown(e: KeyboardEvent): void {
-    if (disabled) return;
     if (e.key === "Escape") {
       e.preventDefault();
-      if (selectedLeft !== null || selectedRight !== null) {
+      if (!disabled && (selectedLeft !== null || selectedRight !== null)) {
         selectedLeft = null;
         selectedRight = null;
       } else {
         onExit?.();
       }
+      return;
     }
+    if (disabled) return;
   }
 
   function leftClass(id: string): string {
