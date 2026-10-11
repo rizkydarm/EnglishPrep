@@ -48,6 +48,8 @@
     readonly?: boolean;
     /** Emits the user's answer: option index, or tapped sentence indices. */
     onAnswer?: (value: number | number[]) => void;
+    /** Called on Esc when there is no selection to clear (exit / dismiss). */
+    onExit?: () => void;
   }
 
   let {
@@ -64,6 +66,7 @@
     filledGaps = {},
     readonly = false,
     onAnswer,
+    onExit,
   }: Props = $props();
 
   let passage: string[] = $derived(
@@ -129,17 +132,21 @@
   }
 
   function onKeydown(e: KeyboardEvent): void {
+    if (e.key === "Escape") {
+      if (!locked && (picked !== null || tapped.length > 0)) {
+        picked = null;
+        tapped = [];
+        return;
+      }
+      onExit?.();
+      return;
+    }
     if (locked) return;
     const target = e.target as HTMLElement | null;
     if (target !== null) {
       const tag = target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable) return;
       if (root !== null && !root.contains(target)) return;
-    }
-    if (e.key === "Escape") {
-      picked = null;
-      tapped = [];
-      return;
     }
     if (mode === "tap_sentence") return;
     if (e.key >= "1" && e.key <= "4") {

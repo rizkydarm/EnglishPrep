@@ -18,6 +18,7 @@
   import HistoryIcon from "@lucide/svelte/icons/history";
   import PlayIcon from "@lucide/svelte/icons/play";
   import RotateCcwIcon from "@lucide/svelte/icons/rotate-ccw";
+  import SettingsIcon from "@lucide/svelte/icons/settings";
 
   export interface ReviewRow {
     id: string;
@@ -36,6 +37,8 @@
     onStartReview?: (queue: QueuedItem<SessionItem>[]) => void;
     /** Called when the user taps Review-wrong on a history session. */
     onReviewWrong?: (session: HistorySession) => void;
+    /** Called when the user taps the Settings shortcut (PRD §7.9). */
+    onOpenSettings?: () => void;
     /** Map a history session to per-question review rows; falls back to wrong_ids. */
     resolveRows?: (session: HistorySession) => ReviewRow[];
   }
@@ -46,6 +49,7 @@
     reviewCount = 10,
     onStartReview,
     onReviewWrong,
+    onOpenSettings,
     resolveRows,
   }: Props = $props();
 
@@ -57,8 +61,8 @@
     "b2-mastery": "B2 Mastery",
   };
 
-  const today = todayStr();
-  const dueWords = $derived(getDueWords(srs.entries, today));
+  // Fresh date on every recompute (no stale-today when left mounted past midnight).
+  const dueWords = $derived(getDueWords(srs.entries, todayStr()));
   const learningCount = $derived(srs.learningCount);
   const masteredCount = $derived(srs.masteredCount);
   const totalTracked = $derived(srs.size);
@@ -95,7 +99,7 @@
   const last30 = $derived.by<DayBar[]>(() => {
     const byDate = new Map(progress.daily.map((d) => [d.date, d]));
     const out: DayBar[] = [];
-    const base = new Date(`${today}T12:00:00`);
+    const base = new Date(`${todayStr()}T12:00:00`);
     for (let i = 29; i >= 0; i--) {
       const d = new Date(base.getTime() - i * 86_400_000);
       const y = d.getFullYear();
@@ -122,6 +126,8 @@
 
   let expandedId = $state<string | null>(null);
   let reviewStatus = $state<string | null>(null);
+  let wrongStatus = $state<string | null>(null);
+  let settingsStatus = $state<string | null>(null);
 
   function startReview(): void {
     const queue = buildReviewSession(dueWords, reviewStubs, reviewCount);
@@ -138,6 +144,18 @@
 
   function toggleDetail(id: string): void {
     expandedId = expandedId === id ? null : id;
+  }
+
+  function handleReviewWrong(session: HistorySession): void {
+    onReviewWrong?.(session);
+    wrongStatus = onReviewWrong
+      ? null
+      : "Review-wrong replay is not wired up in this view.";
+  }
+
+  function openSettings(): void {
+    onOpenSettings?.();
+    settingsStatus = onOpenSettings ? null : "Settings is not available in this view.";
   }
 
   function rowsFor(session: HistorySession): ReviewRow[] {
@@ -158,10 +176,18 @@
 </script>
 
 <div class="flex flex-col gap-4">
-  <div>
-    <h1 class="text-2xl font-semibold tracking-tight">Dashboard</h1>
-    <p class="text-muted-foreground mt-1 text-sm">Vocabulary mastery, activity, and quiz history.</p>
+  <div class="flex flex-wrap items-start justify-between gap-2">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Dashboard</h1>
+      <p class="text-muted-foreground mt-1 text-sm">Vocabulary mastery, activity, and quiz history.</p>
+    </div>
+    <Button variant="outline" class="min-h-11" onclick={openSettings} aria-label="Open settings">
+      <SettingsIcon data-icon="inline-start" /> Settings
+    </Button>
   </div>
+  {#if settingsStatus}
+    <p class="text-muted-foreground text-sm" role="status">{settingsStatus}</p>
+  {/if}
 
   <!-- Vocabulary overview -->
   <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -392,7 +418,7 @@
                             size="sm"
                             class="min-h-11"
                             disabled={session.wrong_ids.length === 0}
-                            onclick={() => onReviewWrong?.(session)}
+                            onclick={() => handleReviewWrong(session)}
                           >
                             <RotateCcwIcon data-icon="inline-start" />
                             Review wrong ({session.wrong_ids.length})
@@ -406,6 +432,9 @@
                             Close
                           </Button>
                         </div>
+                        {#if wrongStatus}
+                          <p class="text-muted-foreground mt-2 text-sm" role="status">{wrongStatus}</p>
+                        {/if}
                       </div>
                     </td>
                   </tr>

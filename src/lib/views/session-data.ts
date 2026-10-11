@@ -417,6 +417,15 @@ export function summarizeSession(
 ): SessionSummary {
 	const entries: ResultEntry[] = items.map((item) => {
 		const o = outcomes[item.id] ?? { earned: 0, userText: "No answer", correctText: correctTextFor(item) };
+		let definition: string | undefined;
+		if (item.word_id) {
+			definition = definitionByWordId[item.word_id];
+		} else if (item.pairWordIds && item.pairWordIds.length > 0) {
+			const parts = item.pairWordIds
+				.map((id) => definitionByWordId[id])
+				.filter((d): d is string => d !== undefined && d !== "");
+			if (parts.length > 0) definition = parts.join("; ");
+		}
 		return {
 			...o,
 			itemId: item.id,
@@ -424,7 +433,7 @@ export function summarizeSession(
 			typeLabel: item.typeLabel,
 			level: item.level,
 			word_id: item.word_id,
-			definition_id: item.word_id ? definitionByWordId[item.word_id] : undefined,
+			definition_id: definition,
 		};
 	});
 	const auto = entries.filter((e) => !e.excluded);

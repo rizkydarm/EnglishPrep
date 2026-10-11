@@ -64,13 +64,19 @@
 	const levelBadge = $derived(levels.map((l) => LEVEL_LABEL[l] ?? l).join(" · "));
 
 	// Per-question countdown. Expiry auto-submits as incorrect (PRD §7.2).
+	// Paused once the answer is recorded (feedback shown); expiry guard kept.
 	$effect(() => {
 		const id = current?.id;
 		const t = timerPerQ;
 		if (id === undefined || t <= 0 || quiz.status !== "active") return;
+		if (outcomes[id] !== undefined) return;
 		remaining = t;
 		const started = Date.now();
 		const iv = setInterval(() => {
+			if (outcomes[id] !== undefined) {
+				clearInterval(iv);
+				return;
+			}
 			const left = t - Math.floor((Date.now() - started) / 1000);
 			remaining = Math.max(0, left);
 			if (left <= 0) {
@@ -404,6 +410,7 @@
 							filledGaps={filledGapsFor(current)}
 							readonly={locked}
 							onAnswer={(v) => { if (typeof v === "number") onReadingMcq(current, v); }}
+							onExit={askExit}
 						/>
 					{:else if current.kind === "reading_tap"}
 						{@const rp = current.payload as ReadingPayload}
@@ -415,6 +422,7 @@
 							answer={tapAnswer(current)}
 							readonly={locked}
 							onAnswer={(v) => { if (Array.isArray(v)) onReadingTap(current, v); }}
+							onExit={askExit}
 						/>
 					{:else if current.kind === "reading_choose"}
 						{@const rp = current.payload as ReadingPayload}
@@ -428,6 +436,7 @@
 							answer={chooseAnswer(current)}
 							readonly={locked}
 							onAnswer={(v) => { if (typeof v === "number") onReadingMcq(current, v); }}
+							onExit={askExit}
 						/>
 					{:else}
 						<WritingEditor

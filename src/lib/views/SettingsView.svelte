@@ -329,7 +329,7 @@
           variant="outline"
           class="min-h-11"
           onclick={cancelReset}
-          bind:this={confirmCancelRef as never}
+          bind:ref={confirmCancelRef}
         >
           Cancel
         </Button>
