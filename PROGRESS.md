@@ -12,9 +12,11 @@
 - [2026-10-11] T-003 (deepseek-equivalent): DONE 19af71a. loader 9/9, suite 11/11, check 0 errors. 2 minors deferred.
 - [2026-10-11] T-004 (muse): DONE 9f8f3e9. cargo check + svelte-check 0 errors, no network. Scope minors → T-006 (agy).
 - [2026-10-11] T-005 (muse-proxy for deepseek, PO-approved): DONE 25f143a. 50+5+10, 0 skipped, images placeholder per PRD §11.
+- [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
+- [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
 
 ## Review findings
-(none yet)
+- [2026-10-11] T-005 (deepseek, structural test): `choose_idea` prompts may not match their highlighted sentence. `urban-farming-q4` highlights sentence 4 ("Volunteers carried soil up the stairs...") but the answer is "Cause and effect", which that sentence does not express. `island-trip-q4` (sentence 12) and `morning-market-q4` (sentence 11) are also weak. Structural checks pass; flagged for agy quality review (T-013), not a blocker.
 
 ## Rulings
 - R1: `agy` = Antigravity/Gemini (reviewer/audit). Jika salah (agy ternyata tool lain), ganti assignment tanpa ubah task.

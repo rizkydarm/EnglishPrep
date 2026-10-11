@@ -39,7 +39,7 @@
 - **Agent:** deepseek · **Estimasi:** 15 mnt · **File:** `src-tauri/resources/content/**` (50 vocab, 5 reading, 10 writing)
 - **Depends On:** T-002, T-003
 - **Acceptance:** `bun run validate:content` hijau; 1 B1-Core, 1 B1+, 2 B2-Core, 1 B2-Mastery reading
-- **Status:** done (25f143a proxy, review clean; images placeholder per PRD §11)
+- **Status:** done (25f143a proxy + b36875b deepseek fix; 4 answer indices corrected, missing gap-3 question added; images placeholder per PRD §11)
 
 ### T-006 — [agy] Security + schema review Epic 0
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `src/lib/types/schema.ts`, `src/lib/content-loader/*`, `src-tauri/**`
@@ -79,7 +79,7 @@
 - **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `src/lib/content-loader/reading.ts`
 - **Depends On:** T-003
 - **Acceptance:** split kalimat deterministik, `[[GAP:n]]` → gap index; test 3 passage hijau
-- **Status:** todo
+- **Status:** done (3e77441; reading.test 8/8, suite 25/25, check 0 errors)
 
 ### T-012 — [muse] Reading UI: passage + tap-to-select highlight
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/ReadingPassage.svelte`, `HighlightPassage.svelte`
