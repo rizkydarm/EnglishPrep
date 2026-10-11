@@ -19,6 +19,7 @@ export function isAccepted(input: string, acceptedList: string[]): boolean {
 	return acceptedList.some((candidate) => normalizeSentence(candidate) === target);
 }
 
+// Raw comparison is intentional: diacritics/case count as edits here (normalize before calling if needed).
 export function levenshtein(a: string, b: string): number {
 	const m = a.length;
 	const n = b.length;

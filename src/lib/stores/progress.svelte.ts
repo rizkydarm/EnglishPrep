@@ -157,8 +157,10 @@ class ProgressStore {
 		this.daily = [];
 		this.sessions = [];
 		this.masteredIds = [];
+		this.profile = { ...this.profile, total_words_mastered: 0 };
 		await clearState("progress.json");
 		await clearState("history.json");
+		await saveState("profile.json", this.profile);
 	}
 }
 
