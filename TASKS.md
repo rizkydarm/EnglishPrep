@@ -27,7 +27,7 @@
 - **Agent:** deepseek · **Estimasi:** 15 mnt · **File:** `src/lib/content-loader/loader.ts`
 - **Depends On:** T-002
 - **Acceptance:** file invalid di-skip + warning (tidak crash); CSV semicolon-list + PapaParse; MD gray-matter + `[[GAP:n]]`; test loader hijau
-- **Status:** todo
+- **Status:** done (19af71a, review clean, 2 minors deferred)
 
 ### T-004 — [muse] Tauri offline hardening (PRD §4, §12)
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`, `src-tauri/src/lib.rs`
