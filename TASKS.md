@@ -65,7 +65,7 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/VocabCard.svelte`, `MatchingGrid.svelte`, `ClozeInput.svelte`
 - **Depends On:** T-008
 - **Acceptance:** tap-to-pair (bukan drag), keyboard 1-4/Enter/Esc, feedback hijau/shake 250ms; `prefers-reduced-motion` ok
-- **Status:** todo
+- **Status:** done (channel split fixed, re-review 4/5; shortcuts → T-010)
 
 ### T-010 — [agy] A11y + motion audit Vocab UI
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review Epic 1 UI
@@ -105,7 +105,7 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/WritingEditor.svelte`
 - **Depends On:** T-014
 - **Acceptance:** tap chips (bukan drag), image → model answer + keyword checklist + self-score 1-5 (excluded dari auto %); rubrik terlihat
-- **Status:** todo
+- **Status:** done (single channel fixed, token match, re-review 2/3; rerun → T-018)
 
 ### T-016 — [agy] Rubrik-honesty review Writing
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `WritingEditor.svelte`, `normalize.ts`
@@ -139,7 +139,7 @@
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/utils/review-queue.ts`
 - **Depends On:** T-007, T-017
 - **Acceptance:** due-words masuk quiz ~30% lintas level; Review Wrong replay missed-only; Dashboard Start Review dari due-today
-- **Status:** todo
+- **Status:** done (d3916fc, review clean, 15/15 + suite 93/93)
 
 ### T-021 — [muse] Dashboard + Settings views
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/views/Dashboard.svelte`, `SettingsView.svelte`
