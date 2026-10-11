@@ -33,7 +33,7 @@
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src-tauri/tauri.conf.json`, `src-tauri/capabilities/default.json`, `src-tauri/src/lib.rs`
 - **Depends On:** none
 - **Acceptance:** plugins `fs, store, dialog, path` saja; CSP block network; `~/Library/Application Support/com.ielts-toeic-preps/content/` seed-copy on first run; `bun run tauri dev` jalan
-- **Status:** todo
+- **Status:** done (9f8f3e9, review clean; scope minors → T-006)
 
 ### T-005 — [deepseek] Seed content valid (PRD §11)
 - **Agent:** deepseek · **Estimasi:** 15 mnt · **File:** `src-tauri/resources/content/**` (50 vocab, 5 reading, 10 writing)
