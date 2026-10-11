@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tick } from "svelte";
+  import { onMount, tick } from "svelte";
   import { ModeWatcher, modeStorageKey, setMode } from "mode-watcher";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import * as Card from "$lib/components/ui/card/index.js";
@@ -29,6 +29,25 @@
   import SunIcon from "@lucide/svelte/icons/sun";
   import MoonIcon from "@lucide/svelte/icons/moon";
   import MonitorIcon from "@lucide/svelte/icons/monitor";
+  import Home from "$lib/views/Home.svelte";
+  import SetupSheet from "$lib/views/SetupSheet.svelte";
+  import QuizShell from "$lib/views/QuizShell.svelte";
+  import Results from "$lib/views/Results.svelte";
+  import type { QuizMode } from "$lib/stores/quiz.svelte.js";
+  import { settings } from "$lib/stores/settings.svelte.js";
+  import { progress } from "$lib/stores/progress.svelte.js";
+  import { srs, todayStr } from "$lib/stores/srs.svelte.js";
+  import type { Level } from "$lib/types/schema.js";
+  import {
+    buildSession,
+    buildWrongSession,
+    countReadingQuestions,
+    loadContentBundle,
+    type ContentBundle,
+    type QuizItem,
+    type SessionSetup,
+    type SessionSummary,
+  } from "$lib/views/session-data.js";
 
   const FAVORITES_KEY = "epl-favorites";
   const AREAS: Area[] = ["vocabulary", "reading", "writing"];
@@ -98,6 +117,121 @@
       ? favorites.filter((f) => f !== id)
       : [...favorites, id];
   }
+
+  // ---- Epic 4 session flow (T-018): Home → Setup → Quiz → Results ----
+  let bundle = $state<ContentBundle | null>(null);
+  let contentError = $state<string | null>(null);
+  let setupMode = $state<QuizMode | null>(null);
+  let stage = $state<"idle" | "quiz" | "results">("idle");
+  let activeItems = $state<QuizItem[]>([]);
+  let activeLevels = $state<Level[]>([]);
+  let activeTimer = $state<0 | 15 | 30 | 60>(0);
+  let activeMode = $state<QuizMode>("vocab");
+  let summary = $state<SessionSummary | null>(null);
+  let quizRunId = $state(0);
+
+  const todayUtc = () => new Date().toISOString().slice(0, 10);
+  const vocabCount = $derived(bundle?.vocab.length ?? 0);
+  const readingCount = $derived(bundle ? countReadingQuestions(bundle) : 0);
+  const writingCount = $derived(bundle?.prompts.length ?? 0);
+  const mastered = $derived(srs.masteredCount);
+  const quizzesToday = $derived(progress.daily.find((d) => d.date === todayUtc())?.quizzes ?? 0);
+  const avgScore = $derived(
+    progress.sessions.length === 0
+      ? 0
+      : Math.round(progress.sessions.reduce((n, s) => n + s.score_pct, 0) / progress.sessions.length),
+  );
+  const definitionByWordId = $derived<Record<string, string>>(
+    Object.fromEntries((bundle?.vocab ?? []).map((v) => [v.id, v.definition_id])),
+  );
+  const contentLoading = $derived(bundle === null && contentError === null);
+
+  onMount(() => {
+    try {
+      bundle = loadContentBundle();
+    } catch (e) {
+      contentError = e instanceof Error ? e.message : "Could not load practice content.";
+    }
+    void settings.load();
+    void progress.load();
+    void srs.load();
+  });
+
+  function startSetup(mode: QuizMode) {
+    setupMode = mode;
+  }
+
+  function areaMode(v: View): QuizMode {
+    if (v === "vocabulary") return "vocab";
+    if (v === "reading") return "reading";
+    return "writing";
+  }
+
+  function availableFor(mode: QuizMode): number {
+    if (mode === "vocab") return vocabCount;
+    if (mode === "reading") return readingCount;
+    return writingCount;
+  }
+
+  function handleSetupStart(setup: SessionSetup) {
+    if (!bundle) return;
+    const due = setup.mode === "vocab" && setup.srsEnabled ? srs.dueToday() : [];
+    activeItems = buildSession(bundle, setup, due);
+    activeMode = setup.mode;
+    activeLevels = setup.levels;
+    activeTimer = setup.timerPerQ;
+    setupMode = null;
+    summary = null;
+    quizRunId += 1;
+    stage = "quiz";
+  }
+
+  async function persistSummary(s: SessionSummary) {
+    try {
+      await progress.recordSession({
+        mode: s.mode,
+        levels: s.levels,
+        correct: s.correctCount,
+        total: s.autoTotalCount,
+        duration_sec: s.durationSec,
+        wrong_ids: s.wrongIds,
+      });
+      for (const u of s.srsUpdates) await srs.recordResult(u.wordId, u.correct, todayStr());
+    } catch {
+      // Local persistence is best-effort; the results screen already shows the score.
+    }
+  }
+
+  function handleQuizFinish(s: SessionSummary) {
+    summary = s;
+    stage = "results";
+    void persistSummary(s);
+  }
+
+  function handleReviewWrong() {
+    if (!summary || summary.wrongIds.length === 0) return;
+    activeItems = buildWrongSession(activeItems, summary.wrongIds);
+    summary = null;
+    quizRunId += 1;
+    stage = "quiz";
+  }
+
+  function handleNewQuiz() {
+    if (summary) setupMode = summary.mode;
+    summary = null;
+    stage = "idle";
+  }
+
+  function exitSession() {
+    stage = "idle";
+    summary = null;
+    activeItems = [];
+  }
+
+  function goHome() {
+    exitSession();
+    navigate("dashboard");
+  }
 </script>
 
 <ModeWatcher />
@@ -110,8 +244,44 @@
       <p class="text-sm font-medium">{VIEW_TITLE[view]}</p>
     </header>
     <main class="flex-1 overflow-y-auto p-4 md:p-6">
+      {#if stage === "quiz"}
+        <div class="mx-auto w-full max-w-5xl">
+          {#key quizRunId}
+            <QuizShell
+              items={activeItems}
+              mode={activeMode}
+              levels={activeLevels}
+              timerPerQ={activeTimer}
+              {definitionByWordId}
+              onFinish={handleQuizFinish}
+              onExit={exitSession}
+            />
+          {/key}
+        </div>
+      {:else if stage === "results" && summary}
+        <div class="mx-auto w-full max-w-5xl">
+          <Results
+            {summary}
+            onReviewWrong={handleReviewWrong}
+            onNewQuiz={handleNewQuiz}
+            onHome={goHome}
+          />
+        </div>
+      {:else}
       <div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
         {#if view === "dashboard"}
+          <Home
+            vocabCount={vocabCount}
+            readingCount={readingCount}
+            writingCount={writingCount}
+            {mastered}
+            {quizzesToday}
+            {avgScore}
+            loading={contentLoading}
+            error={contentError}
+            onStart={startSetup}
+            onOpenDashboard={() => navigate("progress")}
+          />
           <div>
             <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">
               Pick a module to start
@@ -180,6 +350,11 @@
             <p class="text-muted-foreground mt-1 text-sm">
               {items.length} modules. Select a card to see how it works.
             </p>
+            <div class="mt-3">
+              <Button onclick={() => startSetup(areaMode(view))}>
+                Start {AREA_LABEL[view]} drill
+              </Button>
+            </div>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {#each items as m (m.id)}
@@ -288,9 +463,22 @@
           </Card.Root>
         {/if}
       </div>
+      {/if}
     </main>
   </Sidebar.Inset>
 </Sidebar.Provider>
+
+{#if setupMode !== null}
+  <SetupSheet
+    open={setupMode !== null}
+    mode={setupMode}
+    available={availableFor(setupMode)}
+    srsDue={setupMode === "vocab" ? srs.dueCount() : 0}
+    defaults={{ count: 10, levels: [settings.defaultDifficulty], timer: settings.defaultTimer }}
+    onClose={() => (setupMode = null)}
+    onStart={handleSetupStart}
+  />
+{/if}
 
 {#snippet moduleCard(m: PracticeModule, featured: boolean)}
   {@const active = selectedId === m.id}
