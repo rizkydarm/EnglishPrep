@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
 import path from "node:path";
@@ -15,6 +15,12 @@ export default defineConfig(() => ({
     alias: {
       $lib: path.resolve("./src/lib"),
     },
+  },
+
+  // Keep git worktrees (e.g. .worktrees/*) out of the test run: they are full
+  // checkouts of this repo and would otherwise double every test.
+  test: {
+    exclude: ["**/node_modules/**", "**/dist/**", "**/.worktrees/**", "**/.git/**"],
   },
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
