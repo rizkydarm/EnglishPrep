@@ -19,7 +19,7 @@
 					id: i,
 					x: (i % 6) * 16 - 40,
 					delay: (i % 4) * 0.12,
-					color: i % 3 === 0 ? "#10b981" : i % 3 === 1 ? "#6d28d9" : "#f59e0b",
+					color: i % 3 === 0 ? "var(--success)" : i % 3 === 1 ? "var(--primary)" : "var(--warn)",
 					round: i % 2 === 0,
 				}))
 			: [],
@@ -50,14 +50,10 @@
 		}
 	}
 
-	const RING_C = 2 * Math.PI * 26;
-	const ringOffset = $derived(
-		summary.scorePct === null ? RING_C : RING_C * (1 - summary.scorePct / 100),
-	);
 	const scoreLabel = $derived(summary.scorePct === null ? "N/A" : `${summary.scorePct}%`);
 	const headline = $derived(
 		summary.scorePct === null
-			? "Self-assessed — no auto score"
+			? "Self-assessed, no auto score"
 			: summary.scorePct >= 80
 				? "Excellent!"
 				: summary.scorePct >= 60
@@ -68,7 +64,7 @@
 
 <svelte:window onkeydown={onKeydown} />
 
-<section class="results" aria-label="Quiz results">
+<section class="results space-y-8" aria-label="Quiz results">
 	{#if celebrated}
 		<div class="confetti" aria-hidden="true">
 			{#each confetti as p (p.id)}
@@ -81,126 +77,205 @@
 		</div>
 	{/if}
 
-	<div class="head">
-		<div
-			class="ring-wrap"
-			role="img"
-			aria-label={summary.scorePct === null ? "No auto score" : `Score ${summary.scorePct} percent`}
-		>
-			<svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
-				<circle cx="32" cy="32" r="26" class="ring-bg" />
-				<circle
-					cx="32"
-					cy="32"
-					r="26"
-					class="ring-fg"
-					stroke-dasharray={RING_C}
-					stroke-dashoffset={ringOffset}
-					transform="rotate(-90 32 32)"
-				/>
-			</svg>
-			<span class="ring-num">{scoreLabel}</span>
+	<!-- Result Summary Top -->
+	<div class="grid md:grid-cols-[.9fr_1.1fr] gap-6 items-center">
+		<div class="flex flex-col items-center md:items-start gap-4 text-center md:text-left">
+			<div
+				class="score-ring"
+				role="img"
+				aria-label={summary.scorePct === null ? "No auto score" : `Score ${summary.scorePct} percent`}
+			>
+				{scoreLabel}
+			</div>
+			<div>
+				<h1 class="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+					{headline}
+				</h1>
+				<p class="font-serif italic text-muted-foreground mt-2 text-base">
+					You got {summary.correctCount}/{summary.autoTotalCount} correct in {MODE_LABEL[summary.mode]} Drill
+					{#if summary.excludedCount > 0}· {summary.excludedCount} self-assessed{/if}
+				</p>
+			</div>
+			<div class="flex flex-wrap gap-2 justify-center md:justify-start">
+				<span class="badge-pill bg-yellow text-accent-ink border-border-strong font-extrabold">
+					+{summary.correctCount} correct
+				</span>
+				{#if summary.wrongCount > 0}
+					<span class="badge-pill bg-card text-foreground border-border-strong font-extrabold">
+						{summary.wrongCount} wrong → SRS
+					</span>
+				{/if}
+				<span class="badge-pill bg-card text-foreground border-border-strong font-extrabold">
+					⏱ {fmtDuration(summary.durationSec)}
+				</span>
+			</div>
+			<div class="flex flex-wrap gap-3 mt-2 w-full">
+				<button
+					type="button"
+					class="btn-3d flex-1 min-h-[50px] px-4 text-sm font-extrabold"
+					disabled={summary.wrongIds.length === 0}
+					onclick={() => onReviewWrong?.()}
+				>
+					Review Wrong Answers{summary.wrongIds.length > 0 ? ` (${summary.wrongIds.length})` : ""} →
+				</button>
+				<button
+					type="button"
+					class="btn-3d btn-3d-white flex-1 min-h-[50px] px-4 text-sm font-extrabold"
+					onclick={() => onNewQuiz?.()}
+				>
+					New Quiz
+				</button>
+				<button
+					type="button"
+					class="btn-3d btn-3d-white min-h-[50px] px-5 text-sm font-extrabold"
+					onclick={() => onHome?.()}
+				>
+					Dashboard
+				</button>
+			</div>
 		</div>
-		<div class="head-text">
-			<h1 class="title">
-				{MODE_LABEL[summary.mode]} quiz — {headline}
-			</h1>
-			<p class="sub">
-				{summary.correctCount} correct · {summary.wrongCount} wrong
-				{#if summary.excludedCount > 0}· {summary.excludedCount} self-assessed{/if}
-				· {fmtDuration(summary.durationSec)}
-			</p>
+
+		<!-- Breakdown Card -->
+		<div class="card-3d p-6">
+			<div class="font-extrabold text-base flex justify-between items-center">
+				<span>Breakdown</span>
+				<span class="badge-pill border-border-strong text-xs {summary.mode === 'reading' ? 'bg-cyan text-accent-ink' : summary.mode === 'writing' ? 'bg-yellow text-accent-ink' : 'bg-primary text-primary-foreground'}">
+					{MODE_LABEL[summary.mode]}
+				</span>
+			</div>
+			{#if groups.length > 0}
+				<div class="mt-4 space-y-3.5">
+					{#each groups as g, idx (g.label)}
+						{@const pct = g.total > 0 ? Math.round((g.earned / g.total) * 100) : 0}
+						{@const barColor = idx % 3 === 0 ? "var(--primary)" : idx % 3 === 1 ? "var(--secondary)" : "var(--cyan)"}
+						<div>
+							<div class="flex justify-between text-xs font-bold mb-1.5">
+								<span>{g.label}</span>
+								<span class="text-foreground/80">{g.earned}/{g.total} ({pct}%)</span>
+							</div>
+							<div
+								class="h-2.5 rounded-full bg-muted border-2 border-border-strong overflow-hidden"
+								role="img"
+								aria-label="{g.label}: {pct} percent"
+							>
+								<div
+									class="h-full rounded-full transition-all duration-300"
+									style="width: {pct}%; background: {barColor};"
+								></div>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{:else}
+				<p class="text-sm text-muted-foreground mt-4 italic">No auto-scored items to break down.</p>
+			{/if}
+
+			{#if summary.srsUpdates && summary.srsUpdates.length > 0}
+				<div class="mt-5 p-4 rounded-xl border-2 border-border-strong bg-yellow text-accent-ink shadow-sm">
+					<div class="text-[11px] font-black tracking-wider uppercase">SPACED REPETITION</div>
+					<div class="text-[13px] font-bold mt-1">
+						{summary.srsUpdates.length} words updated in Leitner schedule:
+						<span class="underline">
+							{summary.srsUpdates.map(u => u.wordId).slice(0, 5).join(", ")}{summary.srsUpdates.length > 5 ? "..." : ""}
+						</span>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 
-	{#if groups.length > 0}
-		<div class="group">
-			<h2 class="group-title">Per-type breakdown</h2>
-			<div class="bars">
-				{#each groups as g (g.label)}
-					{@const pct = g.total > 0 ? Math.round((g.earned / g.total) * 100) : 0}
-					<div class="bar-row">
-						<span class="bar-label">{g.label}</span>
-						<div class="bar-track" role="img" aria-label="{g.label}: {pct} percent">
-							<div class="bar-fill" style="width: {pct}%;"></div>
+	<!-- Self-assessed (Writing) -->
+	{#if summary.selfAssessed.length > 0}
+		<div class="mt-8">
+			<h2 class="font-black text-xl tracking-tight mb-4">Self-Assessed Writing</h2>
+			<div class="grid md:grid-cols-2 gap-4">
+				{#each summary.selfAssessed as s (s.promptId)}
+					<div class="card-3d p-5 flex flex-col justify-between">
+						<div>
+							<div class="flex justify-between items-center mb-2">
+								<span class="badge-pill bg-muted border-border-strong">{s.label}</span>
+								<span class="badge-pill bg-yellow text-accent-ink border-border-strong font-extrabold">
+									{s.selfScore > 0 ? `Score: ${s.selfScore}/${s.selfMax}` : "Not scored"}
+								</span>
+							</div>
+							<p class="font-serif italic text-sm text-foreground/90 whitespace-pre-wrap">{s.userText}</p>
 						</div>
-						<span class="bar-num">{pct}%</span>
 					</div>
 				{/each}
 			</div>
 		</div>
 	{/if}
 
-	{#if summary.selfAssessed.length > 0}
-		<div class="group">
-			<h2 class="group-title">Self-assessed (excluded from auto %)</h2>
-			<ul class="self-list">
-				{#each summary.selfAssessed as s (s.promptId)}
-					<li class="self-item">
-						<span class="badge badge-self">{s.label}</span>
-						<p class="review-text">{s.userText}</p>
-						{#if s.selfScore > 0}
-							<p class="self-score">Self-score: {s.selfScore} of {s.selfMax}</p>
-						{:else}
-							<p class="self-score">Not self-scored</p>
-						{/if}
-					</li>
-				{/each}
-			</ul>
+	<!-- Review Answers List -->
+	<div class="mt-8">
+		<div class="flex items-center justify-between mb-4">
+			<h2 class="font-black text-xl tracking-tight">Answer Review</h2>
+			<span class="text-xs font-bold text-muted-foreground">{summary.entries.length} questions recorded</span>
 		</div>
-	{/if}
 
-	<div class="group">
-		<h2 class="group-title">Answer review</h2>
 		{#if summary.entries.length === 0}
-			<p class="state" role="status">No answers recorded.</p>
+			<div class="card-3d p-6 text-center text-muted-foreground font-medium">
+				No answers recorded in this session.
+			</div>
 		{:else}
-			<ol class="review-list">
-				{#each summary.entries as e, i (e.itemId)}
-					<li class="review-item" class:review-wrong={!e.excluded && e.earned < 0.999}>
-						<div class="review-head">
-							<span class="badge">{e.typeLabel}</span>
-							{#if e.excluded}
-								<span class="badge badge-self">Self-assessed</span>
-							{:else if e.earned >= 0.999}
-								<span class="verdict verdict-ok" aria-label="Correct">✓</span>
-							{:else}
-								<span class="verdict verdict-bad" aria-label="Question {i + 1} incorrect">✗</span>
+			<div class="grid md:grid-cols-2 gap-4">
+				{#each summary.entries as e (e.itemId)}
+					{@const isCorrect = !e.excluded && e.earned >= 0.999}
+					{@const isWrong = !e.excluded && e.earned < 0.999}
+					<div class="card-3d p-5 flex flex-col justify-between" class:border-destructive={isWrong}>
+						<div>
+							<div class="flex justify-between items-center gap-2">
+								<span class="badge-pill bg-cyan/25 border-border-strong text-foreground font-extrabold text-xs">
+									{e.typeLabel}
+								</span>
+								{#if e.excluded}
+									<span class="badge-pill bg-yellow text-accent-ink border-border-strong font-extrabold">
+										Self-assessed
+									</span>
+								{:else if isCorrect}
+									<span class="badge-pill bg-success-bg text-success-text border-success font-extrabold">
+										CORRECT ✓
+									</span>
+								{:else}
+									<span class="badge-pill bg-destructive-bg text-destructive-text border-destructive font-extrabold">
+										WRONG ✗
+									</span>
+								{/if}
+							</div>
+
+							<div class="mt-3 text-sm">
+								<div class="text-xs text-muted-foreground font-semibold">Your answer:</div>
+								<div class="font-bold text-foreground mt-0.5" class:line-through={isWrong}>
+									{e.userText || "(No answer)"}
+								</div>
+							</div>
+
+							{#if !e.excluded && isWrong}
+								<div class="mt-2 text-sm">
+									<div class="text-xs text-muted-foreground font-semibold">Correct answer:</div>
+									<div class="font-extrabold text-primary mt-0.5">
+										{e.correctText}
+									</div>
+								</div>
+							{/if}
+
+							{#if e.definition_id}
+								<div class="font-serif italic mt-3 p-3 rounded-xl bg-muted/60 border-2 border-border-strong text-xs text-foreground/90">
+									<span class="font-sans font-bold not-italic text-primary block mb-0.5 text-[11px] uppercase tracking-wider">Definisi / Arti:</span>
+									{e.definition_id}
+								</div>
 							{/if}
 						</div>
-						<p class="review-line"><span class="review-key">You:</span> {e.userText}</p>
-						{#if !e.excluded}
-							<p class="review-line"><span class="review-key">Correct:</span> {e.correctText}</p>
-						{/if}
-						{#if e.definition_id}
-							<p class="review-def">Arti: {e.definition_id}</p>
-						{/if}
-					</li>
+					</div>
 				{/each}
-			</ol>
+			</div>
 		{/if}
-	</div>
-
-	<div class="actions">
-		<button
-			type="button"
-			class="btn btn-primary"
-			disabled={summary.wrongIds.length === 0}
-			onclick={() => onReviewWrong?.()}
-		>
-			Review wrong answers{summary.wrongIds.length > 0 ? ` (${summary.wrongIds.length})` : ""}
-		</button>
-		<button type="button" class="btn" onclick={() => onNewQuiz?.()}>New quiz</button>
-		<button type="button" class="btn" onclick={() => onHome?.()}>Back to home</button>
 	</div>
 </section>
 
 <style>
 	.results {
 		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
 		animation: results-enter 250ms ease-out;
 		overflow: hidden;
 	}
@@ -211,6 +286,7 @@
 		width: 0;
 		height: 0;
 		pointer-events: none;
+		z-index: 20;
 	}
 	.particle {
 		position: absolute;
@@ -224,229 +300,6 @@
 	}
 	.particle.round {
 		border-radius: 999px;
-	}
-	.head {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		flex-wrap: wrap;
-	}
-	.ring-wrap {
-		position: relative;
-		flex: none;
-		width: 5.5rem;
-		height: 5.5rem;
-	}
-	.ring {
-		width: 100%;
-		height: 100%;
-	}
-	.ring-bg {
-		fill: none;
-		stroke: #e7e5e4;
-		stroke-width: 6;
-	}
-	.ring-fg {
-		fill: none;
-		stroke: #6d28d9;
-		stroke-width: 6;
-		stroke-linecap: round;
-		transition: stroke-dashoffset 400ms ease-out;
-	}
-	:global(.dark) .ring-bg {
-		stroke: #2a2a2e;
-	}
-	.ring-num {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: 800;
-		font-size: 1.125rem;
-	}
-	.title {
-		margin: 0;
-		font-size: 1.375rem;
-		letter-spacing: -0.01em;
-	}
-	.sub {
-		margin: 0.25rem 0 0;
-		font-size: 0.9rem;
-		opacity: 0.7;
-	}
-	.group {
-		display: flex;
-		flex-direction: column;
-		gap: 0.625rem;
-	}
-	.group-title {
-		margin: 0;
-		font-size: 1rem;
-	}
-	.bars {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	.bar-row {
-		display: grid;
-		grid-template-columns: minmax(7rem, 11rem) 1fr 3rem;
-		align-items: center;
-		gap: 0.625rem;
-	}
-	.bar-label {
-		font-size: 0.85rem;
-		font-weight: 600;
-	}
-	.bar-track {
-		height: 0.75rem;
-		border-radius: 999px;
-		background: #e7e5e4;
-		overflow: hidden;
-	}
-	:global(.dark) .bar-track {
-		background: #2a2a2e;
-	}
-	.bar-fill {
-		height: 100%;
-		border-radius: 999px;
-		background: #6d28d9;
-		transition: width 300ms ease-out;
-	}
-	.bar-num {
-		font-size: 0.85rem;
-		font-weight: 800;
-		text-align: right;
-	}
-	.self-list {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	.self-item,
-	.review-item {
-		background: #ffffff;
-		border: 2px solid #e7e5e4;
-		border-radius: 16px;
-		padding: 0.875rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.375rem;
-	}
-	:global(.dark) .self-item,
-	:global(.dark) .review-item {
-		background: #1e1e20;
-		border-color: #2a2a2e;
-	}
-	.review-wrong {
-		border-color: #ef4444;
-	}
-	.review-list {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-	.review-head {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		min-height: 28px;
-		padding: 0.15rem 0.6rem;
-		border-radius: 999px;
-		background: color-mix(in srgb, #6d28d9 10%, transparent);
-		color: #6d28d9;
-		font-size: 0.75rem;
-		font-weight: 700;
-	}
-	.badge-self {
-		background: transparent;
-		border: 2px dashed #6d28d9;
-	}
-	.verdict {
-		margin-left: auto;
-		font-weight: 800;
-		font-size: 1.1rem;
-	}
-	.verdict-ok {
-		color: #10b981;
-	}
-	.verdict-bad {
-		color: #ef4444;
-	}
-	.review-line,
-	.review-text,
-	.review-def,
-	.self-score {
-		margin: 0;
-		font-size: 0.9rem;
-		line-height: 1.55;
-	}
-	.review-key {
-		font-weight: 700;
-	}
-	.review-def {
-		color: #6d28d9;
-		font-weight: 600;
-	}
-	.self-score {
-		font-weight: 700;
-	}
-	.state {
-		margin: 0;
-		padding: 1rem;
-		border: 2px dashed #e7e5e4;
-		border-radius: 12px;
-	}
-	:global(.dark) .state {
-		border-color: #2a2a2e;
-	}
-	.actions {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-	.btn {
-		min-height: 44px;
-		padding: 0.625rem 1.25rem;
-		border: 2px solid #e7e5e4;
-		border-radius: 12px;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		font-weight: 700;
-		cursor: pointer;
-		transition: transform 80ms ease-out;
-	}
-	:global(.dark) .btn {
-		border-color: #2a2a2e;
-	}
-	.btn:not(:disabled):active {
-		transform: scale(0.98) translateY(1px);
-	}
-	.btn:disabled {
-		opacity: 0.45;
-		cursor: not-allowed;
-	}
-	.btn:focus-visible {
-		outline: 2px solid #6d28d9;
-		outline-offset: 2px;
-	}
-	.btn-primary {
-		background: #6d28d9;
-		border-color: #6d28d9;
-		color: #fff;
 	}
 	@keyframes results-enter {
 		from {
@@ -475,10 +328,6 @@
 		.particle {
 			animation: none;
 			display: none;
-		}
-		.bar-fill,
-		.ring-fg {
-			transition: none;
 		}
 	}
 </style>
