@@ -18,12 +18,17 @@
 - [2026-10-11] T-009 (muse): DONE. channel split fixed, build passes, 4/5 (shortcuts → T-010).
 - [2026-10-11] T-015 (muse): DONE. single channel + token match, 2/3 (rerun → T-018).
 - [2026-10-11] T-020 (muse): DONE d3916fc. 15/15 + suite 93/93, review clean.
+- [2026-10-11] T-018 (muse): DONE. views + 7 tests, suite 100/100, re-review clean.
+- [2026-10-11] T-021 (muse): DONE. dashboard + settings, re-review clean (midnight tick parked).
 - [2026-10-11] T-006 (agy): DONE. Security & schema review PASS (SPEC ✅). Id injection safe, 0 network calls, CSP connect-src 'none', 100% seed ID uniqueness. 2 advisory findings logged.
 - [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
 - [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
 - [2026-10-11] T-007 (deepseek proxy for muse, PO-approved): DONE ad25c4c. srs.ts (Leitner 1-3-7-14-30, isDue/isMastered) + scoring.ts (matchingPartial, percent). srs 9/9, scoring 4/4, suite 38/38, check 0 errors.
 - [2026-10-11] T-008 (agy proxy for muse, PO-approved): DONE. vocab-factory.ts 5 types (mcq, tf, matching 4/6, cloze type/bank, best-word) + auto-distractors + Levenshtein fuzzy match <= 1. factory test 12/12, suite 88/88, check 0 errors.
 - [2026-10-11] T-022 (deepseek): DONE d6c63d8. `validate:content` now asserts global content id uniqueness (T-006 advisory 2) via new `content-loader/integrity.ts`; malformed file verified quarantined (skip + exit 1, no crash). integrity 5/5, loader 11/11, seed 7/7, suite 116/116, validate:content PASS, check 0 errors. Note: content/CI scope only; UI-dependent §14 lines (launch/offline/modes/SRS dashboard) belong to T-009–T-021 and are checked at T-023.
+- [2026-10-11] T-010 (agy): DONE. Vocab UI audit PASS (SPEC ✅). Focus rings visible, AA contrast verified, tap targets >=44px, zero drag-and-drop, 250ms feedback motion with prefers-reduced-motion override.
+- [2026-10-11] T-013 (agy): DONE. Reading grading review PASS (SPEC ✅). Exact tap-to-select sentence index grading, fallback overlap isolated to optional helper, zero paraphrase false-pass. Quality finding noted: urban-farming-q4 sentence index recommendation.
+- [2026-10-11] T-016 (agy): DONE. Writing rubric-honesty review PASS (SPEC ✅). Image description explicitly marked selfAssessed & excludedFromAutoScore: true, zero automated LLM claims, guided offline rubric.
 
 ## Review findings
 - [T-006] Advisory 1 (Security): `ImageDescriptionSchema.image` is currently `z.string().min(1)`. When image asset loading is wired in Epic 3, enforce path sanitization or regex without `..` to prevent directory traversal.

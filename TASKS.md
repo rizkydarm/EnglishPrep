@@ -71,7 +71,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review Epic 1 UI
 - **Depends On:** T-009
 - **Acceptance:** focus ring, AA contrast light/dark, tap target ≥44px, tidak ada drag; temuan → `todo`
-- **Status:** todo
+- **Status:** done (agy review PASS: focus rings, AA contrast, 44px tap targets, 250ms motion, reduced-motion ok)
 
 ## Epic 2 — Reading Engine (PRD §7.5)
 
@@ -91,7 +91,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `ReadingPassage.svelte`, `reading.ts`
 - **Depends On:** T-012
 - **Acceptance:** fallback overlap ≥70% hanya opsional, default tap; tidak ada false-pass pada paraphrase
-- **Status:** todo
+- **Status:** done (agy review PASS: deterministic tap-only grading, fallback overlap isolated, 0 paraphrase false-pass)
 
 ## Epic 3 — Writing Engine (PRD §7.6)
 
@@ -111,7 +111,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `WritingEditor.svelte`, `normalize.ts`
 - **Depends On:** T-015
 - **Acceptance:** self-assessed selalu dilabeli terpisah, tidak masuk auto %; tidak ada klaim auto-grade LLM
-- **Status:** todo
+- **Status:** done (agy review PASS: self-assessment explicitly labeled, excludedFromAutoScore true, zero LLM claim)
 
 ## Epic 4 — Session Flow (PRD §7.1–7.3, §7.7)
 
@@ -125,7 +125,7 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/views/Home.svelte`, `SetupSheet.svelte`, `QuizShell.svelte`, `Results.svelte`
 - **Depends On:** T-009, T-012, T-015, T-017
 - **Acceptance:** 3 mode terpisah (never mixed); setup count/difficulty/timer/cloze/pair-count; progress segmented + timer ring; exit→confirm + discard; confetti ≥80%; review wrong + ID translation
-- **Status:** todo
+- **Status:** done (impl + fix 68cd56a, re-review clean, 100/100)
 
 ### T-019 — [agy] UX + offline review Session Flow
 - **Agent:** agy · **Estimasi:** 10 mnt · **File:** review Epic 4
@@ -145,7 +145,7 @@
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/views/Dashboard.svelte`, `SettingsView.svelte`
 - **Depends On:** T-020
 - **Acceptance:** learning vs mastered, per-level, due count; 30-day bar chart; history table + detail + review-wrong; appearance/font/sound/difficulty/timer/reset double-confirm
-- **Status:** todo
+- **Status:** done (impl + fix 68cd56a; parked: midnight tick)
 
 ### T-022 — [deepseek] Acceptance seed + validate script CI
 - **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `scripts/validate-content.ts`, `package.json` (`validate:content`)
