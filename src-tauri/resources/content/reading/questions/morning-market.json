@@ -34,7 +34,7 @@
       "type": "highlight_idea",
       "variant": "tap_sentence",
       "prompt": "Select the sentence that shows Sari learning something new.",
-      "answer_sentences": [8],
+      "answer_sentences": [11],
       "answer_text": "Sari listens carefully and sometimes writes the recipes in a small notebook."
     },
     {

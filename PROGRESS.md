@@ -13,11 +13,15 @@
 - [2026-10-11] T-004 (muse): DONE 9f8f3e9. cargo check + svelte-check 0 errors, no network. Scope minors → T-006 (agy).
 - [2026-10-11] T-005 (muse-proxy for deepseek, PO-approved): DONE 25f143a. 50+5+10, 0 skipped, images placeholder per PRD §11.
 - [2026-10-11] T-006 (agy): DONE. Security & schema review PASS (SPEC ✅). Id injection safe, 0 network calls, CSP connect-src 'none', 100% seed ID uniqueness. 2 advisory findings logged.
+- [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
+- [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
+- [2026-10-11] T-007 (deepseek proxy for muse, PO-approved): DONE ad25c4c. srs.ts (Leitner 1-3-7-14-30, isDue/isMastered) + scoring.ts (matchingPartial, percent). srs 9/9, scoring 4/4, suite 38/38, check 0 errors.
 
 ## Review findings
 - [T-006] Advisory 1 (Security): `ImageDescriptionSchema.image` is currently `z.string().min(1)`. When image asset loading is wired in Epic 3, enforce path sanitization or regex without `..` to prevent directory traversal.
 - [T-006] Advisory 2 (Integrity): `validate-content.ts` and `loader.ts` validate schemas and counts, but do not yet verify global `id` uniqueness (preventing collision on custom packs). Seed content verified 100% unique (50/50 vocab, 5/5 passages, 25/25 questions, 10/10 prompts). Recommend adding duplicate ID assertion in validator.
 - [T-006] Advisory 3 (Capabilities): `opener:default` is included in `capabilities/default.json` for external app/browser opening. CSP blocks in-app network (`connect-src 'none'`), fully offline compliant.
+- [2026-10-11] T-005 (deepseek, structural test): `choose_idea` prompts may not match their highlighted sentence. `urban-farming-q4` highlights sentence 4 ("Volunteers carried soil up the stairs...") but the answer is "Cause and effect", which that sentence does not express. `island-trip-q4` (sentence 12) and `morning-market-q4` (sentence 11) are also weak. Structural checks pass; flagged for agy quality review (T-013), not a blocker.
 
 ## Rulings
 - R1: `agy` = Antigravity/Gemini (reviewer/audit). Jika salah (agy ternyata tool lain), ganti assignment tanpa ubah task.
