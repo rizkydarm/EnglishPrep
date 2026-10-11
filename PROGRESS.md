@@ -44,3 +44,4 @@
 - R2: Test runner = vitest (belum ada di package.json). T-001 wajib pasang dulu.
 - R3: Plain Svelte tanpa SvelteKit, jadi "routes" = view-switch di `App.svelte` + `src/lib/views/*`.
 - [2026-10-11 QA] T-023 PASS di-supersede: PRD §14 aktual 12/13 (#9 FAIL live-content-read, verified); klaim 200/200 tests dikoreksi → aktual 100/100. Epic 6 Q-001..Q-004 difile. C1 Review-Wrong sedang difix parallel worker (hands off).
+- [2026-10-11 QA] Epic 6 verified: Q-001 5/5, Q-002 3/3, Q-003 4/4 PASS. Suite 106/106, check 0 errors, build clean, validate 50/5/26/10. Q-004 parked (owner binary assets). PRD §14 kini 13/13. Sisa: re-gate final (agy).

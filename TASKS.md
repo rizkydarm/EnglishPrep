@@ -165,25 +165,25 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/views/session-data.ts`, `src/lib/stores/settings.svelte.ts`
 - **Depends On:** T-004 (fs capability; tambah `plugin-fs` read jika belum)
 - **Acceptance:** runtime baca `~/Library/Application Support/com.ielts-toeic-preps/content/` via plugin-fs, fallback bundle; Reload re-read + toast jujur (skipped disurfacing); tambah-test tanpa file → tetap jalan
-- **Status:** todo
+- **Status:** done (a1e3f65, verified 5/5 PASS)
 
 ### Q-002 — [muse] Review-Wrong + Start Review wiring (Critical)
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/App.svelte` (konsumen `buildWrongSessionFromHistory`)
 - **Depends On:** parallel-worker C1 fix (uncommitted saat QA) mendarat dulu
 - **Acceptance:** Review-Wrong replay missed-only semua mode (bukan random); Start Review pakai due queue Dashboard; reading/writing tidak silent no-op
-- **Status:** todo (hands off sampai C1 commit)
+- **Status:** done (parallel C1 + 7ffafd4, verified 3/3 PASS)
 
 ### Q-003 — [muse] Writing scoring honesty + soft-lock (Important)
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/components/quiz/WritingEditor.svelte`, `QuizShell.svelte`, `session-data.ts`
 - **Depends On:** none
 - **Acceptance:** timer-expiry image → excluded (tidak cemari auto %); all-excluded session → N/A bukan 0%; invalid prompt → fallback + skip (tidak soft-lock); Try-again konsisten
-- **Status:** todo
+- **Status:** done (a8e7e69, verified 4/4 PASS)
 
 ### Q-004 — [deepseek] Seed images + alternatives (Minor, optional)
 - **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `writing/images/*`, `prompts.json`
 - **Depends On:** none
 - **Acceptance:** 3 image placeholder diganti/asan; alternatives diisi bila ada; PRD §11 membolehkan placeholder → boleh park
-- **Status:** todo (park-able)
+- **Status:** parked (placeholder jujur per PRD §11; butuh aset biner owner)
 
 ## DAG (urutan eksekusi)
 ```
