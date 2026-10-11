@@ -85,7 +85,7 @@
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/ReadingPassage.svelte`, `HighlightPassage.svelte`
 - **Depends On:** T-011
 - **Acceptance:** side-by-side → stacked <960px; tap kalimat (bukan free-select); gap-fill 4 opsi, best-title 4 opsi; grading deterministik
-- **Status:** todo
+- **Status:** done (c599625 + fix f0f5e9d, re-review 6/6, build passes)
 
 ### T-013 — [agy] Grading-fallback review Reading
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `ReadingPassage.svelte`, `reading.ts`
@@ -99,7 +99,7 @@
 - **Agent:** muse · **Estimasi:** 10 mnt · **File:** `src/lib/utils/normalize.ts`
 - **Depends On:** T-002
 - **Acceptance:** case/punctuation-insensitive, `correct+alternatives` untuk sentence-order, `accepted[]` untuk grammar-fix; test hijau
-- **Status:** todo
+- **Status:** done (normalize 12/12, re-review clean)
 
 ### T-015 — [muse] Writing UI: order chips + fix input + image self-score
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/components/quiz/WritingEditor.svelte`
@@ -119,7 +119,7 @@
 - **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/stores/quiz.ts`, `settings.ts`, `progress.ts`, `srs.ts`
 - **Depends On:** T-004, T-007
 - **Acceptance:** `settings.json, profile.json, progress.json, srs.json, history.json` lokal; localStorage hanya cache; Reload Content + Open Folder jalan
-- **Status:** todo
+- **Status:** done (.svelte.ts runes, session ids + resetAll fixed, re-review clean)
 
 ### T-018 — [muse] Views: Home + Setup Sheet + QuizShell + Results
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/lib/views/Home.svelte`, `SetupSheet.svelte`, `QuizShell.svelte`, `Results.svelte`

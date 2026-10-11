@@ -12,6 +12,9 @@
 - [2026-10-11] T-003 (deepseek-equivalent): DONE 19af71a. loader 9/9, suite 11/11, check 0 errors. 2 minors deferred.
 - [2026-10-11] T-004 (muse): DONE 9f8f3e9. cargo check + svelte-check 0 errors, no network. Scope minors → T-006 (agy).
 - [2026-10-11] T-005 (muse-proxy for deepseek, PO-approved): DONE 25f143a. 50+5+10, 0 skipped, images placeholder per PRD §11.
+- [2026-10-11] T-014 (muse): DONE. normalize 12/12, check 0 errors, re-review clean.
+- [2026-10-11] T-017 (muse): DONE. stores .svelte.ts, resetAll fixed, check 0 errors, re-review clean.
+- [2026-10-11] T-012 (muse): DONE. grade 8/8, build passes, re-review 6/6.
 - [2026-10-11] T-006 (agy): DONE. Security & schema review PASS (SPEC ✅). Id injection safe, 0 network calls, CSP connect-src 'none', 100% seed ID uniqueness. 2 advisory findings logged.
 - [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
 - [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
