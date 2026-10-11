@@ -24,6 +24,9 @@
 - [2026-10-11] T-007 (deepseek proxy for muse, PO-approved): DONE ad25c4c. srs.ts (Leitner 1-3-7-14-30, isDue/isMastered) + scoring.ts (matchingPartial, percent). srs 9/9, scoring 4/4, suite 38/38, check 0 errors.
 - [2026-10-11] T-008 (agy proxy for muse, PO-approved): DONE. vocab-factory.ts 5 types (mcq, tf, matching 4/6, cloze type/bank, best-word) + auto-distractors + Levenshtein fuzzy match <= 1. factory test 12/12, suite 88/88, check 0 errors.
 - [2026-10-11] T-022 (deepseek): DONE d6c63d8. `validate:content` now asserts global content id uniqueness (T-006 advisory 2) via new `content-loader/integrity.ts`; malformed file verified quarantined (skip + exit 1, no crash). integrity 5/5, loader 11/11, seed 7/7, suite 116/116, validate:content PASS, check 0 errors. Note: content/CI scope only; UI-dependent §14 lines (launch/offline/modes/SRS dashboard) belong to T-009–T-021 and are checked at T-023.
+- [2026-10-11] T-010 (agy): DONE. Vocab UI audit PASS (SPEC ✅). Focus rings visible, AA contrast verified, tap targets >=44px, zero drag-and-drop, 250ms feedback motion with prefers-reduced-motion override.
+- [2026-10-11] T-013 (agy): DONE. Reading grading review PASS (SPEC ✅). Exact tap-to-select sentence index grading, fallback overlap isolated to optional helper, zero paraphrase false-pass. Quality finding noted: urban-farming-q4 sentence index recommendation.
+- [2026-10-11] T-016 (agy): DONE. Writing rubric-honesty review PASS (SPEC ✅). Image description explicitly marked selfAssessed & excludedFromAutoScore: true, zero automated LLM claims, guided offline rubric.
 
 ## Review findings
 - [T-006] Advisory 1 (Security): `ImageDescriptionSchema.image` is currently `z.string().min(1)`. When image asset loading is wired in Epic 3, enforce path sanitization or regex without `..` to prevent directory traversal.

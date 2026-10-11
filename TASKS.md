@@ -71,7 +71,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review Epic 1 UI
 - **Depends On:** T-009
 - **Acceptance:** focus ring, AA contrast light/dark, tap target ≥44px, tidak ada drag; temuan → `todo`
-- **Status:** todo
+- **Status:** done (agy review PASS: focus rings, AA contrast, 44px tap targets, 250ms motion, reduced-motion ok)
 
 ## Epic 2 — Reading Engine (PRD §7.5)
 
@@ -91,7 +91,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `ReadingPassage.svelte`, `reading.ts`
 - **Depends On:** T-012
 - **Acceptance:** fallback overlap ≥70% hanya opsional, default tap; tidak ada false-pass pada paraphrase
-- **Status:** todo
+- **Status:** done (agy review PASS: deterministic tap-only grading, fallback overlap isolated, 0 paraphrase false-pass)
 
 ## Epic 3 — Writing Engine (PRD §7.6)
 
@@ -111,7 +111,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `WritingEditor.svelte`, `normalize.ts`
 - **Depends On:** T-015
 - **Acceptance:** self-assessed selalu dilabeli terpisah, tidak masuk auto %; tidak ada klaim auto-grade LLM
-- **Status:** todo
+- **Status:** done (agy review PASS: self-assessment explicitly labeled, excludedFromAutoScore true, zero LLM claim)
 
 ## Epic 4 — Session Flow (PRD §7.1–7.3, §7.7)
 
