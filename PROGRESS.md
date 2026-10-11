@@ -7,7 +7,8 @@
 - [2026-10-11] PM (muse): TASKS.md 23 tasks + DAG dibuat; Epic 0 detail di `docs/superpowers/plans/2026-10-11-mvp-foundation.md`. Next: T-001 (deepseek) ∥ T-004 (muse).
 
 ## Completions
-(none yet)
+- [2026-10-11] T-001 (deepseek-equivalent): DONE 4849459. `bun run check` 0 errors, validate:content exit 0, vitest 0-test pass. Ruling: stub import guarded until T-005.
+- [2026-10-11] T-002 (deepseek-equivalent): DONE 9194727. vitest 2/2, svelte-check 0 errors. 2 minors deferred to final review.
 
 ## Review findings
 (none yet)
