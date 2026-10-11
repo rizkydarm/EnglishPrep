@@ -96,8 +96,16 @@
   async function handleReload(): Promise<void> {
     reloadStatus = "Reloading content…";
     try {
-      await settings.reloadContent();
-      reloadStatus = "Content reloaded.";
+      const result = await settings.reloadContent();
+      if (result.skipped.length > 0) {
+        reloadStatus = `Reloaded, but ${result.skipped.length} file(s) were skipped: ${result.skipped
+          .map((s) => s.file)
+          .join(", ")}.`;
+      } else if (result.source === "folder") {
+        reloadStatus = "Content reloaded from the content folder.";
+      } else {
+        reloadStatus = "Content reloaded (using bundled seed).";
+      }
     } catch {
       reloadStatus = "Reload failed. Content files may be malformed.";
     }

@@ -24,7 +24,13 @@ export const DEFAULT_SETTINGS: SettingsState = {
 	defaultTimer: 0,
 };
 
-export type ReloadListener = () => void | Promise<void>;
+export interface ReloadResult {
+	skipped: { file: string; reason: string }[];
+	source?: "folder" | "bundle";
+	note?: string;
+}
+
+export type ReloadListener = () => ReloadResult | void | Promise<ReloadResult | void>;
 
 class SettingsStore {
 	appearance = $state<Appearance>(DEFAULT_SETTINGS.appearance);
@@ -87,10 +93,18 @@ class SettingsStore {
 	}
 
 	/** Notify all Reload Content listeners (content loader re-reads files). */
-	async reloadContent(): Promise<void> {
+	async reloadContent(): Promise<ReloadResult> {
+		const skipped: { file: string; reason: string }[] = [];
+		let source: ReloadResult["source"];
+		let note: string | undefined;
 		for (const listener of this.listeners) {
-			await listener();
+			const result = await listener();
+			if (!result) continue;
+			skipped.push(...result.skipped);
+			if (result.source) source = result.source;
+			if (result.note) note = result.note;
 		}
+		return { skipped, source, note };
 	}
 }
 

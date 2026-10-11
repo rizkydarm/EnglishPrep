@@ -4,6 +4,7 @@
 
 import { loadPassage, loadQuestions, loadVocab, type ContentFile } from "$lib/content-loader/loader.js";
 import { splitSentences } from "$lib/content-loader/reading.js";
+import { bundledContentFiles } from "$lib/content-loader/source.js";
 import type { QuizMode } from "$lib/stores/quiz.svelte.js";
 import {
 	WritingPromptsFileSchema,
@@ -129,62 +130,42 @@ export interface SessionSummary {
 	srsUpdates: { wordId: string; correct: boolean }[];
 }
 
-// ---- content loading (bundled raw seed; Reload Content re-runs the same pure parse) ----
+// ---- content loading (pure parse; the caller supplies files from disk or bundle) ----
 
-const vocabModules = import.meta.glob("/src-tauri/resources/content/vocab/*.{csv,json}", {
-	eager: true,
-	query: "?raw",
-	import: "default",
-}) as Record<string, string>;
+/** Route content files by folder and parse them (pure; no I/O). */
+export function parseContentBundle(files: ContentFile[]): ContentBundle {
+	const vocabFiles = files.filter((f) => /(^|\/)vocab\//.test(f.file));
+	const passageFiles = files.filter((f) => /(^|\/)reading\/passages\//.test(f.file));
+	const questionFiles = files.filter((f) => /(^|\/)reading\/questions\//.test(f.file));
+	const writingFiles = files.filter((f) => /(^|\/)writing\//.test(f.file) && f.file.endsWith(".json"));
 
-const passageModules = import.meta.glob("/src-tauri/resources/content/reading/passages/*.md", {
-	eager: true,
-	query: "?raw",
-	import: "default",
-}) as Record<string, string>;
-
-const questionModules = import.meta.glob("/src-tauri/resources/content/reading/questions/*.json", {
-	eager: true,
-	query: "?raw",
-	import: "default",
-}) as Record<string, string>;
-
-const writingModules = import.meta.glob("/src-tauri/resources/content/writing/prompts.json", {
-	eager: true,
-	query: "?raw",
-	import: "default",
-}) as Record<string, string>;
-
-function toFiles(modules: Record<string, string>): ContentFile[] {
-	return Object.entries(modules)
-		.map(([path, content]) => ({ file: path.replace(/^.*\/content\//, ""), content }))
-		.sort((a, b) => a.file.localeCompare(b.file));
-}
-
-export function loadContentBundle(): ContentBundle {
-	const vocab = loadVocab(toFiles(vocabModules));
-	const passages = loadPassage(toFiles(passageModules));
-	const questions = loadQuestions(toFiles(questionModules));
+	const vocab = loadVocab(vocabFiles);
+	const passages = loadPassage(passageFiles);
+	const questions = loadQuestions(questionFiles);
 	const prompts: WritingPrompt[] = [];
 	const skipped = [
 		...vocab.skipped.map((s) => ({ ...s })),
 		...passages.skipped.map((s) => ({ ...s })),
 		...questions.skipped.map((s) => ({ ...s })),
 	];
-	for (const [path, content] of Object.entries(writingModules)) {
-		const file = path.replace(/^.*\/content\//, "");
+	for (const f of writingFiles) {
 		try {
-			const parsed = WritingPromptsFileSchema.safeParse(JSON.parse(content));
+			const parsed = WritingPromptsFileSchema.safeParse(JSON.parse(f.content));
 			if (!parsed.success) {
-				skipped.push({ file, reason: "invalid writing prompts" });
+				skipped.push({ file: f.file, reason: "invalid writing prompts" });
 				continue;
 			}
 			prompts.push(...parsed.data.items);
 		} catch (e) {
-			skipped.push({ file, reason: e instanceof Error ? e.message : "parse error" });
+			skipped.push({ file: f.file, reason: e instanceof Error ? e.message : "parse error" });
 		}
 	}
 	return { vocab: vocab.ok, passages: passages.ok, questions: questions.ok, prompts, skipped };
+}
+
+/** Parse the given files, or the bundled seed when none are supplied. */
+export function loadContentBundle(files: ContentFile[] = bundledContentFiles()): ContentBundle {
+	return parseContentBundle(files);
 }
 
 /** Total reading question count across passages (for Home cards). */

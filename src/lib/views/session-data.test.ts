@@ -5,6 +5,7 @@ import {
 	buildWrongSession,
 	buildWrongSessionFromHistory,
 	correctTextFor,
+	parseContentBundle,
 	resolveHistoryRows,
 	summarizeSession,
 	type ContentBundle,
@@ -175,6 +176,32 @@ describe("correctTextFor", () => {
 		if (completion) expect(correctTextFor(completion)).toBe("opt c");
 		const writing = buildSession(bundle(), setup({ mode: "writing", count: 1 }));
 		expect(correctTextFor(writing[0])).toBe("She works hard.");
+	});
+});
+
+describe("parseContentBundle", () => {
+	it("returns an empty bundle without throwing when no files are present", () => {
+		expect(parseContentBundle([])).toEqual({
+			vocab: [],
+			passages: [],
+			questions: [],
+			prompts: [],
+			skipped: [],
+		});
+	});
+
+	it("routes files by folder and quarantines malformed ones", () => {
+		const b = parseContentBundle([
+			{
+				file: "vocab/good.csv",
+				content:
+					"id,word,pos,level,topic,definition_en,definition_id,example_en,example_id,source\nrun,run,verb,b1-core,work,to move fast,berlari,We run daily,Kami berlari,oxford_3000",
+			},
+			{ file: "vocab/bad.json", content: "{ not json" },
+			{ file: "writing/prompts.json", content: JSON.stringify({ items: [] }) },
+		]);
+		expect(b.vocab.map((v) => v.id)).toEqual(["run"]);
+		expect(b.skipped.some((s) => s.file === "vocab/bad.json")).toBe(true);
 	});
 });
 

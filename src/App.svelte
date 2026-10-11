@@ -40,12 +40,13 @@
   import { progress } from "$lib/stores/progress.svelte.js";
   import { srs, todayStr } from "$lib/stores/srs.svelte.js";
   import type { Level } from "$lib/types/schema.js";
+  import { loadContentFiles } from "$lib/content-loader/source.js";
   import {
     buildSession,
     buildWrongSession,
     buildWrongSessionFromHistory,
     countReadingQuestions,
-    loadContentBundle,
+    parseContentBundle,
     resolveHistoryRows,
     type ContentBundle,
     type QuizItem,
@@ -142,6 +143,7 @@
   // ---- Epic 4 session flow (T-018): Home → Setup → Quiz → Results ----
   let bundle = $state<ContentBundle | null>(null);
   let contentError = $state<string | null>(null);
+  let contentToast = $state<string | null>(null);
   let setupMode = $state<QuizMode | null>(null);
   let stage = $state<"idle" | "quiz" | "results">("idle");
   let activeItems = $state<QuizItem[]>([]);
@@ -167,12 +169,38 @@
   );
   const contentLoading = $derived(bundle === null && contentError === null);
 
+  async function loadContent(): Promise<void> {
+    const result = await loadContentFiles();
+    const parsed = parseContentBundle(result.files);
+    bundle = parsed;
+    contentToast =
+      parsed.skipped.length > 0
+        ? `${parsed.skipped.length} content file(s) skipped: ${parsed.skipped
+            .map((s) => s.file)
+            .join(", ")}`
+        : null;
+  }
+
   onMount(() => {
-    try {
-      bundle = loadContentBundle();
-    } catch (e) {
-      contentError = e instanceof Error ? e.message : "Could not load practice content.";
-    }
+    void (async () => {
+      try {
+        await loadContent();
+      } catch (e) {
+        contentError = e instanceof Error ? e.message : "Could not load practice content.";
+      }
+    })();
+    settings.onReloadContent(async () => {
+      const result = await loadContentFiles();
+      const parsed = parseContentBundle(result.files);
+      bundle = parsed;
+      contentToast =
+        parsed.skipped.length > 0
+          ? `${parsed.skipped.length} content file(s) skipped: ${parsed.skipped
+              .map((s) => s.file)
+              .join(", ")}`
+          : null;
+      return { skipped: parsed.skipped, source: result.source, note: result.note };
+    });
     void settings.load();
     void progress.load();
     void srs.load();
@@ -265,6 +293,21 @@
       <p class="text-sm font-medium">{VIEW_TITLE[view]}</p>
     </header>
     <main class="flex-1 overflow-y-auto p-4 md:p-6">
+      {#if contentToast}
+        <div
+          role="alert"
+          class="mx-auto mb-4 flex w-full max-w-5xl items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm"
+        >
+          <span class="flex-1">{contentToast}</span>
+          <button
+            type="button"
+            class="min-h-11 shrink-0 rounded-lg px-2 font-medium underline"
+            onclick={() => (contentToast = null)}
+          >
+            Dismiss
+          </button>
+        </div>
+      {/if}
       {#if stage === "quiz"}
         <div class="mx-auto w-full max-w-5xl">
           {#key quizRunId}
