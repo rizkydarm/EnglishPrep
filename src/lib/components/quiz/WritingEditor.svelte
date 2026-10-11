@@ -20,9 +20,9 @@
   interface Props {
     /** Writing prompt to render. Null/undefined renders the fallback. */
     prompt?: WritingPrompt | null;
-    /** Called when an auto-graded item is checked. */
+    /** Called when an auto-graded item is checked; also the fallback channel for self-score when onSelfScore is absent. */
     onResult?: (result: WritingResult) => void;
-    /** Called when a self-assessed item is submitted. */
+    /** Called when a self-assessed item is submitted. When present, onResult is NOT fired for self-score (single channel). */
     onSelfScore?: (result: WritingResult) => void;
     /** Called on Esc key (exit / close dialog). */
     onExit?: () => void;
@@ -146,11 +146,19 @@
   }
 
   // ---- image_description ----
-  let normalizedText: string = $derived(normalizeSentence(text));
+  // Token-boundary keyword match: both sides tokenized on non-word
+  // boundaries (via normalizeSentence), hit = every keyword token
+  // present in the input token set. Avoids raw-substring false
+  // positives ("cat" vs "concatenate").
+  function tokenize(input: string): string[] {
+    const n = normalizeSentence(input);
+    return n === "" ? [] : n.split(" ");
+  }
+  let textTokens: Set<string> = $derived(new Set(tokenize(text)));
   function keywordHit(keyword: string): boolean {
-    const k = normalizeSentence(keyword);
-    if (k === "" || normalizedText === "") return false;
-    return normalizedText.includes(k);
+    const kt = tokenize(keyword);
+    if (kt.length === 0 || textTokens.size === 0) return false;
+    return kt.every((t) => textTokens.has(t));
   }
 
   let hitCount: number = $derived(
@@ -177,7 +185,7 @@
   function submitSelfScore(): void {
     if (disabled || prompt?.type !== "image_description" || selfScore == null) return;
     submittedSelf = true;
-    onSelfScore?.({
+    const result: WritingResult = {
       promptId: prompt.id,
       type: prompt.type,
       userAnswer: text,
@@ -185,17 +193,11 @@
       selfAssessed: true,
       selfScore,
       excludedFromAutoScore: true,
-    });
-    // Also surface via onResult so shells with a single handler still record it.
-    onResult?.({
-      promptId: prompt.id,
-      type: prompt.type,
-      userAnswer: text,
-      correct: undefined,
-      selfAssessed: true,
-      selfScore,
-      excludedFromAutoScore: true,
-    });
+    };
+    // Single channel only: prefer onSelfScore; fall back to onResult
+    // only when no onSelfScore handler is wired (avoids double-record).
+    if (onSelfScore) onSelfScore(result);
+    else onResult?.(result);
   }
 
   function handleKeydown(event: KeyboardEvent): void {
