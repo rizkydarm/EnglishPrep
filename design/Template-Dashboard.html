@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard & Result Template</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#2373F4;--secondary:#578EF5;--cyan:#65D0F4;--yellow:#F2F7A0;--bg:#F8FAFF;--card:#FFFFFF;--ink:#0F172A;--border-strong:#0F172A;}
+body{font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink);}
+.serif{font-family:'Newsreader',serif;}
+.card-3d{background:white; border:2.5px solid var(--border-strong); border-radius:20px; box-shadow:0 6px 0 var(--border-strong);}
+.btn-3d{background:var(--primary); color:white; border:2.5px solid var(--border-strong); box-shadow:0 5px 0 var(--border-strong); border-radius:16px; font-weight:800;}
+.score-ring{width:140px; height:140px; border-radius:50%; border:8px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:42px; background:var(--yellow); box-shadow:0 6px 0 var(--border-strong); transform:rotate(-3deg);}
+.badge{border:2px solid var(--border-strong); border-radius:9999px; padding:4px 10px; font-size:11px; font-weight:800;}
+</style>
+</head>
+<body class="min-h-screen">
+<div class="max-w-[1080px] mx-auto px-6 py-6">
+  <!-- Result Summary Top -->
+  <div class="grid md:grid-cols-[.9fr_1.1fr] gap-6 items-center">
+    <div class="flex flex-col items-center md:items-start gap-4">
+      <div class="score-ring">84%</div>
+      <div><h1 class="text-[32px] font-extrabold leading-none">Great job!</h1><p class="serif text-slate-600 mt-2">You got 8/10 correct in B2 Core • Vocab Drill</p></div>
+      <div class="flex gap-2"><span class="badge" style="background:var(--yellow);">+6 mastered</span><span class="badge bg-white">2 wrong → SRS</span><span class="badge bg-white">1m 42s</span></div>
+      <div class="flex gap-3 mt-2 w-full"><button class="btn-3d flex-1 h-[52px]">Review Wrong Answers →</button><button class="flex-1 h-[52px] rounded-2xl border-[2.5px] bg-white font-bold" style="border-color:var(--border-strong); box-shadow:0 5px 0 var(--border-strong);">Dashboard</button></div>
+    </div>
+    <div class="card-3d p-5">
+      <div class="font-bold flex justify-between">Breakdown <span class="text-[11px] px-2 py-1 rounded-full border-2 bg-white" style="border-color:var(--border-strong);">Today: 3 quizzes</span></div>
+      <div class="mt-4 space-y-3">
+        <div class="flex justify-between text-[13px]"><span>MC 4 opsi</span><span class="font-bold">3/3 ✓</span></div>
+        <div class="h-2 rounded-full bg-slate-100 border-2 overflow-hidden" style="border-color:var(--border-strong);"><div class="h-full" style="width:100%; background:var(--primary);"></div></div>
+        <div class="flex justify-between text-[13px]"><span>Matching (click)</span><span class="font-bold">1/2 • 50%</span></div>
+        <div class="h-2 rounded-full bg-slate-100 border-2 overflow-hidden" style="border-color:var(--border-strong);"><div class="h-full" style="width:50%; background:var(--secondary);"></div></div>
+        <div class="flex justify-between text-[13px]"><span>Complete sentence</span><span class="font-bold">2/2 ✓</span></div>
+        <div class="h-2 rounded-full bg-slate-100 border-2 overflow-hidden" style="border-color:var(--border-strong);"><div class="h-full" style="width:100%; background:var(--cyan);"></div></div>
+      </div>
+      <div class="mt-5 p-3 rounded-xl border-2" style="border-color:var(--border-strong); background:var(--yellow);"><div class="text-[11px] font-bold">SPACED REPETITION</div><div class="text-[13px] font-semibold mt-1">2 words moved to Box 1 for review tomorrow: <span class="underline">allocate, accommodate</span></div></div>
+    </div>
+  </div>
+
+  <!-- Review Wrong -->
+  <div class="mt-10">
+    <h2 class="font-extrabold text-[20px]">Review Wrong Answers</h2>
+    <div class="mt-4 grid md:grid-cols-2 gap-4">
+      <div class="card-3d p-5">
+        <div class="flex justify-between"><span class="badge" style="background:var(--cyan);">B2 Core • allocate</span><span class="badge bg-red-100 border-red-900 text-red-700">WRONG</span></div>
+        <div class="mt-3"><div class="text-[13px] opacity-60">Your answer: to achieve successfully</div><div class="mt-1 font-bold">Correct: to distribute for a purpose → mengalokasikan</div></div>
+        <div class="serif mt-3 p-3 rounded-xl bg-slate-50 border-2 text-[14px]" style="border-color:var(--border-strong);">Example: The company allocated 20% budget to training.<br><span class="opacity-60">Perusahaan mengalokasikan 20% anggaran untuk pelatihan.</span></div>
+      </div>
+      <div class="card-3d p-5">
+        <div class="flex justify-between"><span class="badge" style="background:var(--yellow);">Highlight • Reading</span><span class="badge bg-red-100">WRONG</span></div>
+        <div class="mt-3 font-semibold">You highlighted: "Companies report higher productivity"</div><div class="mt-1 text-[13px]">Correct highlight: "However, isolation remains the biggest challenge..."</div>
+        <div class="mt-3 text-[12px] px-2 py-1 rounded-full border-2 inline-block bg-white" style="border-color:var(--border-strong);">Tip: Look for contrast word "However"</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="mt-14 border-t-[2.5px] pt-8" style="border-color:var(--border-strong);">
+    <div class="flex justify-between items-center"><h2 class="font-extrabold text-[24px]">Dashboard / Profile</h2><span class="badge bg-white">Local • Offline • JSON</span></div>
+    <div class="mt-6 grid md:grid-cols-3 gap-4">
+      <div class="card-3d p-5"><div class="text-[11px] font-bold opacity-60">KOTOBA MASTERED</div><div class="mt-2 flex items-baseline gap-2"><span class="text-[36px] font-extrabold">42</span><span class="badge" style="background:var(--yellow);">+6 today</span></div><div class="mt-3 text-[12px]">B1 Core 15 • B1+ 9 • B2 Core 14 • B2 Mastery 4</div></div>
+      <div class="card-3d p-5"><div class="text-[11px] font-bold opacity-60">DAILY ACTIVITY (7 days)</div><div class="mt-4 flex gap-2 items-end h-[64px]"><div class="flex-1 rounded-t-lg border-2" style="height:30%; background:var(--secondary); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:60%; background:var(--primary); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:45%; background:var(--secondary); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:80%; background:var(--primary); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:55%; background:var(--cyan); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:90%; background:var(--primary); border-color:var(--border-strong);"></div><div class="flex-1 rounded-t-lg border-2" style="height:40%; background:var(--secondary); border-color:var(--border-strong);"></div></div></div>
+      <div class="card-3d p-5" style="background:var(--yellow);"><div class="text-[11px] font-bold">SRS DUE TODAY</div><div class="text-[36px] font-extrabold">12</div><div class="text-[13px] font-semibold">Words need review. Mixed B1-B2.</div><button class="btn-3d w-full h-[44px] mt-3" style="background:white; color:var(--ink);">Start Review →</button></div>
+    </div>
+    <div class="mt-6 card-3d p-0 overflow-hidden">
+      <div class="p-4 font-bold border-b-[2.5px] flex justify-between" style="border-color:var(--border-strong);"><span>History • Daily Scores</span><span class="text-[11px] px-2 py-1 rounded-full border-2 bg-white" style="border-color:var(--border-strong);">Full offline JSON</span></div>
+      <div class="divide-y-2 divide-slate-900">
+        <div class="p-4 flex justify-between text-[13px]"><span>2026-10-11 • Vocab • B2 Core • 10Q</span><span class="font-bold">84% • 1m 42s</span></div>
+        <div class="p-4 flex justify-between text-[13px] bg-slate-50"><span>2026-10-11 • Reading • B1+ • 5Q</span><span class="font-bold">60% • 4m 10s</span></div>
+        <div class="p-4 flex justify-between text-[13px]"><span>2026-10-10 • Writing • B2 Core • 5Q</span><span class="font-bold">80% • 3m 02s</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

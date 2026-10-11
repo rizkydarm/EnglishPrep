@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Session Template - IELTS & TOEIC Preps</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#2373F4;--secondary:#578EF5;--cyan:#65D0F4;--yellow:#F2F7A0;--bg:#F8FAFF;--card:#FFFFFF;--ink:#0F172A;--muted:#64748B;--border-strong:#0F172A;}
+body{font-family:'Inter',sans-serif; background:var(--bg); color:var(--ink);}
+.serif{font-family:'Newsreader',serif;}
+.choice{border:2.5px solid var(--border-strong); border-radius:16px; padding:14px 16px; background:white; box-shadow:0 4px 0 var(--border-strong); transition:.15s; cursor:pointer; font-weight:600; text-align:left; width:100%;}
+.choice:hover{transform:translateY(-1px); box-shadow:0 6px 0 var(--border-strong); background:#F2F6FF;}
+.choice.selected{border-color:var(--primary); background:#EFF6FF; box-shadow:0 4px 0 var(--primary);}
+.choice.correct{border-color:#10B981; background:#D1FAE5; box-shadow:0 4px 0 #10B981;}
+.choice.wrong{border-color:#EF4444; background:#FEE2E2; box-shadow:0 4px 0 #EF4444; animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.match-pill{border:2.5px solid var(--border-strong); border-radius:9999px; padding:10px 16px; font-weight:700; background:white; cursor:pointer; transition:.15s;}
+.match-pill.selected{background:var(--cyan); transform:scale(1.03);}
+.match-pill.matched{background:var(--yellow); text-decoration:line-through; opacity:.7;}
+.btn-3d{background:var(--primary); color:white; border:2.5px solid var(--border-strong); box-shadow:0 5px 0 var(--border-strong); border-radius:16px; font-weight:800; transition:.15s;}
+.btn-3d:active{transform:translateY(4px); box-shadow:0 0 0 var(--border-strong);}
+.highlight-user{background:rgba(101,208,244,.45); border-bottom:3px solid var(--cyan);}
+.highlight-correct{background:var(--yellow); border:2.5px dashed var(--border-strong);}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="sticky top-0 z-20 bg-white/90 backdrop-blur border-b-[2.5px]" style="border-color:var(--border-strong);">
+  <div class="max-w-[1120px] mx-auto px-6 h-[64px] flex items-center gap-4">
+    <button class="w-9 h-9 rounded-xl border-2 flex items-center justify-center bg-white" style="border-color:var(--border-strong);">✕</button>
+    <div class="flex-1 h-[14px] rounded-full border-[2.5px] overflow-hidden bg-slate-100" style="border-color:var(--border-strong);"><div class="h-full" style="width:35%; background:var(--primary);"></div></div>
+    <div class="px-3 py-1 rounded-full border-2 font-bold text-[12px] bg-white" style="border-color:var(--border-strong);">3 / 10</div>
+    <div class="px-3 py-1 rounded-full border-2 font-bold text-[12px] text-white" style="background:var(--primary); border-color:var(--border-strong);">⏱ 24s</div>
+    <div class="px-3 py-1 rounded-full border-2 font-bold text-[11px]" style="background:var(--yellow); border-color:var(--border-strong);">B2 Core</div>
+  </div>
+</header>
+
+<main class="max-w-[1120px] mx-auto px-6 py-8 grid lg:grid-cols-[1.1fr_.9fr] gap-8">
+  <!-- Left: Question Context -->
+  <div>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border-2 text-[11px] font-bold bg-white" style="border-color:var(--border-strong);"><span class="w-2 h-2 rounded-full" style="background:var(--primary);"></span> VOCAB • Matching • Click to pair</div>
+    <h2 class="mt-4 text-[26px] font-extrabold leading-tight tracking-tight">Match the word with its correct definition</h2>
+    <p class="serif mt-2 text-slate-600">Tap a word on the left, then tap its meaning on the right. Faster than drag & drop for desktop.</p>
+
+    <!-- Matching Example -->
+    <div class="mt-8 grid grid-cols-2 gap-3">
+      <div class="space-y-3">
+        <button class="match-pill selected w-full">accomplish</button>
+        <button class="match-pill w-full">allocate</button>
+        <button class="match-pill matched w-full">acquire ✓</button>
+        <button class="match-pill w-full">accommodate</button>
+      </div>
+      <div class="space-y-3">
+        <button class="match-pill w-full">to achieve successfully</button>
+        <button class="match-pill selected w-full" style="background:#EFF6FF; border-color:var(--primary);">to distribute for a purpose</button>
+        <button class="match-pill matched w-full">to obtain</button>
+        <button class="match-pill w-full">to provide space</button>
+      </div>
+    </div>
+
+    <div class="mt-10 rounded-[16px] border-[2.5px] p-4 bg-white" style="border-color:var(--border-strong);">
+      <div class="text-[11px] font-bold opacity-50">READING HIGHLIGHT EXAMPLE (2nd tab)</div>
+      <div class="serif mt-3 text-[17px] leading-7">
+        Remote work has surged since 2020. <span class="highlight-user">Companies report higher productivity but also note communication gaps.</span> <span class="highlight-correct">However, isolation remains the biggest challenge for long-term retention.</span> To address this, many firms now invest in virtual team building.
+      </div>
+      <div class="mt-3 flex gap-2"><span class="px-2 py-1 rounded-full border-2 text-[11px] font-bold" style="background:var(--cyan); border-color:var(--border-strong);">Your highlight</span><span class="px-2 py-1 rounded-full border-2 text-[11px] font-bold" style="background:var(--yellow); border-color:var(--border-strong);">Correct answer</span></div>
+    </div>
+  </div>
+
+  <!-- Right: Choices / Input -->
+  <div class="space-y-4">
+    <!-- MC Example -->
+    <div class="rounded-[20px] border-[2.5px] bg-white p-5" style="border-color:var(--border-strong); box-shadow:0 6px 0 var(--border-strong);">
+      <div class="flex justify-between items-center"><span class="font-extrabold">What does "accomplish" mean?</span><span class="text-[11px] px-2 py-1 rounded-full border-2" style="background:var(--yellow); border-color:var(--border-strong);">MC 4 opsi</span></div>
+      <div class="mt-5 space-y-3">
+        <button class="choice">A. to leave behind</button>
+        <button class="choice selected">B. to achieve successfully</button>
+        <button class="choice">C. to collect gradually</button>
+        <button class="choice">D. to make room</button>
+      </div>
+      <button class="btn-3d w-full h-[52px] mt-6">Check Answer</button>
+      <div class="mt-3 text-center text-[12px] font-bold opacity-60">Press 1-4 on keyboard</div>
+    </div>
+
+    <!-- Complete Sentence - Typing vs Word Bank -->
+    <div class="rounded-[20px] border-[2.5px] bg-white p-5" style="border-color:var(--border-strong); box-shadow:0 6px 0 var(--border-strong);">
+      <div class="font-bold">Complete the sentence</div>
+      <div class="serif mt-3 text-[18px]">She <span class="inline-block min-w-[120px] border-b-[3px] border-slate-900 px-2 font-bold">__________</span> her goal of passing IELTS.</div>
+      
+      <div class="mt-4 grid grid-cols-2 gap-3">
+        <div class="rounded-xl border-2 p-3" style="border-color:var(--border-strong);"><div class="text-[11px] font-bold">MODE: Typing</div><input class="mt-2 w-full border-[2.5px] rounded-xl h-[44px] px-3 font-bold" style="border-color:var(--border-strong);" placeholder="type: accomplished" /></div>
+        <div class="rounded-xl border-2 p-3" style="border-color:var(--border-strong); background:#F8FAFF;"><div class="text-[11px] font-bold">MODE: Word Bank</div><div class="mt-2 flex flex-wrap gap-2"><span class="px-3 py-1 rounded-full border-2 bg-white font-bold text-[13px]" style="border-color:var(--border-strong);">accomplished</span><span class="px-3 py-1 rounded-full border-2 bg-white font-bold text-[13px]" style="border-color:var(--border-strong);">acquired</span><span class="px-3 py-1 rounded-full border-2 bg-white font-bold text-[13px]" style="border-color:var(--border-strong);">allocated</span></div></div>
+      </div>
+    </div>
+
+    <!-- Cloze -->
+    <div class="rounded-[20px] border-[2.5px] bg-white p-5" style="border-color:var(--border-strong);">
+      <div class="text-[12px] font-bold">Cloze - Select best option per gap</div>
+      <div class="serif mt-3 text-[16px] leading-7">The report <select class="border-2 rounded-lg px-2 py-1 font-bold" style="border-color:var(--border-strong);"><option>shows</option></select> that productivity <select class="border-2 rounded-lg px-2 py-1 font-bold" style="border-color:var(--primary); background:#EFF6FF;"><option>has increased</option></select> by 20% despite challenges.</div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

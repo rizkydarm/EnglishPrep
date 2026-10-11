@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IELTS & TOEIC Preps - Homepage Template</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#2373F4; --primary-hover:#1A5FD1; --secondary:#578EF5; --cyan:#65D0F4; --yellow:#F2F7A0; --yellow-strong:#E9ED6F;
+  --bg:#F8FAFF; --card:#FFFFFF; --ink:#0F172A; --muted:#64748B; --border:#E2E8F0; --border-strong:#0F172A;
+}
+body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--ink);}
+.serif{font-family:'Newsreader',Georgia,serif;}
+.btn-3d{
+  background:var(--primary); color:white; border:2.5px solid var(--border-strong);
+  box-shadow:0 5px 0 0 var(--border-strong); border-radius:16px; font-weight:700;
+  transition:all .15s ease; height:52px;
+}
+.btn-3d:hover{transform:translateY(-2px); box-shadow:0 7px 0 0 var(--border-strong);}
+.btn-3d:active{transform:translateY(4px); box-shadow:0 0 0 0 var(--border-strong);}
+.btn-yellow{background:var(--yellow); color:var(--ink); box-shadow:0 5px 0 0 var(--border-strong);}
+.mode-card{
+  background:var(--card); border:2.5px solid var(--border-strong); border-radius:24px;
+  box-shadow:0 6px 0 0 var(--border-strong); transition:all .2s cubic-bezier(.34,1.56,.64,1);
+  cursor:pointer; position:relative; overflow:hidden;
+}
+.mode-card:hover{transform:translateY(-6px) rotate(0.5deg); box-shadow:0 12px 0 0 var(--border-strong);}
+.mode-card:active{transform:translateY(2px); box-shadow:0 2px 0 0 var(--border-strong);}
+.icon-circle{width:56px; height:56px; border-radius:18px; border:2px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-size:28px;}
+</style>
+</head>
+<body class="min-h-screen">
+<!-- Topbar -->
+<header class="max-w-[1080px] mx-auto px-6 h-[72px] flex items-center justify-between">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white font-extrabold" style="background:var(--primary); border:2px solid var(--border-strong); box-shadow:0 3px 0 var(--border-strong);">I</div>
+    <span class="font-extrabold text-[18px] tracking-tight">IELTS & TOEIC Preps</span>
+    <span class="ml-2 px-2.5 py-1 rounded-full text-[11px] font-bold border-2" style="background:var(--yellow); border-color:var(--border-strong);">B1-B2</span>
+  </div>
+  <div class="flex gap-2">
+    <button class="w-10 h-10 rounded-xl border-2 flex items-center justify-center" style="border-color:var(--border-strong); background:white;">⚙️</button>
+    <button class="w-10 h-10 rounded-xl border-2 flex items-center justify-center" style="border-color:var(--border-strong); background:white;">🌙</button>
+  </div>
+</header>
+
+<main class="max-w-[1080px] mx-auto px-6 pb-16">
+  <!-- Hero -->
+  <div class="mt-6 grid md:grid-cols-[1.2fr_.8fr] gap-8 items-center">
+    <div>
+      <h1 class="text-[42px] font-extrabold leading-[0.95] tracking-[-0.03em]">What do you want to<br><span style="color:var(--primary);">master today?</span></h1>
+      <p class="serif mt-4 text-[18px] leading-7 text-slate-600 max-w-[48ch]">Full offline drilling for B1 Core to B2 Mastery. No streaks, just real mastery. Pick a mode — we track everything in your dashboard.</p>
+      <div class="mt-6 flex gap-3">
+        <button class="btn-3d px-7">Continue Last Quiz →</button>
+        <button class="h-[52px] px-6 rounded-2xl border-[2.5px] font-bold bg-white" style="border-color:var(--border-strong); box-shadow:0 5px 0 var(--border-strong);">View Dashboard</button>
+      </div>
+    </div>
+    <div class="hidden md:block">
+      <div class="mode-card p-5 rotate-[-2deg]" style="background:var(--yellow);">
+        <div class="text-[13px] font-bold opacity-60">DAILY TIP</div>
+        <div class="serif mt-2 text-[16px] leading-6">B2 Mastery words are 70% collocations. Learn <span class="font-bold underline decoration-2">accomplish a task</span> not just <em>accomplish</em>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mode Cards -->
+  <div class="mt-12 grid md:grid-cols-3 gap-6">
+    <!-- Vocab -->
+    <div class="mode-card p-6">
+      <div class="flex justify-between items-start">
+        <div class="icon-circle" style="background:var(--primary); color:white;">📚</div>
+        <span class="px-3 py-1 rounded-full text-[12px] font-bold border-2 bg-white" style="border-color:var(--border-strong);">250 words</span>
+      </div>
+      <h3 class="mt-5 text-[22px] font-extrabold tracking-tight">Vocab Drill</h3>
+      <p class="mt-1 text-[14px] text-slate-500 leading-5">MC • True/False • Matching (click) • Complete sentence • Cloze</p>
+      <div class="mt-5 h-2 rounded-full bg-slate-100 overflow-hidden border-2" style="border-color:var(--border-strong);"><div class="h-full" style="width:68%; background:var(--primary);"></div></div>
+      <div class="mt-2 text-[12px] font-bold">68% mastered</div>
+      <button class="btn-3d w-full mt-5">Start Vocab →</button>
+      <div class="absolute -right-6 -bottom-6 w-24 h-24 rounded-full opacity-20" style="background:var(--primary);"></div>
+    </div>
+
+    <!-- Reading -->
+    <div class="mode-card p-6">
+      <div class="flex justify-between items-start">
+        <div class="icon-circle" style="background:var(--cyan);">📄</div>
+        <span class="px-3 py-1 rounded-full text-[12px] font-bold border-2 bg-white" style="border-color:var(--border-strong);">18 passages</span>
+      </div>
+      <h3 class="mt-5 text-[22px] font-extrabold tracking-tight">Reading</h3>
+      <p class="mt-1 text-[14px] text-slate-500 leading-5">Best sentence • Highlight answer • Main idea • Best title</p>
+      <div class="mt-5 flex gap-2">
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border-2" style="background:var(--cyan); border-color:var(--border-strong);">B2 Core</span>
+        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold border-2 bg-white" style="border-color:var(--border-strong);">280-350w</span>
+      </div>
+      <button class="btn-3d w-full mt-6" style="background:var(--secondary);">Start Reading →</button>
+    </div>
+
+    <!-- Writing -->
+    <div class="mode-card p-6" style="background:var(--yellow);">
+      <div class="flex justify-between items-start">
+        <div class="icon-circle bg-white">✍️</div>
+        <span class="px-3 py-1 rounded-full text-[12px] font-bold border-2 bg-white" style="border-color:var(--border-strong);">NEW</span>
+      </div>
+      <h3 class="mt-5 text-[22px] font-extrabold tracking-tight">Writing</h3>
+      <p class="mt-1 text-[14px] text-slate-700 leading-5">Reorder & Fix grammar • Describe image (chart)</p>
+      <div class="mt-5 p-3 rounded-xl border-2 bg-white" style="border-color:var(--border-strong);">
+        <div class="text-[11px] font-bold opacity-50">EXAMPLE</div>
+        <div class="text-[13px] font-semibold mt-1">Despite the rain, we went out.</div>
+      </div>
+      <button class="btn-3d btn-yellow w-full mt-5">Start Writing →</button>
+    </div>
+  </div>
+
+  <!-- Mini Dashboard -->
+  <div class="mt-10 grid md:grid-cols-[1.1fr_.9fr] gap-6">
+    <div class="rounded-[20px] border-[2.5px] bg-white p-5" style="border-color:var(--border-strong); box-shadow:0 6px 0 var(--border-strong);">
+      <div class="flex justify-between"><span class="font-bold">Today's Activity</span><span class="text-[12px] font-bold px-2 py-1 rounded-full border-2" style="background:var(--yellow); border-color:var(--border-strong);">3 quizzes • 84% avg</span></div>
+      <div class="mt-4 flex gap-2 items-end h-[60px]">
+        <div class="flex-1 rounded-t-lg" style="height:40%; background:var(--secondary); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:70%; background:var(--primary); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:55%; background:var(--secondary); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:90%; background:var(--primary); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:65%; background:var(--cyan); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:84%; background:var(--primary); border:2px solid var(--border-strong);"></div>
+        <div class="flex-1 rounded-t-lg" style="height:45%; background:var(--secondary); border:2px solid var(--border-strong);"></div>
+      </div>
+    </div>
+    <div class="rounded-[20px] border-[2.5px] bg-white p-5 flex items-center gap-4" style="border-color:var(--border-strong); box-shadow:0 6px 0 var(--border-strong);">
+      <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl font-extrabold border-2" style="background:var(--yellow); border-color:var(--border-strong);">42</div>
+      <div><div class="font-extrabold">Kotoba mastered</div><div class="text-[13px] text-slate-500">B2 Core: 18 • B2 Mastery: 4 • SRS due today: 12</div><div class="mt-2 inline-flex px-3 py-1 rounded-full text-[11px] font-bold border-2" style="background:var(--cyan); border-color:var(--border-strong);">Review 12 now →</div></div>
+    </div>
+  </div>
+</main>
+</body>
+</html>

@@ -24,9 +24,11 @@ All content lives in plain-text files (JSON / CSV / Markdown) inside an editable
 folder, so the question bank is **easy to extend and edit by humans or AI assistants**
 without touching app code.
 
-UI/UX is inspired by Duolingo/Quizlet: clean layout, smooth micro-animations, instant
-feedback, and a clear sense of progress — but calm and professional, **without gamification
-pressure (no streaks, no XP, no hearts)**.
+UI/UX is a **Duolingo + Quizlet + Kahoot hybrid** (see `design/DESIGN.md`): a clean, card-first
+layout with thick tactile borders, hard "3D" shadows, spring micro-animations, and instant
+feedback, in a trustworthy blue palette with a playful yellow highlight for score and
+achievement. Professional for B1–B2, **without gamification pressure (no streaks, no XP, no
+hearts)**.
 
 **Core value:** the user can add thousands of new words/passages just by dropping files or
 asking an AI to generate them in a strict schema. No internet required to run.
@@ -42,7 +44,7 @@ asking an AI to generate them in a strict schema. No internet required to run.
 - Content pipeline: add/edit questions by editing plain files; AI-friendly schemas.
 - Track local progress: daily activity, quiz scores, vocabulary mastery (SRS).
 - Polished feel: instant answer feedback, smooth animations, light/dark mode.
-- Native macOS feel: system appearance, font style switching, responsive window.
+- Native macOS feel: system appearance, responsive window.
 
 ### 2.2 Non-Goals (v1)
 - ❌ Speaking & Listening exercises (no audio).
@@ -332,7 +334,8 @@ shows an error toast and skips the file — it never crashes.
 - Compact stats strip: *words mastered · quizzes today · average score* → tap to open
   Dashboard.
 
-Design: shadcn Card, 2px border, rounded-2xl, hover lift + spring.
+Design: shadcn Card, 2px ink border + hard 3D shadow, rounded-3xl, hover lift + spring
+(PRD §10, `design/DESIGN.md`).
 
 ### 7.2 Pre-Quiz Setup (Sheet / Dialog, before every session)
 
@@ -430,7 +433,6 @@ drag-selectable desktop, but tap-to-select is the default.)*
 | Setting | Values | Default |
 |---|---|---|
 | Appearance | System / Light / Dark | System |
-| Font style | **Sans / Serif / Mono** (hardcoded system stacks — see §10) | Sans |
 | Sound effects | On / Off | On |
 | Default difficulty | B1 Core / B1+ / B2 Core / B2 Mastery | B2 Core |
 | Default timer | Off / 15s / 30s / 60s | Off |
@@ -483,50 +485,84 @@ Recommended pipeline for AI-assisted content authoring:
 
 ## 10. UI/UX & Design System
 
-**Inspiration:** Linear + Quizlet + Duolingo motion.
+Canonical spec: **`design/DESIGN.md`** (blue/yellow "Duolingo + Quizlet + Kahoot" hybrid).
+Mockups: `design/Template-Homepage.html`, `design/Template-Dashboard.html`,
+`design/Template-Quiz.html`, `design/System-Ielts-Toeic-Preps.html`.
+
+**Inspiration:** Duolingo interaction (tactile 3D press) + Quizlet layout (clean, card-first) +
+Kahoot energy (yellow accent for score/highlight). Professional for B2, never childish.
 
 ### 10.1 Design principles
-1. **Calm focus** — clean, generous whitespace (Quizlet-like base).
-2. **Juice on feedback** — spring/bounce micro-animations on correct/wrong, progress fill,
-   and completion confetti (Duolingo-like moments).
-3. **One accent color** + semantic green (correct) / red (wrong); grayscale-first interface.
+1. **Card-first calm** — spacious, Quizlet-like layout; whitespace over decoration.
+2. **Tactile feedback** — thick ink borders + hard offset "3D" shadows; spring micro-animations
+   on correct/wrong, progress fill, and completion confetti.
+3. **Trustworthy blue + playful yellow** — blue `#2373F4` for actions/progress/focus, cyan
+   `#65D0F4` for highlights/info, yellow `#F2F7A0` for correct/score/mastered only; semantic
+   green (correct) / red (wrong) still apply.
 4. Touchpad-first interactions: **click/tap everywhere; drag & drop avoided.**
+5. **No gamification pressure** — no streaks, XP, or hearts (PRD §2.2). Yellow marks
+   achievement; it does not create a streak system.
 
 ### 10.2 Color tokens
-| Token | Light | Dark |
-|---|---|---|
-| Background | `#FFFBF5` | `#121214` |
-| Card | `#FFFFFF` | `#1E1E20` |
-| Border | `#E7E5E4` | `#2A2A2E` |
-| Primary (accent) | `#6D28D9` | `#6D28D9` |
-| Success (correct) | `#10B981` | `#10B981` |
-| Destructive (wrong) | `#EF4444` | `#EF4444` |
+| Token | Light | Dark | Purpose |
+|---|---|---|---|
+| Background | `#F8FAFF` | `#0B1220` | bluish paper; less eye strain for long reading |
+| Card | `#FFFFFF` | `#141E33` | flat, single elevation |
+| Card hover | `#F2F6FF` | `#1B2A4A` | hover tint |
+| Border | `#E2E8F0` | `#1E2D50` | thin divider |
+| Border strong | `#0F172A` | `#2A3A5C` | thick quiz/choice border + 3D shadow |
+| Ink (text) | `#0F172A` | `#F1F5F9` | primary text |
+| Muted | `#64748B` | `#94A3B8` | secondary text |
+| Primary | `#2373F4` | `#578EF5` | CTA, progress fill, selected border, focus ring |
+| Primary hover | `#1A5FD1` | `#6EA0F7` | hover state |
+| Secondary | `#578EF5` | `#578EF5` | secondary button, card hover border, icon bg |
+| Accent cyan | `#65D0F4` | `#65D0F4` | reading highlight, matching pill, info badge |
+| Accent yellow | `#F2F7A0` | `#F2F7A0` | correct bg, score/mastered highlight, tooltip |
+| Accent yellow strong | `#E9ED6F` | `#E9ED6F` | emphasis |
+| Success | `#10B981` | `#10B981` | correct state |
+| Success bg | `#D1FAE5` | `#0F2E24` | correct fill |
+| Error | `#EF4444` | `#EF4444` | wrong state |
+| Error bg | `#FEE2E2` | `#3A1414` | wrong fill |
 
-- **Radius:** 16px cards, 12px buttons (`rounded-xl`/`rounded-2xl`).
-- **Border:** 2px solid for quiz options (Duolingo-style tactile feel).
+- **Shadow (3D):** `0 4px 0 0 var(--border-strong)` on pressable cards/buttons; soft
+  `0 8px 24px rgba(35,115,244,0.08)` on large cards. Dark mode 3D shadow uses `#000`.
+- **Radius:** sm 12px · md 16px · lg 20px · xl 24px · full 9999px.
+- **Border:** 1.5px thin on cards; **2px solid ink on every interactive choice card**
+  (never 1px).
+- Yellow is used as ink-on-yellow or as a fill under ink, never as yellow text on white.
 
 ### 10.3 Typography (hardcoded system stacks)
-| Style | Stack | Size |
-|---|---|---|
-| Sans | SF Pro / Helvetica Neue | 16px |
-| Serif | Georgia / Palatino | 17px |
-| Mono | SF Mono / Menlo | 15px |
+The mockups name Inter / Newsreader / JetBrains Mono. The offline app uses the equivalent
+**system stacks** (no bundled webfonts, no CDN):
 
+| Style | Stack | Size / weight |
+|---|---|---|
+| Sans (UI default) | `-apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif` | 15px / 500 |
+| Serif (reading passages, review quotes) | `Georgia, Palatino, "Palatino Linotype", serif` | 18px / 1.7 |
+| Mono (cloze/grammar input) | `"SF Mono", Menlo, Consolas, monospace` | 15px |
+
+Scale: display (home title) 36px/700/-0.02em · card title 20px/650 · quiz question 18px/600 ·
+caption 13px/500 muted. Reading optimised to max 65ch, line-height 1.7, letter-spacing 0.01em.
 All resolved from system fonts (optionally via Tauri `get_system_fonts`); no bundled webfonts.
 
 ### 10.4 Motion spec
 | Element | Spec |
 |---|---|
-| Correct answer | Green flash + subtle scale spring (200–300 ms); confetti burst (12 CSS particles) |
-| Wrong answer | Red shake keyframes (x: −4 → 4), 250 ms |
-| Button press | scale 0.98 + y 1px |
-| Card / screen enter | Slide + fade (y 8px → 0, opacity 0 → 1), 200–300 ms ease-out / spring |
-| Progress bar | Fill tween 300–400 ms ease-out |
-| Completion | Confetti burst 1.2 s (score ≥ 80%) |
+| Card / screen enter | Spring (stiffness 400, damping 25) or slide+fade (y 8px → 0), 300 ms |
+| Button press | scale 0.98; the 3D shadow collapses to `0 0 0` |
+| Correct answer | Success border/bg + spring; confetti 12 dots (yellow + blue + cyan), 600 ms |
+| Wrong answer | Red shake keyframes (x: −4 → 4 → 0), 300 ms |
+| Progress bar | Fill ease-out 400 ms |
+| Matching pair | Pop scale 1.05, 150 ms |
+| Completion | Confetti burst when score ≥ 80% |
+| Durations | micro < 200 ms · transition 300 ms · celebration 600 ms |
 | `prefers-reduced-motion` | All non-essential motion disabled |
 
 ### 10.5 shadcn-svelte components used
-Button, Card, Dialog, Sheet, Progress, Badge, Tabs, Slider, Switch, Select, ToggleGroup, Chart.
+Button (custom `3d` + yellow variant), Card, Dialog, Sheet, Progress, Badge, Tabs, Slider,
+Switch, Select, ToggleGroup, Chart. Custom classes: `.btn-3d`, `.choice-card`, `.match-pill`,
+`.mode-card`, `.score-ring`. Icons: **lucide-svelte** (stroke-width 2.2, size 20–24), never
+emoji as UI icons.
 
 ### 10.6 Responsiveness
 - macOS window: default **1280×800**, **min 960×640**, freely resizable.
@@ -537,6 +573,10 @@ Button, Card, Dialog, Sheet, Progress, Badge, Tabs, Slider, Switch, Select, Togg
 - Keyboard shortcuts: `1–4` select option, `Tab`/arrows for matching, `Enter` check/next,
   `Esc` exit dialog.
 - Focus rings on all interactive elements; AA contrast in both themes.
+- Verified pairs: `#2373F4` on white = 4.35:1 (fails AA for normal text), so primary *text* and
+  filled buttons use `--primary-strong` `#1A5FD1` (5.83:1 with white); `#2373F4` is kept for
+  non-text accents (borders, rings, progress fill). Yellow `#F2F7A0` and cyan `#65D0F4` carry
+  ink text (`--accent-ink` `#0F172A`), never white.
 
 ---
 
@@ -584,7 +624,7 @@ Button, Card, Dialog, Sheet, Progress, Badge, Tabs, Slider, Switch, Select, Togg
 - [ ] SRS intervals advance correctly; dashboard shows mastery & due counts.
 - [ ] Adding a new vocab CSV row / reading MD file without rebuild is reflected after
       Reload Content.
-- [ ] Light/dark + Sans/Serif/Mono switch instantly; respects system appearance.
+- [ ] Light/dark switch instantly; respects system appearance.
 - [ ] App functions fully with network disabled.
 - [ ] No drag & drop anywhere.
 - [ ] 50 vocab + 5 reading + 10 writing seed data included and validated.

@@ -40,6 +40,23 @@ Reviewer fail → kembalikan status ke `todo`.
 DAG: `T-001∥T-004 → T-002 → (T-003∥T-007∥T-014) → ... → T-023 gate`.
 Ruling R1: jika `agy` ternyata bukan Antigravity, ganti baris tabel tanpa ubah task.
 
+## Design Source of Truth
+Canonical UI specification: **`design/DESIGN.md`** — the blue/yellow "Duolingo + Quizlet +
+Kahoot" hybrid (blue `#2373F4`, cyan `#65D0F4`, yellow `#F2F7A0`, ink `#0F172A`, bg `#F8FAFF`).
+Reference mockups (read-only, never shipped): `design/Template-Homepage.html`,
+`design/Template-Dashboard.html`, `design/Template-Quiz.html`,
+`design/System-Ielts-Toeic-Preps.html`.
+- Root `DESIGN.md` is only a pointer to `design/DESIGN.md`; it is not a second spec.
+- Precedence: `PRD.md` §10 wins for tokens/palette/type/motion; `design/DESIGN.md` details
+  component styling; mockups show the intended look. If they conflict, follow PRD §10 and
+  surface the mismatch instead of guessing.
+- **Offline reconciliation (mandatory):** the mockups load webfonts from a CDN and use emoji
+  icons. In the app use **system font stacks only** (Sans / Serif / Mono, PRD §10.3) and
+  **lucide-svelte icons** — never a CDN webfont, never emoji as UI icons. The app makes zero
+  network requests (PRD §4, §12, §14).
+- **Palette discipline:** yellow `#F2F7A0` marks correct / score / mastered / highlight only.
+  It does not introduce streak / XP / hearts mechanics (PRD §2.2 non-goals).
+
 ## UI/UX Pro Max
 Source: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 Installed skill file: `.agents/skills/ui-ux-pro-max/SKILL.md`
