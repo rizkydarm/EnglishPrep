@@ -18,6 +18,8 @@
 - [2026-10-11] T-009 (muse): DONE. channel split fixed, build passes, 4/5 (shortcuts → T-010).
 - [2026-10-11] T-015 (muse): DONE. single channel + token match, 2/3 (rerun → T-018).
 - [2026-10-11] T-020 (muse): DONE d3916fc. 15/15 + suite 93/93, review clean.
+- [2026-10-11] T-018 (muse): DONE. views + 7 tests, suite 100/100, re-review clean.
+- [2026-10-11] T-021 (muse): DONE. dashboard + settings, re-review clean (midnight tick parked).
 - [2026-10-11] T-006 (agy): DONE. Security & schema review PASS (SPEC ✅). Id injection safe, 0 network calls, CSP connect-src 'none', 100% seed ID uniqueness. 2 advisory findings logged.
 - [2026-10-11] T-011 (deepseek): DONE 3e77441. reading.ts splitSentences + parseGaps; reading.test 8/8, suite 25/25, check 0 errors.
 - [2026-10-11] T-005 (deepseek): DONE b36875b (fix). Independent seed.test.ts caught 4 wrong `answer_sentences` indices (remote-work 5→8, morning-market 8→11, island-trip 7→10, can-machines-teach 17→24) + 1 gap with no question (can-machines-teach gap 3). Fixed; validate:content PASS (26 questions), suite 25/25, check 0 errors.
