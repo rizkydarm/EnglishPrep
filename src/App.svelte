@@ -1,19 +1,18 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { ModeWatcher } from "mode-watcher";
+  import type { Component } from "svelte";
+  import { ModeWatcher, setMode } from "mode-watcher";
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
-  import { Button } from "$lib/components/ui/button/index.js";
   import { Separator } from "$lib/components/ui/separator/index.js";
   import AppSidebar from "$lib/components/app-sidebar.svelte";
-  import { AREA_LABEL, VIEW_TITLE, type View } from "$lib/data/modules.js";
+  import { VIEW_TITLE, type View } from "$lib/data/modules.js";
   import Home from "$lib/views/Home.svelte";
   import SetupSheet from "$lib/views/SetupSheet.svelte";
   import QuizShell from "$lib/views/QuizShell.svelte";
   import Results from "$lib/views/Results.svelte";
   import Dashboard from "$lib/views/Dashboard.svelte";
-  import SettingsView from "$lib/views/SettingsView.svelte";
   import type { QuizMode } from "$lib/stores/quiz.svelte.js";
-  import { settings } from "$lib/stores/settings.svelte.js";
+  import { settings, type Appearance } from "$lib/stores/settings.svelte.js";
   import { progress } from "$lib/stores/progress.svelte.js";
   import { srs, todayStr } from "$lib/stores/srs.svelte.js";
   import type { Level } from "$lib/types/schema.js";
@@ -31,27 +30,49 @@
     type SessionSummary,
   } from "$lib/views/session-data.js";
 
-  const FONT_STACK = {
-    sans: `-apple-system, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif`,
-    serif: `Georgia, Palatino, "Palatino Linotype", serif`,
-    mono: `"SF Mono", Menlo, Consolas, monospace`,
-  } as const;
-
   let view = $state<View>("dashboard");
+  let settingsViewComponent = $state<Component | null>(null);
+  let settingsViewLoading = $state(false);
+  let settingsViewLoadError = $state(false);
+  let settingsViewPromise: Promise<void> | null = null;
 
+  function preloadSettingsView(): Promise<void> {
+    if (settingsViewComponent) return Promise.resolve();
+    if (settingsViewPromise) return settingsViewPromise;
+
+    settingsViewLoading = true;
+    settingsViewLoadError = false;
+    settingsViewPromise = import("$lib/views/SettingsView.svelte")
+      .then(({ default: component }) => {
+        settingsViewComponent = component;
+      })
+      .catch(() => {
+        settingsViewLoadError = true;
+        settingsViewPromise = null;
+      })
+      .finally(() => {
+        settingsViewLoading = false;
+      });
+    return settingsViewPromise;
+  }
+
+  function prefetchView(next: View): void {
+    if (next === "settings") void preloadSettingsView();
+  }
+
+  // Apply the persisted appearance once, and on real change only. Guarded so opening a
+  // view never re-applies the theme — that redundant restyle made Settings feel slow.
+  let appliedAppearance: Appearance | null = null;
   $effect(() => {
-    if (settings.loaded) {
-      try {
-        document.documentElement.dataset.font = settings.font;
-        document.documentElement.style.fontFamily = FONT_STACK[settings.font];
-      } catch {
-        // Non-DOM environment
-      }
-    }
+    if (!settings.loaded) return;
+    if (appliedAppearance === settings.appearance) return;
+    appliedAppearance = settings.appearance;
+    setMode(settings.appearance);
   });
 
   function navigate(next: View) {
     view = next;
+    prefetchView(next);
   }
 
   // ---- Epic 4 session flow (T-018): Home → Setup → Quiz → Results ----
@@ -86,7 +107,7 @@
 
   function skippedToast(skipped: { file: string; reason: string }[]): string | null {
     return skipped.length > 0
-      ? `${skipped.length} content file(s) skipped: ${skipped.map((s) => s.file).join(", ")}`
+      ? `${skipped.length} content file(s) skipped: ${skipped.map((s) => `${s.file} (${s.reason})`).join("; ")}`
       : null;
   }
 
@@ -119,12 +140,6 @@
 
   function startSetup(mode: QuizMode) {
     setupMode = mode;
-  }
-
-  function areaMode(v: View): QuizMode {
-    if (v === "vocabulary") return "vocab";
-    if (v === "reading") return "reading";
-    return "writing";
   }
 
   function availableFor(mode: QuizMode): number {
@@ -197,29 +212,40 @@
 
 <ModeWatcher />
 <Sidebar.Provider>
-  <AppSidebar {view} onNavigate={navigate} />
+  <AppSidebar {view} onNavigate={navigate} onPrefetch={prefetchView} />
   <Sidebar.Inset>
-    <header class="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-      <Sidebar.Trigger class="size-11" />
-      <Separator orientation="vertical" class="h-6" />
-      <p class="text-sm font-medium">{VIEW_TITLE[view]}</p>
+    <header class="flex h-16 shrink-0 items-center gap-3 border-b-[2.5px] border-border-strong bg-card px-4 md:px-6">
+      <!-- Desktop sidebar toggle lives in the sidebar footer (bottom-left). This one is
+           mobile-only, where the sidebar renders as a sheet. -->
+      <Sidebar.Trigger
+        class="interactive size-10 shrink-0 rounded-xl border-2 border-border-strong shadow-none hover:bg-muted md:hidden"
+      />
+      <Separator orientation="vertical" class="h-6 w-[2px] bg-border-strong/20 md:hidden" />
+      <div class="flex items-center gap-2">
+        <p class="text-base font-black tracking-tight">{VIEW_TITLE[view]}</p>
+        <span class="badge-pill bg-yellow text-accent-ink border-border-strong text-[11px] font-black hidden sm:inline-flex">B1–B2 LAB</span>
+      </div>
     </header>
-    <main class="flex-1 overflow-y-auto p-4 md:p-6">
-      {#if contentToast}
-        <div
-          role="alert"
-          class="mx-auto mb-4 flex w-full max-w-5xl items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-3 text-sm"
-        >
-          <span class="flex-1">{contentToast}</span>
+    {#if contentToast}
+      <!-- Content-skip banner. Lives OUTSIDE the scroll container so it never
+           interacts with the quiz header's negative top margin (-mt-4/-mt-6). -->
+      <div
+        role="alert"
+        class="shrink-0 border-b-[2.5px] border-border-strong bg-yellow px-4 py-3 text-sm font-semibold md:px-6 dark:bg-yellow/40"
+      >
+        <div class="mx-auto flex w-full max-w-5xl items-center gap-3">
+          <span class="flex-1 text-foreground">{contentToast}</span>
           <button
             type="button"
-            class="min-h-11 shrink-0 rounded-lg px-2 font-medium underline"
+            class="btn-3d btn-3d-white min-h-[36px] px-3 text-xs font-extrabold"
             onclick={() => (contentToast = null)}
           >
             Dismiss
           </button>
         </div>
-      {/if}
+      </div>
+    {/if}
+    <main class="flex-1 overflow-y-auto p-4 md:p-6">
       {#if stage === "quiz"}
         <div class="mx-auto w-full max-w-5xl">
           {#key quizRunId}
@@ -258,22 +284,6 @@
               onStart={startSetup}
               onOpenDashboard={() => navigate("progress")}
             />
-          {:else if view === "vocabulary" || view === "reading" || view === "writing"}
-            {@const mode = areaMode(view)}
-            <div>
-              <h1 class="text-2xl font-semibold tracking-tight md:text-3xl">
-                {AREA_LABEL[view]}
-              </h1>
-              <p class="text-muted-foreground mt-1 text-sm">
-                {availableFor(mode)} item{availableFor(mode) === 1 ? "" : "s"} available. Choose
-                settings, then start a drill.
-              </p>
-              <div class="mt-3">
-                <Button disabled={availableFor(mode) === 0} onclick={() => startSetup(mode)}>
-                  Start {AREA_LABEL[view]} drill
-                </Button>
-              </div>
-            </div>
           {:else if view === "progress"}
             <Dashboard
               words={(bundle?.vocab ?? []).map((v) => ({ id: v.id, level: v.level }))}
@@ -320,7 +330,23 @@
               onOpenSettings={() => navigate("settings")}
             />
           {:else if view === "settings"}
-            <SettingsView />
+            {#if settingsViewComponent}
+              {@const SettingsView = settingsViewComponent}
+              <SettingsView />
+            {:else if settingsViewLoadError}
+              <div class="card-3d p-5" role="alert">
+                <p class="font-bold">Settings could not be loaded.</p>
+                <button
+                  type="button"
+                  class="btn-3d btn-3d-white mt-3 min-h-11 px-4 text-sm"
+                  onclick={() => void preloadSettingsView()}
+                >
+                  Try again
+                </button>
+              </div>
+            {:else if settingsViewLoading}
+              <p class="text-muted-foreground p-4 text-sm" role="status">Loading settings…</p>
+            {/if}
           {/if}
         </div>
       {/if}

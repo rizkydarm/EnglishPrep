@@ -1,21 +1,12 @@
 // Navigation labels for the app shell.
 // The app has exactly three practice modes (PRD §7.1): Vocabulary, Reading,
-// Writing. There is no browsable module catalog.
+// Writing. They are chosen on Home, not routed by the shell. The shell only
+// routes the top-level destinations below.
 
-export type Area = "vocabulary" | "reading" | "writing";
-export type View = "dashboard" | Area | "progress" | "settings";
-
-export const AREA_LABEL: Record<Area, string> = {
-	vocabulary: "Vocabulary",
-	reading: "Reading",
-	writing: "Writing",
-};
+export type View = "dashboard" | "progress" | "settings";
 
 export const VIEW_TITLE: Record<View, string> = {
 	dashboard: "Home",
-	vocabulary: "Vocabulary",
-	reading: "Reading",
-	writing: "Writing",
 	progress: "Progress",
 	settings: "Settings",
 };

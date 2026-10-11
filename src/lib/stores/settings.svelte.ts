@@ -1,16 +1,15 @@
 // Global app settings (PRD §7.10). Persisted to settings.json.
-// Defaults: appearance system, font sans, sound on, difficulty b2-core, timer off.
+// Defaults: appearance system, sound on, difficulty b2-core, timer off.
+// Fonts are fixed by the design system (sans UI, serif reading, mono input) — not user-switchable.
 
 import type { Level } from "$lib/types/schema";
 import { loadState, saveState } from "./persist";
 
 export type Appearance = "system" | "light" | "dark";
-export type FontStyle = "sans" | "serif" | "mono";
 export type TimerOption = 0 | 15 | 30 | 60;
 
 export interface SettingsState {
 	appearance: Appearance;
-	font: FontStyle;
 	sound: boolean;
 	defaultDifficulty: Level;
 	defaultTimer: TimerOption;
@@ -18,7 +17,6 @@ export interface SettingsState {
 
 export const DEFAULT_SETTINGS: SettingsState = {
 	appearance: "system",
-	font: "sans",
 	sound: true,
 	defaultDifficulty: "b2-core",
 	defaultTimer: 0,
@@ -34,7 +32,6 @@ export type ReloadListener = () => ReloadResult | void | Promise<ReloadResult | 
 
 class SettingsStore {
 	appearance = $state<Appearance>(DEFAULT_SETTINGS.appearance);
-	font = $state<FontStyle>(DEFAULT_SETTINGS.font);
 	sound = $state<boolean>(DEFAULT_SETTINGS.sound);
 	defaultDifficulty = $state<Level>(DEFAULT_SETTINGS.defaultDifficulty);
 	defaultTimer = $state<TimerOption>(DEFAULT_SETTINGS.defaultTimer);
@@ -45,7 +42,6 @@ class SettingsStore {
 	snapshot(): SettingsState {
 		return {
 			appearance: this.appearance,
-			font: this.font,
 			sound: this.sound,
 			defaultDifficulty: this.defaultDifficulty,
 			defaultTimer: this.defaultTimer,
@@ -55,7 +51,6 @@ class SettingsStore {
 	async load(): Promise<void> {
 		const saved = await loadState<SettingsState>("settings.json", DEFAULT_SETTINGS);
 		this.appearance = saved.appearance;
-		this.font = saved.font;
 		this.sound = saved.sound;
 		this.defaultDifficulty = saved.defaultDifficulty;
 		this.defaultTimer = saved.defaultTimer;
@@ -68,7 +63,6 @@ class SettingsStore {
 
 	async set(patch: Partial<SettingsState>): Promise<void> {
 		if (patch.appearance !== undefined) this.appearance = patch.appearance;
-		if (patch.font !== undefined) this.font = patch.font;
 		if (patch.sound !== undefined) this.sound = patch.sound;
 		if (patch.defaultDifficulty !== undefined) this.defaultDifficulty = patch.defaultDifficulty;
 		if (patch.defaultTimer !== undefined) this.defaultTimer = patch.defaultTimer;
@@ -77,7 +71,6 @@ class SettingsStore {
 
 	async reset(): Promise<void> {
 		this.appearance = DEFAULT_SETTINGS.appearance;
-		this.font = DEFAULT_SETTINGS.font;
 		this.sound = DEFAULT_SETTINGS.sound;
 		this.defaultDifficulty = DEFAULT_SETTINGS.defaultDifficulty;
 		this.defaultTimer = DEFAULT_SETTINGS.defaultTimer;

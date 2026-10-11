@@ -2,6 +2,8 @@
 	import type { QuizMode } from "$lib/stores/quiz.svelte.js";
 	import type { Level } from "$lib/types/schema.js";
 	import { LEVELS, LEVEL_LABEL, VOCAB_TYPES, VOCAB_TYPE_LABEL, type SessionSetup } from "$lib/views/session-data.js";
+	import { toggleVariants } from "$lib/components/ui/toggle/index.js";
+	import { Switch } from "$lib/components/ui/switch/index.js";
 
 	interface Defaults {
 		count: number;
@@ -124,27 +126,29 @@
 			aria-label="Setup: {MODE_TITLE[mode]}"
 		>
 			<div class="sheet-head">
-				<h2 class="sheet-title">{MODE_TITLE[mode]}</h2>
+				<div>
+					<h2 class="sheet-title">{MODE_TITLE[mode]}</h2>
+					<p class="text-xs text-muted-foreground font-serif italic mt-0.5">Customize your practice session parameters</p>
+				</div>
 				<button type="button" class="icon-btn" aria-label="Close setup" onclick={() => onClose?.()}>
 					✕
 				</button>
 			</div>
 
 			{#if available === 0}
-				<p class="state" role="status">No content available for this mode yet.</p>
+				<div class="state" role="status">No content available for this mode yet.</div>
 			{:else}
 				<div class="group">
 					<p class="group-label" id="setup-count-label">
-						Questions · <strong>{clamped}</strong>{isClamped ? ` (max ${maxCount} available)` : ""}
+						Questions: <span class="badge-pill bg-yellow text-accent-ink ml-1">{clamped}</span>{isClamped ? ` (max ${maxCount} available)` : ""}
 					</p>
-					<div class="presets" role="group" aria-labelledby="setup-count-label">
+					<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-count-label">
 						{#each COUNTS as n (n)}
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={clamped === Math.min(n, maxCount)}
 								aria-pressed={clamped === Math.min(n, maxCount)}
 								onclick={() => (count = Math.min(n, maxCount))}
+								class={toggleVariants()}
 							>{n}</button>
 						{/each}
 					</div>
@@ -160,15 +164,14 @@
 				</div>
 
 				<div class="group">
-					<p class="group-label" id="setup-level-label">Difficulty (multi-select)</p>
-					<div class="chips" role="group" aria-labelledby="setup-level-label">
+					<p class="group-label" id="setup-level-label">Difficulty (CEFR Level)</p>
+					<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-level-label">
 						{#each LEVELS as level (level)}
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={levels.includes(level)}
 								aria-pressed={levels.includes(level)}
 								onclick={() => toggleLevel(level)}
+								class={toggleVariants()}
 							>{LEVEL_LABEL[level]}</button>
 						{/each}
 					</div>
@@ -179,75 +182,68 @@
 
 				<div class="group">
 					<p class="group-label" id="setup-timer-label">Timer per question</p>
-					<div class="chips" role="group" aria-labelledby="setup-timer-label">
+					<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-timer-label">
 						{#each TIMERS as t (t.value)}
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={timer === t.value}
 								aria-pressed={timer === t.value}
 								onclick={() => (timer = t.value)}
+								class={toggleVariants()}
 							>{t.label}</button>
 						{/each}
 					</div>
 					{#if timer > 0}
-						<p class="note">Timer expiry auto-submits the question as incorrect.</p>
+						<p class="note">Timer expiry auto-submits question as incorrect.</p>
 					{/if}
 				</div>
 
 				{#if mode === "vocab"}
 					<div class="group">
 						<p class="group-label" id="setup-cloze-label">Cloze input mode</p>
-						<div class="chips" role="group" aria-labelledby="setup-cloze-label">
+						<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-cloze-label">
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={clozeMode === "word_bank"}
 								aria-pressed={clozeMode === "word_bank"}
 								onclick={() => (clozeMode = "word_bank")}
+								class={toggleVariants()}
 							>Word bank</button>
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={clozeMode === "type"}
 								aria-pressed={clozeMode === "type"}
 								onclick={() => (clozeMode = "type")}
+								class={toggleVariants()}
 							>Type answer</button>
 						</div>
 					</div>
 
 					<div class="group">
 						<p class="group-label" id="setup-pair-label">Matching pairs</p>
-						<div class="chips" role="group" aria-labelledby="setup-pair-label">
+						<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-pair-label">
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={pairCount === 4}
 								aria-pressed={pairCount === 4}
 								onclick={() => (pairCount = 4)}
+								class={toggleVariants()}
 							>4 pairs</button>
 							<button
 								type="button"
-								class="chip"
-								class:chip-active={pairCount === 6}
 								aria-pressed={pairCount === 6}
 								onclick={() => (pairCount = 6)}
+								class={toggleVariants()}
 							>6 pairs</button>
 						</div>
 					</div>
 
 					<div class="group">
-						<p class="group-label" id="setup-types-label">Question types (at least one)</p>
-						<div class="checks" role="group" aria-labelledby="setup-types-label">
+						<p class="group-label" id="setup-types-label">Question types</p>
+						<div class="flex flex-wrap gap-2" role="group" aria-labelledby="setup-types-label">
 							{#each VOCAB_TYPES as t (t)}
-								<label class="check">
-									<input
-										type="checkbox"
-										checked={types.includes(t)}
-										onchange={() => toggleType(t)}
-									/>
-									<span>{VOCAB_TYPE_LABEL[t]}</span>
-								</label>
+								<button
+									type="button"
+									aria-pressed={types.includes(t)}
+									onclick={() => toggleType(t)}
+									class={toggleVariants()}
+								>{VOCAB_TYPE_LABEL[t]}</button>
 							{/each}
 						</div>
 						{#if !typesValid}
@@ -256,27 +252,33 @@
 					</div>
 
 					<div class="group">
-						<label class="check check-row">
-							<input
-								type="checkbox"
+						<div
+							class="flex items-center justify-between gap-4 rounded-xl border-2 border-border-strong bg-muted/40 p-3"
+						>
+							<span class="text-sm font-bold"
+								>Include SRS review words (~30%{srsDue > 0
+									? `, ${srsDue} due today`
+									: ", none due"})</span
+							>
+							<Switch
 								bind:checked={srsEnabled}
 								disabled={srsDue === 0}
+								aria-label="Include SRS review words"
 							/>
-							<span>Include review words (~30% due SRS{srsDue > 0 ? `, ${srsDue} due` : ", none due"})</span>
-						</label>
+						</div>
 					</div>
 				{/if}
 			{/if}
 
-			<div class="actions">
-				<button type="button" class="btn" onclick={() => onClose?.()}>Cancel</button>
+			<div class="actions pt-3 border-t-2 border-border-strong">
+				<button type="button" class="btn-3d btn-3d-white min-h-[48px] px-5 text-sm font-extrabold" onclick={() => onClose?.()}>Cancel</button>
 				<button
 					type="button"
-					class="btn btn-primary"
+					class="btn-3d min-h-[48px] px-6 text-sm font-extrabold flex-1"
 					disabled={!canStart}
 					onclick={start}
 				>
-					Start quiz · {clamped} question{clamped === 1 ? "" : "s"}
+					Start Drill · {clamped} question{clamped === 1 ? "" : "s"} →
 				</button>
 			</div>
 		</div>
@@ -291,7 +293,8 @@
 		display: flex;
 		align-items: flex-end;
 		justify-content: center;
-		background: rgba(0, 0, 0, 0.45);
+		background: rgba(15, 23, 42, 0.6);
+		backdrop-filter: blur(2px);
 		animation: fade-in 200ms ease-out;
 	}
 	@media (min-width: 720px) {
@@ -302,49 +305,61 @@
 	}
 	.sheet {
 		width: 100%;
-		max-width: 34rem;
+		max-width: 36rem;
 		max-height: 88vh;
 		overflow-y: auto;
-		background: #ffffff;
-		border: 2px solid #e7e5e4;
-		border-radius: 16px 16px 0 0;
-		padding: 1.25rem;
+		background: var(--card);
+		border: 2.5px solid var(--border-strong);
+		border-radius: 24px 24px 0 0;
+		padding: 1.5rem;
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
-		animation: sheet-up 250ms ease-out;
+		gap: 1.25rem;
+		box-shadow: var(--shadow-3d-lg);
+		animation: sheet-up 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
 	}
 	@media (min-width: 720px) {
 		.sheet {
-			border-radius: 16px;
+			border-radius: 24px;
 		}
-	}
-	:global(.dark) .sheet {
-		background: #1e1e20;
-		border-color: #2a2a2e;
 	}
 	.sheet-head {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.75rem;
+		border-bottom: 2px solid var(--border-strong);
+		padding-bottom: 0.75rem;
 	}
 	.sheet-title {
 		margin: 0;
-		font-size: 1.125rem;
+		font-size: 1.35rem;
+		font-weight: 900;
+		letter-spacing: -0.01em;
 	}
 	.icon-btn {
-		min-width: 44px;
-		min-height: 44px;
-		border: 2px solid #e7e5e4;
+		min-width: 40px;
+		min-height: 40px;
+		border: 2px solid var(--border-strong);
 		border-radius: 12px;
-		background: transparent;
+		background: var(--card);
+		box-shadow: 0 3px 0 0 var(--border-strong);
 		color: inherit;
-		font: inherit;
+		font-weight: 800;
+		font-size: 1rem;
 		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.15s ease;
 	}
-	:global(.dark) .icon-btn {
-		border-color: #2a2a2e;
+	.icon-btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 0 0 var(--border-strong);
+	}
+	.icon-btn:active {
+		transform: translateY(2px);
+		box-shadow: 0 1px 0 0 var(--border-strong);
 	}
 	.group {
 		display: flex;
@@ -354,123 +369,41 @@
 	.group-label {
 		margin: 0;
 		font-size: 0.85rem;
-		font-weight: 700;
+		font-weight: 800;
 	}
-	.presets,
-	.chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-	.chip {
-		min-height: 44px;
-		min-width: 44px;
-		padding: 0.5rem 0.9rem;
-		border: 2px solid #e7e5e4;
-		border-radius: 12px;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		font-weight: 600;
-		cursor: pointer;
-		transition: transform 80ms ease-out, border-color 120ms ease-out;
-	}
-	:global(.dark) .chip {
-		border-color: #2a2a2e;
-	}
-	.chip:not(:disabled):hover {
-		border-color: #6d28d9;
-	}
-	.chip:not(:disabled):active {
-		transform: scale(0.98) translateY(1px);
-	}
-	.chip-active {
-		border-color: #6d28d9;
-		background: color-mix(in srgb, #6d28d9 10%, transparent);
-	}
-	.chip:focus-visible,
 	.icon-btn:focus-visible,
-	.btn:focus-visible,
-	.slider:focus-visible,
-	.check input:focus-visible {
-		outline: 2px solid #6d28d9;
+	.slider:focus-visible {
+		outline: 2px solid var(--ring);
 		outline-offset: 2px;
 	}
 	.slider {
 		width: 100%;
-		min-height: 44px;
-		accent-color: #6d28d9;
-	}
-	.checks {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-	.check {
-		display: flex;
-		align-items: center;
-		gap: 0.625rem;
-		min-height: 44px;
-		font-size: 0.9375rem;
-		cursor: pointer;
-	}
-	.check input {
-		width: 1.25rem;
-		height: 1.25rem;
-		accent-color: #6d28d9;
-		flex: none;
-	}
-	.check-row {
-		font-weight: 600;
+		min-height: 40px;
+		accent-color: var(--primary);
 	}
 	.note {
 		margin: 0;
 		font-size: 0.8rem;
-		opacity: 0.65;
+		color: var(--muted-foreground);
 	}
 	.warn {
 		margin: 0;
 		font-size: 0.85rem;
-		font-weight: 700;
-		color: #ef4444;
+		font-weight: 800;
+		color: var(--destructive);
 	}
 	.state {
 		margin: 0;
-		padding: 1rem;
-		border: 2px dashed #e7e5e4;
-		border-radius: 12px;
-	}
-	:global(.dark) .state {
-		border-color: #2a2a2e;
+		padding: 1.25rem;
+		border: 2px dashed var(--border-strong);
+		border-radius: 16px;
+		text-align: center;
+		font-weight: 600;
 	}
 	.actions {
 		display: flex;
-		justify-content: flex-end;
-		gap: 0.5rem;
+		gap: 0.75rem;
 		flex-wrap: wrap;
-	}
-	.btn {
-		min-height: 44px;
-		padding: 0.625rem 1.25rem;
-		border: 2px solid #e7e5e4;
-		border-radius: 12px;
-		background: transparent;
-		color: inherit;
-		font: inherit;
-		font-weight: 700;
-		cursor: pointer;
-	}
-	:global(.dark) .btn {
-		border-color: #2a2a2e;
-	}
-	.btn-primary {
-		background: #6d28d9;
-		border-color: #6d28d9;
-		color: #fff;
-	}
-	.btn:disabled {
-		opacity: 0.45;
-		cursor: not-allowed;
 	}
 	@keyframes fade-in {
 		from {
@@ -482,11 +415,11 @@
 	}
 	@keyframes sheet-up {
 		from {
-			transform: translateY(8px);
+			transform: translateY(12px) scale(0.98);
 			opacity: 0;
 		}
 		to {
-			transform: translateY(0);
+			transform: translateY(0) scale(1);
 			opacity: 1;
 		}
 	}
@@ -495,7 +428,7 @@
 		.sheet {
 			animation: none;
 		}
-		.chip {
+		.icon-btn {
 			transition: none;
 		}
 	}
