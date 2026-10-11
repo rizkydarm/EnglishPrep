@@ -45,7 +45,7 @@
 - **Agent:** agy · **Estimasi:** 8 mnt · **File:** review `src/lib/types/schema.ts`, `src/lib/content-loader/*`, `src-tauri/**`
 - **Depends On:** T-003, T-004, T-005
 - **Acceptance:** tidak ada SQL/path injection via `id`, tidak ada network call, ada index/unique `id`; temuan → balikin status ke `todo`
-- **Status:** todo
+- **Status:** done (review clean, SPEC ✅; 2 advisories logged in PROGRESS.md)
 
 ## Epic 1 — Vocab Engine (PRD §7.4, 5 tipe)
 

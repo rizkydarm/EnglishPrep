@@ -193,9 +193,9 @@ git commit -m "feat: add v1 seed content 50+5+10"
 
 **Files:** review-only, tanpa kode baru kecuali temuan.
 
-- [ ] **Step 1: Audit `id` regex, path join, CSP, allowlist, `[[GAP]]` handling**
-- [ ] **Step 2: Verdict SPEC ✅/❌ + quality; jika ❌, kembalikan task terkait ke `todo` dengan alasan di `PROGRESS.md`**
-- [ ] **Step 3: Append log ke `PROGRESS.md`, tanpa commit kode**
+- [x] **Step 1: Audit `id` regex, path join, CSP, allowlist, `[[GAP]]` handling**
+- [x] **Step 2: Verdict SPEC ✅/❌ + quality; jika ❌, kembalikan task terkait ke `todo` dengan alasan di `PROGRESS.md`**
+- [x] **Step 3: Append log ke `PROGRESS.md`, tanpa commit kode**
 
 ## Self-Review
 
