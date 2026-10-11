@@ -84,10 +84,14 @@
 				const item = items.find((it) => it.id === id);
 				if (item && outcomes[item.id] === undefined && quiz.status === "active") {
 					expired[item.id] = true;
+					// Self-assessed items (image description) stay out of the auto %
+					// even when they time out (PRD §7.7).
+					const selfAssessed = item.kind === "writing_image";
 					record(item.id, {
 						earned: 0,
 						userText: "No answer — time expired",
-						correctText: correctTextFor(item),
+						correctText: selfAssessed ? "Not self-scored" : correctTextFor(item),
+						...(selfAssessed ? { excluded: true } : {}),
 					});
 				}
 			}
@@ -443,6 +447,13 @@
 							prompt={current.payload as WritingPrompt}
 							onResult={(r) => onWritingResult(current, r)}
 							onSelfScore={(r) => onWritingSelf(current, r)}
+							onSkip={() =>
+								record(current.id, {
+									earned: 0,
+									userText: "Skipped (no valid prompt)",
+									correctText: "Not auto-graded",
+									excluded: true,
+								})}
 							onExit={askExit}
 							disabled={locked}
 						/>

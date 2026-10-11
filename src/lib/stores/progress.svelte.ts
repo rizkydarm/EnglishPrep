@@ -22,7 +22,7 @@ export interface HistorySession {
 	levels: Level[];
 	correct: number;
 	total: number;
-	score_pct: number;
+	score_pct: number | null;
 	duration_sec: number;
 	wrong_ids: string[];
 }
@@ -41,6 +41,8 @@ export interface RecordSessionInput {
 	duration_sec: number;
 	wrong_ids: string[];
 	date?: string;
+	/** Auto score 0..100, or null for a fully self-assessed session (N/A). */
+	score_pct?: number | null;
 }
 
 function dayOf(dateIso: string): string {
@@ -107,7 +109,12 @@ class ProgressStore {
 			levels: [...input.levels],
 			correct: input.correct,
 			total: input.total,
-			score_pct: input.total > 0 ? Math.round((input.correct / input.total) * 100) : 0,
+			score_pct:
+				input.score_pct !== undefined
+					? input.score_pct
+					: input.total > 0
+						? Math.round((input.correct / input.total) * 100)
+						: null,
 			duration_sec: input.duration_sec,
 			wrong_ids: [...input.wrong_ids],
 		};

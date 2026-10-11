@@ -119,7 +119,8 @@ export interface SessionSummary {
 	durationSec: number;
 	autoEarned: number;
 	autoTotal: number;
-	scorePct: number;
+	/** Auto score 0..100, or null when every item was self-assessed (N/A). */
+	scorePct: number | null;
 	correctCount: number;
 	wrongCount: number;
 	excludedCount: number;
@@ -539,7 +540,7 @@ export function summarizeSession(
 	const auto = entries.filter((e) => !e.excluded);
 	const autoEarned = auto.reduce((n, e) => n + Math.min(1, Math.max(0, e.earned)), 0);
 	const autoTotal = auto.length;
-	const scorePct = autoTotal > 0 ? Math.round((autoEarned / autoTotal) * 100) : 0;
+	const scorePct = autoTotal > 0 ? Math.round((autoEarned / autoTotal) * 100) : null;
 	const correctCount = auto.filter((e) => e.earned >= 0.999).length;
 	const wrongCount = auto.length - correctCount;
 	const selfAssessed = entries

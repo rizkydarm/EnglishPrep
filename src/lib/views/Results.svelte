@@ -12,7 +12,7 @@
 
 	const MODE_LABEL = { vocab: "Vocabulary", reading: "Reading", writing: "Writing" } as const;
 
-	const celebrated = $derived(summary.scorePct >= 80);
+	const celebrated = $derived(summary.scorePct !== null && summary.scorePct >= 80);
 	const confetti = $derived(
 		celebrated
 			? Array.from({ length: 12 }, (_, i) => ({
@@ -51,7 +51,19 @@
 	}
 
 	const RING_C = 2 * Math.PI * 26;
-	const ringOffset = $derived(RING_C * (1 - summary.scorePct / 100));
+	const ringOffset = $derived(
+		summary.scorePct === null ? RING_C : RING_C * (1 - summary.scorePct / 100),
+	);
+	const scoreLabel = $derived(summary.scorePct === null ? "N/A" : `${summary.scorePct}%`);
+	const headline = $derived(
+		summary.scorePct === null
+			? "Self-assessed — no auto score"
+			: summary.scorePct >= 80
+				? "Excellent!"
+				: summary.scorePct >= 60
+					? "Good effort!"
+					: "Keep practicing!",
+	);
 </script>
 
 <svelte:window onkeydown={onKeydown} />
@@ -70,7 +82,11 @@
 	{/if}
 
 	<div class="head">
-		<div class="ring-wrap" role="img" aria-label="Score {summary.scorePct} percent">
+		<div
+			class="ring-wrap"
+			role="img"
+			aria-label={summary.scorePct === null ? "No auto score" : `Score ${summary.scorePct} percent`}
+		>
 			<svg class="ring" viewBox="0 0 64 64" aria-hidden="true">
 				<circle cx="32" cy="32" r="26" class="ring-bg" />
 				<circle
@@ -83,15 +99,11 @@
 					transform="rotate(-90 32 32)"
 				/>
 			</svg>
-			<span class="ring-num">{summary.scorePct}%</span>
+			<span class="ring-num">{scoreLabel}</span>
 		</div>
 		<div class="head-text">
 			<h1 class="title">
-				{MODE_LABEL[summary.mode]} quiz — {summary.scorePct >= 80
-					? "Excellent!"
-					: summary.scorePct >= 60
-						? "Good effort!"
-						: "Keep practicing!"}
+				{MODE_LABEL[summary.mode]} quiz — {headline}
 			</h1>
 			<p class="sub">
 				{summary.correctCount} correct · {summary.wrongCount} wrong
@@ -127,7 +139,11 @@
 					<li class="self-item">
 						<span class="badge badge-self">{s.label}</span>
 						<p class="review-text">{s.userText}</p>
-						<p class="self-score">Self-score: {s.selfScore} of {s.selfMax}</p>
+						{#if s.selfScore > 0}
+							<p class="self-score">Self-score: {s.selfScore} of {s.selfMax}</p>
+						{:else}
+							<p class="self-score">Not self-scored</p>
+						{/if}
 					</li>
 				{/each}
 			</ul>

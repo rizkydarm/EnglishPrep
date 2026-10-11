@@ -26,11 +26,13 @@
     onSelfScore?: (result: WritingResult) => void;
     /** Called on Esc key (exit / close dialog). */
     onExit?: () => void;
+    /** Called when the prompt is unusable and the learner skips it (avoids soft-lock). */
+    onSkip?: () => void;
     /** Disable all inputs (e.g. review mode). */
     disabled?: boolean;
   }
 
-  let { prompt = null, onResult, onSelfScore, onExit, disabled = false }: Props = $props();
+  let { prompt = null, onResult, onSelfScore, onExit, onSkip, disabled = false }: Props = $props();
 
   // ---- shared grading state ----
   let checked: boolean = $state(false);
@@ -224,6 +226,13 @@
     <div class="fallback" role="status">
       <p class="fallback-title">No writing prompt available.</p>
       <p class="fallback-sub">This prompt is empty or invalid and was skipped.</p>
+      {#if onSkip && !disabled}
+        <div class="actions">
+          <button type="button" class="btn btn-primary" onclick={() => onSkip?.()}>
+            Skip this question
+          </button>
+        </div>
+      {/if}
     </div>
   {:else if prompt.type === "sentence_order"}
     <div class="block">

@@ -367,7 +367,7 @@
                       {/each}
                     </span>
                   </td>
-                  <td class="py-2 pr-3">{session.correct}/{session.total} ({session.score_pct}%)</td>
+                  <td class="py-2 pr-3">{session.correct}/{session.total} ({session.score_pct === null ? "N/A" : `${session.score_pct}%`})</td>
                   <td class="py-2 pr-3">{formatDuration(session.duration_sec)}</td>
                   <td class="py-2">
                     <Button

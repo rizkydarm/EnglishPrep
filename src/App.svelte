@@ -159,11 +159,12 @@
   const writingCount = $derived(bundle?.prompts.length ?? 0);
   const mastered = $derived(srs.masteredCount);
   const quizzesToday = $derived(progress.daily.find((d) => d.date === todayUtc())?.quizzes ?? 0);
-  const avgScore = $derived(
-    progress.sessions.length === 0
+  const avgScore = $derived.by(() => {
+    const scored = progress.sessions.filter((s) => s.score_pct !== null);
+    return scored.length === 0
       ? 0
-      : Math.round(progress.sessions.reduce((n, s) => n + s.score_pct, 0) / progress.sessions.length),
-  );
+      : Math.round(scored.reduce((n, s) => n + (s.score_pct ?? 0), 0) / scored.length);
+  });
   const definitionByWordId = $derived<Record<string, string>>(
     Object.fromEntries((bundle?.vocab ?? []).map((v) => [v.id, v.definition_id])),
   );
@@ -244,6 +245,7 @@
         total: s.autoTotalCount,
         duration_sec: s.durationSec,
         wrong_ids: s.wrongIds,
+        score_pct: s.scorePct,
       });
       for (const u of s.srsUpdates) await srs.recordResult(u.wordId, u.correct, todayStr());
     } catch {

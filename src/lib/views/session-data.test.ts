@@ -152,6 +152,22 @@ describe("summarizeSession", () => {
 		// Partial matching updates no SRS boxes; full-mark single word advances.
 		expect(summary.srsUpdates).toEqual([{ wordId: "w-001", correct: true }]);
 	});
+
+	it("reports N/A (null) when every item is self-assessed", () => {
+		const items: QuizItem[] = [
+			{ id: "q1", kind: "writing_image", typeLabel: "Image description", level: "b2-core", payload: {} as never },
+		];
+		const summary = summarizeSession(
+			items,
+			{ q1: { earned: 0, userText: "desc", correctText: "self", excluded: true, selfScore: 3, selfMax: 5 } },
+			30,
+			"writing",
+			["b2-core"],
+		);
+		expect(summary.scorePct).toBeNull();
+		expect(summary.autoTotalCount).toBe(0);
+		expect(summary.excludedCount).toBe(1);
+	});
 });
 
 describe("buildWrongSession", () => {
