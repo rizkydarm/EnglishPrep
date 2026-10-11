@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build output
+/dist/
+/build/
+
+# Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Env
+.env
+.env.*
+!.env.example
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# OS / Editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Worktrees
+.worktrees/
