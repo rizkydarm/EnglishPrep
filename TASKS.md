@@ -157,7 +157,7 @@
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD`
 - **Depends On:** T-006, T-010, T-013, T-016, T-019, T-022
 - **Acceptance:** semua acceptance §14 hijau; tidak ada network; tidak ada drag&drop; 1 fix-wave max, lalu adjudicate
-- **Status:** todo
+- **Status:** done (agy final whole-branch review PASS: PRD §14 checklist 13/13 verified green, zero network, zero drag&drop, 200/200 tests pass, svelte-check 0 errors, cargo check 0 errors)
 
 ## DAG (urutan eksekusi)
 ```
