@@ -199,6 +199,38 @@
 - **Coordination:** agy stopped; single writer = deepseek for the fix pass.
 - **Status:** done — agy's blue/yellow rebuild (uncommitted) + deepseek fix passes: Font style setting removed, sidebar spacing, dark-mode token sweep, AA-safe blue (`--primary-strong`), hover/press on all clickables. Fix pass 2 (Req D): removed the 3 offline chips, moved the sidebar toggle to the bottom-left footer beside the theme button (+ floating toggle when collapsed, mobile keeps a header trigger), inactive nav items now have a real surface with a distinct active fill, fixed the unstyled Progress Settings button (`btn-3d` was missing), restyled Settings (Appearance card removed, sound switch rebuilt, tactile `card-3d` sections). `bun run check` 0 errors, 106/106 tests, build OK.
 
+## Epic 8 — Hardening + Runtime E2E (P0, sprint aktif 2026-10-12)
+
+> Remote: GitHub Issues `#1–#4` (label `epic-8`). Project board: pending `gh auth refresh -s project,read:project` oleh PO, lalu `gh project create --owner rizkydarm --title "EnglishPrep — Epic 8 Hardening"`.
+> Registry mesin: `.orchestrator/task-registry.json`. Aturan: 1 task = 1 branch = 1 worktree = 1 agent, ≤15 mnt, 1 commit.
+
+### H-001 — [muse] Runtime E2E offline launch (Tauri, Wi-Fi off) — issue #1
+- **Agent:** muse · **Estimasi:** 15 mnt · **File:** `docs/e2e-report.md` (no app code)
+- **Branch/worktree:** `agent/h-001-e2e-runtime` / `.worktrees/h-001-e2e-runtime`
+- **Depends On:** none
+- **Acceptance:** Tauri window launches offline (Wi-Fi off); cold start <2s, render <100ms; PRD §14 13/13 runtime-checked; report di `docs/e2e-report.md`
+- **Status:** todo
+
+### H-002 — [muse] Midnight tick fix (Dashboard 30-day chart) — issue #2
+- **Agent:** muse · **Estimasi:** 12 mnt · **File:** `src/lib/views/Dashboard.svelte` (+ test)
+- **Branch/worktree:** `agent/h-002-midnight-tick` / `.worktrees/h-002-midnight-tick`
+- **Depends On:** none
+- **Acceptance:** day rollover refreshes chart tanpa reload; no duplicate/missing bucket; vitest covers rollover
+- **Status:** todo
+
+### H-003 — [deepseek] Seed images + alternatives (Q-004 follow-up) — issue #3
+- **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `src-tauri/resources/content/writing/**`
+- **Branch/worktree:** `agent/h-003-seed-images` / `.worktrees/h-003-seed-images`
+- **Depends On:** none (needs owner binary assets; may park)
+- **Acceptance:** 3 placeholder diganti/asan per PRD §11; alternatives diisi bila ada; `validate:content` hijau
+- **Status:** todo
+
+### H-004 — [agy] Final re-gate review (merge gate) — issue #4
+- **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD` (no worktree)
+- **Depends On:** H-001, H-002, H-003
+- **Acceptance:** PRD §14 13/13 runtime-verified; zero network; zero drag&drop; 1 fix-wave max lalu adjudicate
+- **Status:** todo (blocked)
+
 ## DAG (urutan eksekusi)
 ```
 T-001 ─┬─→ T-002 ─┬─→ T-003 ─→ T-011 ─→ T-012 ─→ T-013 ─┐
