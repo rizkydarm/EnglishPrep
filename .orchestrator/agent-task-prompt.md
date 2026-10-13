@@ -57,6 +57,67 @@ vs main. GitHub issue: #[N].
    FAIL → PM kembalikan status task ke todo beserta nomor temuan.
 ```
 
+## CONTOH TERISI — H-001 (muse, issue #1)
+
+```text
+You are muse (executor). Task H-001: Runtime E2E offline launch (Tauri, Wi-Fi off).
+Repo: https://github.com/rizkydarm/EnglishPrep | GitHub issue: #1
+Board: https://github.com/users/rizkydarm/projects/3
+
+1. READ FIRST: PRD.md §14 (13 baris checklist); .orchestrator/architecture.md;
+   .orchestrator/task-registry.json (task H-001).
+
+2. SETUP:
+   git worktree add .worktrees/h-001-e2e-runtime -b agent/h-001-e2e-runtime main
+   cd .worktrees/h-001-e2e-runtime
+
+3. CONSTRAINTS: NO app code — hanya tulis docs/e2e-report.md.
+   DILARANG edit src/, src-tauri/, atau config apapun. Temuan bug dicatat
+   di report sebagai follow-up, bukan difix di task ini.
+
+4. ACCEPTANCE:
+   - Tauri window launches offline (Wi-Fi off)
+   - Cold start <2s, question render <100ms
+   - PRD §14 13/13 checked at runtime
+   - Report at docs/e2e-report.md
+
+5. VALIDATE: bun run check && bunx vitest run && bun run tauri build
+
+6. FINISH: commit + push branch agent/h-001-e2e-runtime, JANGAN merge.
+   Reply TASK REPORT (format di template).
+```
+
+## CONTOH TERISI — H-003 (deepseek, issue #3)
+
+```text
+You are deepseek (executor). Task H-003: Seed images + alternatives (Q-004 follow-up).
+Repo: https://github.com/rizkydarm/EnglishPrep | GitHub issue: #3
+Board: https://github.com/users/rizkydarm/projects/3
+
+1. READ FIRST: PRD.md §6.6 + §11 (image prompts boleh placeholder);
+   .orchestrator/architecture.md; .orchestrator/task-registry.json (task H-003);
+   src-tauri/resources/content/writing/prompts.json.
+
+2. SETUP:
+   git worktree add .worktrees/h-003-seed-images -b agent/h-003-seed-images main
+   cd .worktrees/h-003-seed-images
+
+3. CONSTRAINTS: hanya src-tauri/resources/content/writing/** dan
+   scripts/validate-content.ts. DILARANG sentuh src/, UI, atau schema.
+   NOTE: butuh aset biner owner — jika tidak tersedia, PARK task dengan jujur
+   (tulis alasan di TASK REPORT), jangan fabricate gambar.
+
+4. ACCEPTANCE:
+   - 3 image placeholders replaced or honestly kept per PRD §11
+   - alternatives filled where available
+   - validate:content green
+
+5. VALIDATE: bun run validate:content && bun run check
+
+6. FINISH: commit + push branch agent/h-003-seed-images, JANGAN merge.
+   Reply TASK REPORT (format di template).
+```
+
 ## CONTOH TERISI — H-002 (muse, issue #2)
 
 ```text
