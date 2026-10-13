@@ -201,7 +201,7 @@
 
 ## Epic 8 — Hardening + Runtime E2E (P0, sprint aktif 2026-10-12)
 
-> Remote: GitHub Issues `#1–#4` (label `epic-8`). Project board: pending `gh auth refresh -s project,read:project` oleh PO, lalu `gh project create --owner rizkydarm --title "EnglishPrep — Epic 8 Hardening"`.
+> Remote: GitHub Issues `#1–#4` (label `epic-8`) + Project board #3 "EnglishPrep — Epic 8 Hardening" (linked to repo, all 4 issues added).
 > Registry mesin: `.orchestrator/task-registry.json`. Aturan: 1 task = 1 branch = 1 worktree = 1 agent, ≤15 mnt, 1 commit.
 
 ### H-001 — [muse] Runtime E2E offline launch (Tauri, Wi-Fi off) — issue #1

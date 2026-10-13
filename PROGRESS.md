@@ -118,6 +118,7 @@
 
 ## 2026-10-12 — Multi-agent Fase 1 setup (PM, Epic 8 Hardening+E2E)
 - [2026-10-12] PM: `.orchestrator/{project-spec,architecture,task-registry.json,decisions}.md` dibuat; Issues `#1 H-001, #2 H-002, #3 H-003, #4 H-004` (label `epic-8`); duplikat `#5` closed. Worktrees `h-001/h-002/h-003` (branch `agent/*`) dari `main@84eac2b`. `.worktrees/mvp-foundation` hands-off (abandoned violet wave, uncommitted). Next: PO jalankan `gh auth refresh -s project,read:project` lalu PM buat Project board + link repo; H-001 ∥ H-002 ready, H-003 ready (may park), H-004 blocked.
+- [2026-10-13] PM: Project board #3 "EnglishPrep — Epic 8 Hardening" live (token scope ok) — repo linked, issues #1–#4 added. TASKS.md note updated.
 
 ## 2026-10-11 — macOS release build (deepseek)
 - [2026-10-11 20:33] PO: build the app into a macOS desktop app. Ran `bun run tauri build` (release). Finished in ~2m55s (Rust release compile 2m28s).
