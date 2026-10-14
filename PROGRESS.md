@@ -119,6 +119,8 @@
 ## 2026-10-12 — Multi-agent Fase 1 setup (PM, Epic 8 Hardening+E2E)
 - [2026-10-12] PM: `.orchestrator/{project-spec,architecture,task-registry.json,decisions}.md` dibuat; Issues `#1 H-001, #2 H-002, #3 H-003, #4 H-004` (label `epic-8`); duplikat `#5` closed. Worktrees `h-001/h-002/h-003` (branch `agent/*`) dari `main@84eac2b`. `.worktrees/mvp-foundation` hands-off (abandoned violet wave, uncommitted). Next: PO jalankan `gh auth refresh -s project,read:project` lalu PM buat Project board + link repo; H-001 ∥ H-002 ready, H-003 ready (may park), H-004 blocked.
 - [2026-10-13] PM: Project board #3 "EnglishPrep — Epic 8 Hardening" live (token scope ok) — repo linked, issues #1–#4 added. TASKS.md note updated.
+- [2026-10-14] PM: H-001 (issue #1) CLOSED oleh worker — report `docs/e2e-report.md` committed `bfeadc0` di branch `agent/h-001-e2e-runtime`, worktree clean, BELUM merge ke main (butuh integrasi + TASKS.md status update). Ditemukan `docs/APP-NAVIGATION.md` untracked di main checkout (recon navigasi, provenance tidak jelas — dijadikan input, tidak di-commit).
+- [2026-10-14] PM: H-005 difile (issue #6, board #3, worktree `.worktrees/h-005-nav-stack` branch `agent/h-005-nav-stack` dari `main@77b34fa`): quiz push-stack navigation. Registry + TASKS.md updated; H-004 gate kini depends on H-001, H-002, H-003, H-005. Open decision: perilaku back mid-quiz + tap sidebar saat sesi aktif (tunggu jawaban PO sebelum implementasi).
 
 ## 2026-10-11 — macOS release build (deepseek)
 - [2026-10-11 20:33] PO: build the app into a macOS desktop app. Ran `bun run tauri build` (release). Finished in ~2m55s (Rust release compile 2m28s).

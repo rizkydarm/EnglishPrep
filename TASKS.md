@@ -227,9 +227,16 @@
 
 ### H-004 — [agy] Final re-gate review (merge gate) — issue #4
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD` (no worktree)
-- **Depends On:** H-001, H-002, H-003
+- **Depends On:** H-001, H-002, H-003, H-005
 - **Acceptance:** PRD §14 13/13 runtime-verified; zero network; zero drag&drop; 1 fix-wave max lalu adjudicate
 - **Status:** todo (blocked)
+
+### H-005 — [muse] Quiz navigation as push-stack — issue #6
+- **Agent:** muse · **Estimasi:** 15 mnt · **File:** `src/App.svelte`, `src/lib/data/modules.ts`, `src/lib/components/app-sidebar.svelte` (+ test)
+- **Branch/worktree:** `agent/h-005-nav-stack` / `.worktrees/h-005-nav-stack`
+- **Depends On:** none (input recon: `docs/APP-NAVIGATION.md`, untracked di main checkout)
+- **Acceptance:** start quiz push halaman quiz ke stack (home tetap di bawah, bukan diganti di slot yang sama); back di header quiz pop stack (exit-confirm tetap); results push di atas quiz; tap sidebar saat sesi aktif konsisten; Esc = back/exit-confirm
+- **Status:** todo
 
 ## DAG (urutan eksekusi)
 ```
