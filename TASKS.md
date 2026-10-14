@@ -204,7 +204,8 @@
 > Remote: GitHub Issues `#1–#4` (label `epic-8`) + Project board #3 "EnglishPrep — Epic 8 Hardening" (linked to repo, all 4 issues added).
 > Registry mesin: `.orchestrator/task-registry.json`. Aturan: 1 task = 1 branch = 1 worktree = 1 agent, ≤15 mnt, 1 commit.
 
-### H-001 — [muse] Runtime E2E offline launch (Tauri, Wi-Fi off) — issue #1
+### H-001 — [muse] Runtime E2E offline launch — issue #1
+- **Status:** done (PR #7 merged `367e5d7`; worktree + branch cleaned)
 - **Agent:** muse · **Estimasi:** 15 mnt · **File:** `docs/e2e-report.md` (no app code)
 - **Branch/worktree:** `agent/h-001-e2e-runtime` / `.worktrees/h-001-e2e-runtime`
 - **Depends On:** none
@@ -236,7 +237,7 @@
 - **Branch/worktree:** `agent/h-005-nav-stack` / `.worktrees/h-005-nav-stack`
 - **Depends On:** none (input recon: `docs/APP-NAVIGATION.md`, untracked di main checkout)
 - **Acceptance:** start quiz push halaman quiz ke stack (home tetap di bawah, bukan diganti di slot yang sama); back di header quiz pop stack (exit-confirm tetap); results push di atas quiz; tap sidebar saat sesi aktif konsisten; Esc = back/exit-confirm
-- **Status:** review (impl `274356b` di `agent/h-005-nav-stack`, pushed; check 0 errors, 106/106 tests, build OK; butuh agy review + keputusan merge)
+- **Status:** review (PR #8 open, reviewer assigned: agy via issue #6; DO NOT merge before PASS)
 
 ## DAG (urutan eksekusi)
 ```

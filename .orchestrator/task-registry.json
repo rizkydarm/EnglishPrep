@@ -18,7 +18,7 @@
       "depends_on": [],
       "estimate_min": 15,
       "id": "H-001",
-      "status": "ready",
+      "status": "done",
       "title": "Runtime E2E offline launch (Tauri, Wi-Fi off)",
       "validation": [
         "bun run check",
@@ -110,7 +110,7 @@
       "branch": "agent/h-005-nav-stack",
       "worktree": ".worktrees/h-005-nav-stack",
       "depends_on": [],
-      "status": "ready",
+      "status": "review",
       "allowed_paths": [
         "src/App.svelte",
         "src/lib/data/modules.ts",
