@@ -1,147 +1,44 @@
-# Agent Task Prompt — template + contoh terisi (Epic 8)
+# Universal Agent Prompt (1 prompt untuk semua agent & task)
 
-> Cara pakai: copy blok TEMPLATE, isi slot `[...]`, paste ke agent worker
-> (Codex/Agy/OpenCode/dll). 1 task = 1 agent = 1 worktree = 1 branch.
-> Nilai slot diambil dari `.orchestrator/task-registry.json` dan GitHub issue.
-
-## TEMPLATE (executor: muse / deepseek)
+> Cara pakai: copy seluruh blok di bawah, isi 2 slot (`[AGENT]`, `[TASK-ID]`),
+> paste ke agent mana pun. Semua detail lain diambil agent dari registry + issue.
 
 ```text
-You are [AGENT] (executor). Task [TASK-ID]: [TITLE].
-Repo: [REPO-URL] | GitHub issue: #[N] | Board: [PROJECT-URL]
-
-1. READ FIRST (source of truth, urutan ini):
-   - PRD.md §[X] (acceptance untuk task ini)
-   - .orchestrator/architecture.md (ownership + rules)
-   - .orchestrator/task-registry.json (task [TASK-ID]: allowed_paths, acceptance_criteria)
-   - File yang akan diubah (current state)
-
-2. SETUP WORKSPACE (jangan kerja di main checkout):
-   git worktree add .worktrees/[SLUG] -b agent/[SLUG] main
-   cd .worktrees/[SLUG]
-   gh issue view [N]   (konfirmasi scope)
-
-3. CONSTRAINTS:
-   - Hanya boleh edit: [ALLOWED PATHS, mis. src/lib/views/Dashboard.svelte + test-nya]
-   - DILARANG: edit file di luar allowed paths, ubah design tokens,
-     tambah dependensi, ubah routing/kontrak tanpa persetujuan.
-   - Offline rule: system font stacks + lucide icons saja; tanpa network call.
-   - ≤15 menit, 1 commit.
-
-4. ACCEPTANCE (task DONE hanya jika semua hijau):
-   - [CRITERION 1]
-   - [CRITERION 2]
-
-5. VALIDATE di worktree-mu:
-   bun run check && bunx vitest run && bun run build
-   (+ [extra, mis. bun run validate:content])
-
-6. FINISH:
-   - Commit di branch agent/[SLUG], push branch. JANGAN merge ke main.
-   - Reply dengan TASK REPORT:
-     Task ID: / Status: / Files changed: / Branch: /
-     Tests executed-passed-failed: / Blockers: / Next action:
-```
-
-## TEMPLATE (reviewer: agy — tanpa worktree, tanpa edit kode)
-
-```text
-You are agy (reviewer/auditor). Review task [TASK-ID] pada branch agent/[SLUG]
-vs main. GitHub issue: #[N].
-
-1. READ: PRD.md §[X], issue #[N], lalu `git diff main...agent/[SLUG]`.
-2. CHECK: acceptance issue terpenuhi? Zero network call? Zero drag&drop?
-   AA contrast + light/dark + keyboard (utk UI)? File di luar allowed paths tersentuh?
-3. DO NOT edit code. Outputkan REVIEW REPORT:
-   Verdict: PASS / FAIL + temuan bernomor (file:line + alasan).
-   FAIL → PM kembalikan status task ke todo beserta nomor temuan.
-```
-
-## CONTOH TERISI — H-001 (muse, issue #1)
-
-```text
-You are muse (executor). Task H-001: Runtime E2E offline launch (Tauri, Wi-Fi off).
-Repo: https://github.com/rizkydarm/EnglishPrep | GitHub issue: #1
+You are [AGENT] (executor) for task [TASK-ID] in rizkydarm/EnglishPrep.
 Board: https://github.com/users/rizkydarm/projects/3
 
-1. READ FIRST: PRD.md §14 (13 baris checklist); .orchestrator/architecture.md;
-   .orchestrator/task-registry.json (task H-001).
+Do this in order, no shortcuts:
 
-2. SETUP:
-   git worktree add .worktrees/h-001-e2e-runtime -b agent/h-001-e2e-runtime main
-   cd .worktrees/h-001-e2e-runtime
+1. LOOK UP the task (this is the ONLY source for scope):
+   - gh issue view [N, dari .orchestrator/task-registry.json untuk TASK-ID ini]
+   - Read the matching entry in .orchestrator/task-registry.json:
+     allowed_paths, acceptance_criteria, validation, branch, worktree.
+   - Read .orchestrator/architecture.md (ownership + offline rules).
+   - Read PRD.md section named in the issue.
 
-3. CONSTRAINTS: NO app code — hanya tulis docs/e2e-report.md.
-   DILARANG edit src/, src-tauri/, atau config apapun. Temuan bug dicatat
-   di report sebagai follow-up, bukan difix di task ini.
+2. SETUP (never work in the main checkout):
+   git worktree add [worktree] -b [branch] main && cd [worktree]
+   (values from the registry entry; reuse existing worktree if present)
 
-4. ACCEPTANCE:
-   - Tauri window launches offline (Wi-Fi off)
-   - Cold start <2s, question render <100ms
-   - PRD §14 13/13 checked at runtime
-   - Report at docs/e2e-report.md
+3. BUILD only inside allowed_paths. FORBIDDEN: editing other files,
+   changing design tokens, adding dependencies, changing routes/contracts
+   without approval, any network call, emoji icons, webfonts.
+   Reviewer tasks (agent agy): read-only, NO code edits, NO worktree needed.
 
-5. VALIDATE: bun run check && bunx vitest run && bun run tauri build
+4. DONE only when every acceptance_criteria is met AND every validation
+   command in the registry entry passes in your worktree.
 
-6. FINISH: commit + push branch agent/h-001-e2e-runtime, JANGAN merge.
-   Reply TASK REPORT (format di template).
+5. FINISH: commit + push your agent/* branch. NEVER merge to main.
+   Reply ONLY in this format:
+   Task ID: / Status: done|blocked|parked / Files changed: / Branch: /
+   Tests executed-passed-failed: / Blockers: / Next action:
 ```
 
-## CONTOH TERISI — H-003 (deepseek, issue #3)
+Slot values (`[N]`, `[worktree]`, `[branch]`) per task — salin dari registry:
 
-```text
-You are deepseek (executor). Task H-003: Seed images + alternatives (Q-004 follow-up).
-Repo: https://github.com/rizkydarm/EnglishPrep | GitHub issue: #3
-Board: https://github.com/users/rizkydarm/projects/3
-
-1. READ FIRST: PRD.md §6.6 + §11 (image prompts boleh placeholder);
-   .orchestrator/architecture.md; .orchestrator/task-registry.json (task H-003);
-   src-tauri/resources/content/writing/prompts.json.
-
-2. SETUP:
-   git worktree add .worktrees/h-003-seed-images -b agent/h-003-seed-images main
-   cd .worktrees/h-003-seed-images
-
-3. CONSTRAINTS: hanya src-tauri/resources/content/writing/** dan
-   scripts/validate-content.ts. DILARANG sentuh src/, UI, atau schema.
-   NOTE: butuh aset biner owner — jika tidak tersedia, PARK task dengan jujur
-   (tulis alasan di TASK REPORT), jangan fabricate gambar.
-
-4. ACCEPTANCE:
-   - 3 image placeholders replaced or honestly kept per PRD §11
-   - alternatives filled where available
-   - validate:content green
-
-5. VALIDATE: bun run validate:content && bun run check
-
-6. FINISH: commit + push branch agent/h-003-seed-images, JANGAN merge.
-   Reply TASK REPORT (format di template).
-```
-
-## CONTOH TERISI — H-002 (muse, issue #2)
-
-```text
-You are muse (executor). Task H-002: Midnight tick fix (Dashboard 30-day chart).
-Repo: https://github.com/rizkydarm/EnglishPrep | GitHub issue: #2
-Board: https://github.com/users/rizkydarm/projects/3
-
-1. READ FIRST: PRD.md §7.9 + §8; .orchestrator/architecture.md;
-   .orchestrator/task-registry.json (task H-002); src/lib/views/Dashboard.svelte.
-
-2. SETUP:
-   git worktree add .worktrees/h-002-midnight-tick -b agent/h-002-midnight-tick main
-   cd .worktrees/h-002-midnight-tick
-
-3. CONSTRAINTS: hanya src/lib/views/Dashboard.svelte, src/lib/utils/*.ts,
-   dan test-nya. DILARANG sentuh design tokens, stores lain, routing.
-
-4. ACCEPTANCE:
-   - Day rollover at midnight refreshes 30-day bar chart tanpa reload
-   - No duplicate/missing day bucket
-   - vitest covers rollover
-
-5. VALIDATE: bun run check && bunx vitest run && bun run build
-
-6. FINISH: commit + push branch agent/h-002-midnight-tick, JANGAN merge.
-   Reply TASK REPORT (format di template).
-```
+| TASK-ID | Issue | Branch / Worktree |
+|---|---|---|
+| H-002 | #2 | `agent/h-002-midnight-tick` / `.worktrees/h-002-midnight-tick` |
+| H-003 | #3 | `agent/h-003-seed-images` / `.worktrees/h-003-seed-images` |
+| H-004 | #4 | review only, no worktree |
+| H-005 | #6 | `agent/h-005-nav-stack` / `.worktrees/h-005-nav-stack` |
