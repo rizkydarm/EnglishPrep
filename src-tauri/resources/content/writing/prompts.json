@@ -6,7 +6,7 @@
       "level": "b1-core",
       "words": ["she", "goes", "to", "work", "by", "bus", "every", "day"],
       "correct": "She goes to work by bus every day.",
-      "alternatives": [],
+      "alternatives": ["Every day she goes to work by bus."],
       "grammar_focus": "present simple routine"
     },
     {
@@ -24,7 +24,7 @@
       "level": "b2-core",
       "words": ["although", "the", "report", "was", "long", "it", "was", "clear"],
       "correct": "Although the report was long, it was clear.",
-      "alternatives": [],
+      "alternatives": ["The report was clear although it was long."],
       "grammar_focus": "concession clause"
     },
     {
@@ -33,7 +33,7 @@
       "level": "b2-mastery",
       "words": ["had", "she", "known", "about", "the", "delay", "she", "would", "have", "left", "earlier"],
       "correct": "Had she known about the delay, she would have left earlier.",
-      "alternatives": [],
+      "alternatives": ["She would have left earlier had she known about the delay."],
       "grammar_focus": "third conditional inversion"
     },
     {
