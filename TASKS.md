@@ -226,7 +226,7 @@
 - **Acceptance:** 3 placeholder diganti/asan per PRD §11; alternatives diisi bila ada; `validate:content` hijau
 - **Status:** review (PR #10 open, `6a8eb77` alternatives filled + images parked; PM-verified validate PASS, 106/106 tests; reviewer: agy)
 
-### H-004 — [agy] Final re-gate review (merge gate) — issue #4
+### H-004 — [agy + deepseek support] Final re-gate review (merge gate) — issue #4
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD` (no worktree)
 - **Depends On:** H-001, H-002, H-003, H-005
 - **Acceptance:** PRD §14 13/13 runtime-verified; zero network; zero drag&drop; 1 fix-wave max lalu adjudicate

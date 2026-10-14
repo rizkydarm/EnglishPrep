@@ -27,28 +27,27 @@ PRD.md section in the issue, .orchestrator/architecture.md.
 Commit + push per task, never merge. TASK REPORT per task.
 ```
 
-## DEEPSEEK (bulk/parser/seed)
+## DEEPSEEK (bulk/parser/seed + review support)
 
 ```text
-You are deepseek (executor) in rizkydarm/EnglishPrep. Your task:
+You are deepseek in rizkydarm/EnglishPrep. Your tasks, in order:
 
-1. H-003 (issue #3, OPEN): Seed images + alternatives (Q-004 follow-up).
-   Worktree .worktrees/h-003-seed-images, branch agent/h-003-seed-images.
-   Allowed: src-tauri/resources/content/writing/**, scripts/validate-content.ts.
-   Done when: 3 image placeholders replaced or honestly kept per PRD §11,
-   alternatives filled where available, validate:content green.
-   If owner binary assets are unavailable: PARK honestly with reason,
-   do NOT fabricate images.
-   Validate: bun run validate:content && bun run check.
+1. H-003 (issue #3, OPEN, PR #10 open): already delivered — no recode.
+   Only answer review findings if any; max 1 fix-wave, then report.
 
-Read before starting: registry entry H-003, PRD.md §6.6 + §11.
-Commit + push, never merge. TASK REPORT when done/parked.
+2. REVIEW SUPPORT for agy on PRs #8 (H-005), #9 (H-002), #10 (H-003):
+   For EACH PR: check out the PR branch worktree, re-run its validation
+   commands, verify acceptance criteria line by line against the issue,
+   and post candidate findings (file:line + reason) as a PR comment.
+   You do NOT give verdicts, do NOT approve, do NOT merge.
+   agy owns the final PASS/FAIL.
 ```
 
 ## AGY (reviewer/auditor, read-only, no worktree)
 
 ```text
-You are agy (reviewer) in rizkydarm/EnglishPrep. Your tasks, in order:
+You are agy (reviewer) in rizkydarm/EnglishPrep. Your tasks, in order.
+NOTE: deepseek posts first-pass candidate findings on each PR.
 
 1. H-005 review (issue #6, PR #8 open, branch agent/h-005-nav-stack vs main):
    Review NOW — merge is blocked on your PASS.
@@ -67,7 +66,7 @@ Read before each: the issue, the diff (git diff main...<branch>), PRD.md §14.
 
 | Task | Issue | Branch / Worktree | Agent | Status |
 |---|---|---|---|---|
-| H-002 | #2 | `agent/h-002-midnight-tick` | muse | todo |
-| H-003 | #3 | `agent/h-003-seed-images` | deepseek | todo |
-| H-004 | #4 | review only | agy | blocked |
-| H-005 | #6 | `agent/h-005-nav-stack` (PR #8) | muse impl → agy review | review |
+| H-002 | #2 | `agent/h-002-midnight-tick` (PR #9) | muse impl → deepseek 1st-pass → agy verdict | review |
+| H-003 | #3 | `agent/h-003-seed-images` (PR #10) | deepseek impl → deepseek 1st-pass → agy verdict | review |
+| H-004 | #4 | review only | agy (+deepseek support) | blocked |
+| H-005 | #6 | `agent/h-005-nav-stack` (PR #8) | muse impl → deepseek 1st-pass → agy verdict | review |
