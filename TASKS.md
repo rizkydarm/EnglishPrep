@@ -236,7 +236,7 @@
 - **Branch/worktree:** `agent/h-005-nav-stack` / `.worktrees/h-005-nav-stack`
 - **Depends On:** none (input recon: `docs/APP-NAVIGATION.md`, untracked di main checkout)
 - **Acceptance:** start quiz push halaman quiz ke stack (home tetap di bawah, bukan diganti di slot yang sama); back di header quiz pop stack (exit-confirm tetap); results push di atas quiz; tap sidebar saat sesi aktif konsisten; Esc = back/exit-confirm
-- **Status:** todo
+- **Status:** review (impl `274356b` di `agent/h-005-nav-stack`, pushed; check 0 errors, 106/106 tests, build OK; butuh agy review + keputusan merge)
 
 ## DAG (urutan eksekusi)
 ```
