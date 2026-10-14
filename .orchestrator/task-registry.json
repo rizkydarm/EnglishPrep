@@ -43,7 +43,7 @@
       "depends_on": [],
       "estimate_min": 12,
       "id": "H-002",
-      "status": "ready",
+      "status": "review",
       "title": "Midnight tick fix (Dashboard 30-day chart)",
       "validation": [
         "bun run check",
@@ -68,7 +68,7 @@
       "estimate_min": 10,
       "id": "H-003",
       "notes": "Needs owner binary assets; may park like Q-004",
-      "status": "ready",
+      "status": "review",
       "title": "Seed images + alternatives (Q-004 follow-up)",
       "validation": [
         "bun run validate:content",

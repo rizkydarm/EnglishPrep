@@ -217,14 +217,14 @@
 - **Branch/worktree:** `agent/h-002-midnight-tick` / `.worktrees/h-002-midnight-tick`
 - **Depends On:** none
 - **Acceptance:** day rollover refreshes chart tanpa reload; no duplicate/missing bucket; vitest covers rollover
-- **Status:** todo
+- **Status:** review (PR #9 open, `e43fdb2`; PM-verified check 0 errors, 109/109 tests; reviewer: agy)
 
 ### H-003 — [deepseek] Seed images + alternatives (Q-004 follow-up) — issue #3
 - **Agent:** deepseek · **Estimasi:** 10 mnt · **File:** `src-tauri/resources/content/writing/**`
 - **Branch/worktree:** `agent/h-003-seed-images` / `.worktrees/h-003-seed-images`
 - **Depends On:** none (needs owner binary assets; may park)
 - **Acceptance:** 3 placeholder diganti/asan per PRD §11; alternatives diisi bila ada; `validate:content` hijau
-- **Status:** todo
+- **Status:** review (PR #10 open, `6a8eb77` alternatives filled + images parked; PM-verified validate PASS, 106/106 tests; reviewer: agy)
 
 ### H-004 — [agy] Final re-gate review (merge gate) — issue #4
 - **Agent:** agy · **Estimasi:** 15 mnt · **File:** full diff `main..HEAD` (no worktree)
