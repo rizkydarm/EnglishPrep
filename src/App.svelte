@@ -211,6 +211,9 @@
 </script>
 
 <ModeWatcher />
+<!-- Pushed-stack navigation (H-005): an active session is its own page with no
+     sidebar. Back/Exit pops the stack to Home and discards (confirm first). -->
+{#if stage === "idle"}
 <Sidebar.Provider>
   <AppSidebar {view} onNavigate={navigate} onPrefetch={prefetchView} />
   <Sidebar.Inset>
@@ -246,30 +249,6 @@
       </div>
     {/if}
     <main class="flex-1 overflow-y-auto p-4 md:p-6">
-      {#if stage === "quiz"}
-        <div class="mx-auto w-full max-w-5xl">
-          {#key quizRunId}
-            <QuizShell
-              items={activeItems}
-              mode={activeMode}
-              levels={activeLevels}
-              timerPerQ={activeTimer}
-              {definitionByWordId}
-              onFinish={handleQuizFinish}
-              onExit={exitSession}
-            />
-          {/key}
-        </div>
-      {:else if stage === "results" && summary}
-        <div class="mx-auto w-full max-w-5xl">
-          <Results
-            {summary}
-            onReviewWrong={handleReviewWrong}
-            onNewQuiz={handleNewQuiz}
-            onHome={goHome}
-          />
-        </div>
-      {:else}
         <div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
           {#if view === "dashboard"}
             <Home
@@ -349,10 +328,38 @@
             {/if}
           {/if}
         </div>
-      {/if}
     </main>
   </Sidebar.Inset>
 </Sidebar.Provider>
+{:else}
+  <!-- Pushed session page (H-005): no sidebar. Back/Exit pops to Home (confirm first, discard). -->
+  <main class="h-dvh overflow-y-auto bg-background p-4 md:p-6">
+    {#if stage === "quiz"}
+      <div class="mx-auto w-full max-w-5xl">
+        {#key quizRunId}
+          <QuizShell
+            items={activeItems}
+            mode={activeMode}
+            levels={activeLevels}
+            timerPerQ={activeTimer}
+            {definitionByWordId}
+            onFinish={handleQuizFinish}
+            onExit={exitSession}
+          />
+        {/key}
+      </div>
+    {:else if stage === "results" && summary}
+      <div class="mx-auto w-full max-w-5xl">
+        <Results
+          {summary}
+          onReviewWrong={handleReviewWrong}
+          onNewQuiz={handleNewQuiz}
+          onHome={goHome}
+        />
+      </div>
+    {/if}
+  </main>
+{/if}
 
 {#if setupMode !== null}
   <SetupSheet
