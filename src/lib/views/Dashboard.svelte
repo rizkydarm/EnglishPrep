@@ -2,13 +2,15 @@
   import { progress, type HistorySession } from "$lib/stores/progress.svelte.js";
   import { srs, todayStr } from "$lib/stores/srs.svelte.js";
   import type { Level } from "$lib/types/schema.js";
-  import {
+  import { buildDayBars } from "$lib/utils/day-bars.js";
+import {
     buildReviewSession,
     getDueWords,
     type QueuedItem,
     type SessionItem,
   } from "$lib/utils/review-queue.js";
   import { isMastered } from "$lib/utils/srs.js";
+  import { onMount } from "svelte";
   import CalendarXIcon from "@lucide/svelte/icons/calendar-x";
   import HistoryIcon from "@lucide/svelte/icons/history";
   import PlayIcon from "@lucide/svelte/icons/play";
@@ -56,8 +58,26 @@
     "b2-mastery": "B2 Mastery",
   };
 
-  // Fresh date on every recompute (no stale-today when left mounted past midnight).
-  const dueWords = $derived(getDueWords(srs.entries, todayStr()));
+  // Reactive today: refreshes the 30-day window + due words past midnight.
+  let today = $state(todayStr());
+
+  onMount(() => {
+    function tick(): void {
+      const next = todayStr();
+      if (next !== today) today = next;
+    }
+    const id = setInterval(tick, 30_000);
+    function onVisible(): void {
+      if (document.visibilityState === "visible") tick();
+    }
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  });
+
+  const dueWords = $derived(getDueWords(srs.entries, today));
   const learningCount = $derived(srs.learningCount);
   const masteredCount = $derived(srs.masteredCount);
   const totalTracked = $derived(srs.size);
@@ -84,34 +104,7 @@
     }),
   );
 
-  interface DayBar {
-    date: string;
-    label: string;
-    quizzes: number;
-    avg: number | null;
-  }
-
-  const last30 = $derived.by<DayBar[]>(() => {
-    const byDate = new Map(progress.daily.map((d) => [d.date, d]));
-    const out: DayBar[] = [];
-    const base = new Date(`${todayStr()}T12:00:00`);
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(base.getTime() - i * 86_400_000);
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      const key = `${y}-${m}-${day}`;
-      const entry = byDate.get(key);
-      out.push({
-        date: key,
-        label: `${m}/${day}`,
-        quizzes: entry?.quizzes ?? 0,
-        avg:
-          entry && entry.total > 0 ? Math.round((entry.correct / entry.total) * 100) : null,
-      });
-    }
-    return out;
-  });
+  const last30 = $derived(buildDayBars(progress.daily, today));
 
   const maxQuizzes = $derived(Math.max(1, ...last30.map((d) => d.quizzes)));
 
